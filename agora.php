@@ -90,7 +90,7 @@ class RRDTool {
            RRA:AVERAGE:0.5:1440:3700 \
            RRA:MIN:0.5:1:2880 \
            RRA:MIN:0.5:5:2304 \
-           RRA:MIN:0.5:30:700
+           RRA:MIN:0.5:30:700 \
            RRA:MIN:0.5:120:775 \
            RRA:MIN:0.5:1440:3700 \
            RRA:MAX:0.5:1:2880 \
