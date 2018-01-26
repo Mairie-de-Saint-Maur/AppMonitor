@@ -1,13 +1,17 @@
 <?php
 //////////////////////////////////////////////////////////////////
 //                                                              //
-//     Script de test applicatif Agora pour Selenium 2          //
+//     Script de test applicatif du site institutionnel         //
 //                                                              //
-//                   Blaise 26-01-2018   V0.2                   //
+//                   Blaise 26-01-2018   V0.1                   //
 //                                                              //
 //////////////////////////////////////////////////////////////////
 
 //namespace Facebook\WebDriver;
+
+ini_set('display_startup_errors', 1);
+ini_set('display_errors', 1);
+error_reporting(-1);
 
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -162,7 +166,7 @@ $timeStart = round(microtime(true) * 1000);
 ///////////////////////////////////////////////////////////////////
 
 // Ouverture de la page d'accueil de l'application
-$driver->get('http://10.51.0.8/agora/pck_security.home');
+$driver->get('https://www.saint-maur.com/');
 $timeCurrent = round(microtime(true) * 1000);
 $RRD->timeHome = $timeCurrent - $timeStart;
 $timeLast = $timeCurrent;
@@ -171,58 +175,35 @@ $timeLast = $timeCurrent;
 $driver->manage()->deleteAllCookies();
 
 
-// On cherche les 3 boutons colorés des 3 domaines d'Agora
-// puis on clique aveuglément sur le deuxième 
-$element = $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('dock-item'))); 
-$elements = $driver->findElements(WebDriverBy::className('dock-item'));
-$nbElements = count($elements);
-if ($nbElements <> 3) 
-   fin("On attendait 3 disques clicables, on en a obtenu $nbElements.\n");
-else
-   // $element[0] = Agora Baby
-   // $element[1] = Agora Péri
-   // $element[2] = Agora Scolaire
-   $elements[0]->click();
-
-// On attend l'affichage du bloc de login
-$element = $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name('p_login')));
-
-// Saisie du login et du mot de passe puis validation
-$driver->findElement(WebDriverBy::name('p_login'))->sendKeys('Tdsi');
-$driver->findElement(WebDriverBy::name('p_pass'))->sendKeys('DSI94100');
-$link = $driver->findElement(WebDriverBy::id('logIn'));
+$element = $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkTest('Se conecter'))); 
+$link = $driver->findElement(WebDriverBy::linkText('Se connecter'));
 $link->click();
 
-// On attend l'affichage effectif de la première page
-$driver->wait()->until(WebDriverExpectedCondition::titleContains('Agor@Baby'));
-//$driver->wait()->until(WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::id('title', 'login')));
+// On attend l'affichage du bloc de login
+$element = $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('user')));
+
+// Saisie du login et du mot de passe puis validation
+$driver->findElement(WebDriverBy::id('user'))->sendKeys('blaise.thauvin@mairie-saint-maur.com');
+$driver->findElement(WebDriverBy::id('motdepasse')->clear()
+$driver->findElement(WebDriverBy::id('motdepasse'))->sendKeys('OAN5NFrXf0l6GafxQSZd');
+$link = $driver->findElement(WebDriverBy::id('submit_logIn'));
+$link->click();
 $timeCurrent = round(microtime(true) * 1000);
 $RRD->timeLogin = $timeCurrent - $timeLast;
 $timeLast = $timeCurrent;
 
-// Un cookie a peut-être été postionné, on l'affiche
-//$cookies = $driver->manage()->getCookies();
-//print_r($cookies);
-
-
-// Clic sur les items de menu
-$link = $driver->findElement(WebDriverBy::linkText('GESTION DE LA POPULATION'));
-$link->click();
-
-$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText('FAMILLES')));
-$link = $driver->findElement(WebDriverBy::linkText('FAMILLES'));
-$link->click();
-
-$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText('Rechercher')));
-$link = $driver->findElement(WebDriverBy::linkText('Rechercher'));
-$link->click();
+// On attend l'affichage effectif de la première page puis clic sur menu "mes démarches"
+$driver->findElement(WebDriverBy::xpath("(//button[@type='button'])[5]"))->click();
+$driver.findElement(WebDriverBy::css_selector("#mes-demarches > ul > li > a"))->click();
 $timeCurrent = round(microtime(true) * 1000);
 $RRD->timeActions = $timeCurrent - $timeLast;
 $timeLast = $timeCurrent;
 
-$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText('DÉCONNEXION')));
-$link = $driver->findElement(WebDriverBy::linkText('DÉCONNEXION'));
-$link->click();
+// clic sur bouton "mon compte
+$driver->find_Element(WebDriverB::linkText("Mon compte"))->click();
+
+// Déconnexion
+$driver->findElement(webDriverBy::linkText("Se déconnecter"))->click();
 $timeCurrent = round(microtime(true) * 1000);
 $RRD->timeLogout = $timeCurrent - $timeLast;
 $timeLast = $timeCurrent;
@@ -234,4 +215,4 @@ echo "Le titre de la dernière page est: " . $driver->getTitle() . "\n";
 echo "L'URL finale est: " . $driver->getCurrentURL() . "\n";
 
 // Sortie
-fin(0, "Agora OK");
+fin(0, "Institutionnel OK");
