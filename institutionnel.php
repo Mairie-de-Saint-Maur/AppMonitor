@@ -193,17 +193,19 @@ $RRD->timeLogin = $timeCurrent - $timeLast;
 $timeLast = $timeCurrent;
 
 // On attend l'affichage effectif de la première page puis clic sur menu "mes démarches"
-$driver->findElement(WebDriverBy::xpath("(//button[@type='button'])[5]"))->click();
-$driver.findElement(WebDriverBy::css_selector("#mes-demarches > ul > li > a"))->click();
+//$driver->findElement(WebDriverBy::xpath("(//button[@type='button'])[5]"))->click();
+//$driver.findElement(WebDriverBy::css_selector("#mes-demarches > ul > li > a"))->click();
+
+// clic sur bouton "mon compte
+$element = $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText('Mon compte')));
+$element->click();
 $timeCurrent = round(microtime(true) * 1000);
 $RRD->timeActions = $timeCurrent - $timeLast;
 $timeLast = $timeCurrent;
 
-// clic sur bouton "mon compte
-$driver->find_Element(WebDriverB::linkText("Mon compte"))->click();
-
 // Déconnexion
-$driver->findElement(webDriverBy::linkText("Se déconnecter"))->click();
+$element = $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText('Se déconnecter')));
+$element->click();
 $timeCurrent = round(microtime(true) * 1000);
 $RRD->timeLogout = $timeCurrent - $timeLast;
 $timeLast = $timeCurrent;

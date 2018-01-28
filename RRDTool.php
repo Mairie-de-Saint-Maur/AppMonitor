@@ -6,7 +6,6 @@
 //            Blaise 20-01-2018   V0.1                          //
 //                                                              //
 //////////////////////////////////////////////////////////////////
-
 class RRDTool {
 
    private $rrdTool = '/opt/rrdtool-1.7.0/bin/rrdtool';
@@ -26,21 +25,23 @@ class RRDTool {
          $parameters = "--step 60 --no-overwrite DS:home:GAUGE:600:0:60000 DS:login:GAUGE:600:0:60000 \
            DS:actions:GAUGE:600:0:60000 \
            DS:logout:GAUGE:600:0:60000 \
-           RRA:AVERAGE:0.5:1:240 \
-           RRA:AVERAGE:0.5:5:600 \
+           RRA:AVERAGE:0.5:1:2880 \
+           RRA:AVERAGE:0.5:5:2304 \
            RRA:AVERAGE:0.5:30:700 \
            RRA:AVERAGE:0.5:120:775 \
            RRA:AVERAGE:0.5:1440:3700 \
-           RRA:MIN:0.5:1:240 \
+           RRA:MIN:0.5:1:2880 \
+           RRA:MIN:0.5:5:2304 \
+           RRA:MIN:0.5:30:700 \
            RRA:MIN:0.5:120:775 \
            RRA:MIN:0.5:1440:3700 \
-           RRA:MAX:0.5:1:240 \
-           RRA:MAX:0.5:5:600 \
+           RRA:MAX:0.5:1:2880 \
+           RRA:MAX:0.5:5:2304 \
            RRA:MAX:0.5:30:700 \
            RRA:MAX:0.5:120:775 \
            RRA:MAX:0.5:1440:3700 \
-           RRA:LAST:0.5:1:240 \
-           RRA:LAST:0.5:5:600 \
+           RRA:LAST:0.5:1:2880 \
+           RRA:LAST:0.5:5:2304 \
            RRA:LAST:0.5:30:700 \
            RRA:LAST:0.5:120:775 \
            RRA:LAST:0.5:1440:3700";
@@ -57,7 +58,7 @@ class RRDTool {
    }
 
    // Update du fichier rrd
-   function update() {
+   public function update() {
       $timeHome = $this->timeHome;
       $timeLogin = $this->timeLogin;
       $timeActions = $this->timeActions;
@@ -75,3 +76,4 @@ class RRDTool {
    }
 
 }
+?>
