@@ -107,10 +107,12 @@ $element = $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition:
 $element->click();
 
 // Saisie du login et du mot de passe puis validation
-$driver->findElement(WebDriverBy::id('identifierId'))->sendKeys('licences@mairie-saint-maur.com');
+$element = $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('identifierId')));
+$element->sendKeys('licences@mairie-saint-maur.com');
 $driver->findElement(WebDriverBy::cssSelector('span.RveJvd.snByac'))->click();
-$element = $driver->findElement(WebDriverBy::name('password'));
-$element->click();
+
+$element = $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name('password')));
+//$element->click();
 $element->clear();
 $element->sendKeys('M7FohTSh');
 $driver->findElement(WebDriverBy::cssSelector('span.RveJvd.snByac'))->click();
@@ -120,7 +122,7 @@ $timeLast = $timeCurrent;
 
 
 // Recherche simple sur le mot Test
-$element = $driver->findElement(WebDriverBy::id('lst-ib'));
+$element = $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('lst-ib')));
 $element->clear();
 $element->sendKeys('test');
 $driver->findElement(WebDriverBy::cssSelector('span.gb_ab.gbii'))->click();
