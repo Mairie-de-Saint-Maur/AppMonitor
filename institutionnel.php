@@ -80,7 +80,8 @@ $host = 'http://test01-x.saintmaur.local:4444/wd/hub';
 $capabilities = DesiredCapabilities::firefox();
 
 // Instanciation de la classe permettant le stockage des données en base circulaire
-$RRD = new RRDTool(__FILE__);
+$filename = pathinfo(__FILE__)['filename'];
+$RRD = new RRDTool($filename);
 
 // Lancement du navigateur sur le client cible, timeout de 5 secondes
 // Stockage heure de début

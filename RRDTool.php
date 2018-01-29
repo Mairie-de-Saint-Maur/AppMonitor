@@ -19,8 +19,7 @@ class RRDTool {
 
    // Création du fichier RRD si nécessaire lors de l'instanciation
    function __construct($file) {
-      $path_parts = pathinfo($file);
-      $this->rrdFile = $path_parts['dirname'] . "/" . $path_parts['filename'] . ".rrd";
+      $this->rrdFile = $file . ".rrd";
       if (!file_exists($this->rrdFile)) {
          $parameters = "--step 60 --no-overwrite DS:home:GAUGE:600:0:60000 DS:login:GAUGE:600:0:60000 \
            DS:actions:GAUGE:600:0:60000 \

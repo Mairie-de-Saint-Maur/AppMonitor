@@ -73,14 +73,15 @@ set_exception_handler('exception_handler');
 
 // Execution du navigateur sur le serveur local, disponible au port ci-dessous parce que le Java y est lancé 
 //$host = 'http://localhost:4444/wd/hub';
-$host = 'http://sm00739.saintmaur.local:4444/wd/hub';
-//$host = 'http://test01-x.saintmaur.local:4444/wd/hub';
+//$host = 'http://sm00739.saintmaur.local:4444/wd/hub';
+$host = 'http://test01-x.saintmaur.local:4444/wd/hub';
 
 // Choix du navigateur
 $capabilities = DesiredCapabilities::firefox();
 
 // Instanciation de la classe permettant le stockage des données en base circulaire
-$RRD = new RRDTool(__FILE__);
+$filename = pathinfo(__FILE__)['filename'];
+$RRD = new RRDTool($filename);
 
 // Lancement du navigateur sur le client cible, timeout de 5 secondes
 // Stockage heure de début
@@ -111,8 +112,7 @@ $element = $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition:
 $element->sendKeys('licences@mairie-saint-maur.com');
 $driver->findElement(WebDriverBy::cssSelector('span.RveJvd.snByac'))->click();
 
-$element = $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name('password')));
-//$element->click();
+$element = $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::name('password')));
 $element->clear();
 $element->sendKeys('M7FohTSh');
 $driver->findElement(WebDriverBy::cssSelector('span.RveJvd.snByac'))->click();
@@ -124,14 +124,15 @@ $timeLast = $timeCurrent;
 // Recherche simple sur le mot Test
 $element = $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('lst-ib')));
 $element->clear();
-$element->sendKeys('test');
-$driver->findElement(WebDriverBy::cssSelector('span.gb_ab.gbii'))->click();
+$element->sendKeys("test\n");
 $timeCurrent = round(microtime(true) * 1000);
 $RRD->timeActions = $timeCurrent - $timeLast;
 $timeLast = $timeCurrent;
 
 // Déconnexion
-$driver->findElement(WebDriverBy::id('gb_71'))->click();
+
+$driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::cssSelector('span.gb_ab.gbii')))->click();
+$driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::id('gb_71')))->click();
 $timeCurrent = round(microtime(true) * 1000);
 $RRD->timeLogout = $timeCurrent - $timeLast;
 $timeLast = $timeCurrent;

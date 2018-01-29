@@ -1,13 +1,17 @@
 <?php
 //////////////////////////////////////////////////////////////////
 //                                                              //
-//     Script de test applicatif Agora pour Selenium 2          //
+//     Script de test applicatif de référence: Google           //
 //                                                              //
-//                   Blaise 26-01-2018   V0.2                   //
+//                   Blaise 28-01-2018   V0.1                   //
 //                                                              //
 //////////////////////////////////////////////////////////////////
 
 //namespace Facebook\WebDriver;
+
+ini_set('display_startup_errors', 1);
+ini_set('display_errors', 1);
+error_reporting(-1);
 
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -43,21 +47,23 @@ set_exception_handler('exception_handler');
 ///////////////////////////////////////////////////////////////////
 
    function fin($exit_code=0, $message='fin de simulation') {
-      global $driver, $RRD;
+      global $driver, $RRD, $filename;
    
       echo "$message\n";
    
-      // Détruit la classe RRDTool (provoque la sauvegarde des données)
-      // Si le script a échoué: screenshot
-      if ($RRD->timeLogout == 'U') {
-         $screenshot = "screenshot-". time() . ".png";
+  
+      // Si le script a échoué et que $driver est bien un objet: screenshot
+      if ($RRD->timeLogout == 'U' && is_object($driver)) {
+         $screenshot = "screenshot-$filename-". time() . ".png";
          $driver->takeScreenshot($screenshot);
          $exit_code = 1;
       }
+
+      // Détruit la classe RRDTool (provoque la sauvegarde des données)
       unset($RRD);
-   
+ 
       // Ferme le navigateur
-      $driver->quit();
+      if (is_object($driver)) $driver->quit();
       exit($exit_code);
    
    }
@@ -70,10 +76,10 @@ set_exception_handler('exception_handler');
 // Execution du navigateur sur le serveur local, disponible au port ci-dessous parce que le Java y est lancé 
 //$host = 'http://localhost:4444/wd/hub';
 $host = 'http://sm00739.saintmaur.local:4444/wd/hub';
-$host = 'http://test01-x.saintmaur.local:4444/wd/hub';
+//$host = 'http://test01-x.saintmaur.local:4444/wd/hub';
 
 // Choix du navigateur
-$capabilities = DesiredCapabilities::firefox();
+$capabilities = DesiredCapabilities::chrome();
 
 // Instanciation de la classe permettant le stockage des données en base circulaire
 $filename = pathinfo(__FILE__)['filename'];
@@ -90,67 +96,45 @@ $timeStart = round(microtime(true) * 1000);
 ///////////////////////////////////////////////////////////////////
 
 // Ouverture de la page d'accueil de l'application
-$driver->get('http://10.51.0.8/agora/pck_security.home');
+$driver->get('https://www.google.fr/');
 $timeCurrent = round(microtime(true) * 1000);
 $RRD->timeHome = $timeCurrent - $timeStart;
 $timeLast = $timeCurrent;
 
 // Suppression des éventuels cookies résiduels
-$driver->manage()->deleteAllCookies();
+//$driver->manage()->deleteAllCookies();
 
-
-// On cherche les 3 boutons colorés des 3 domaines d'Agora
-// puis on clique aveuglément sur le deuxième 
-$element = $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('dock-item'))); 
-$elements = $driver->findElements(WebDriverBy::className('dock-item'));
-$nbElements = count($elements);
-if ($nbElements <> 3) 
-   fin("On attendait 3 disques clicables, on en a obtenu $nbElements.\n");
-else
-   // $element[0] = Agora Baby
-   // $element[1] = Agora Péri
-   // $element[2] = Agora Scolaire
-   $elements[0]->click();
 
 // On attend l'affichage du bloc de login
-$element = $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name('p_login')));
+$element = $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('gb_70')));
+$element->click();
 
 // Saisie du login et du mot de passe puis validation
-$driver->findElement(WebDriverBy::name('p_login'))->sendKeys('Tdsi');
-$driver->findElement(WebDriverBy::name('p_pass'))->sendKeys('DSI94100');
-$link = $driver->findElement(WebDriverBy::id('logIn'));
-$link->click();
+$element = $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('identifierId')));
+$element->sendKeys('licences@mairie-saint-maur.com');
+$driver->findElement(WebDriverBy::cssSelector('span.RveJvd.snByac'))->click();
 
-// On attend l'affichage effectif de la première page
-$driver->wait()->until(WebDriverExpectedCondition::titleContains('Agor@Baby'));
-//$driver->wait()->until(WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::id('title', 'login')));
+$element = $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::name('password')));
+$element->clear();
+$element->sendKeys('M7FohTSh');
+$driver->findElement(WebDriverBy::cssSelector('span.RveJvd.snByac'))->click();
 $timeCurrent = round(microtime(true) * 1000);
 $RRD->timeLogin = $timeCurrent - $timeLast;
 $timeLast = $timeCurrent;
 
-// Un cookie a peut-être été postionné, on l'affiche
-//$cookies = $driver->manage()->getCookies();
-//print_r($cookies);
 
-
-// Clic sur les items de menu
-$link = $driver->findElement(WebDriverBy::linkText('GESTION DE LA POPULATION'));
-$link->click();
-
-$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText('FAMILLES')));
-$link = $driver->findElement(WebDriverBy::linkText('FAMILLES'));
-$link->click();
-
-$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText('Rechercher')));
-$link = $driver->findElement(WebDriverBy::linkText('Rechercher'));
-$link->click();
+// Recherche simple sur le mot Test
+$element = $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('lst-ib')));
+$element->clear();
+$element->sendKeys("test\n");
 $timeCurrent = round(microtime(true) * 1000);
 $RRD->timeActions = $timeCurrent - $timeLast;
 $timeLast = $timeCurrent;
 
-$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText('DÉCONNEXION')));
-$link = $driver->findElement(WebDriverBy::linkText('DÉCONNEXION'));
-$link->click();
+// Déconnexion
+
+$driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::cssSelector('span.gb_ab.gbii')))->click();
+$driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::id('gb_71')))->click();
 $timeCurrent = round(microtime(true) * 1000);
 $RRD->timeLogout = $timeCurrent - $timeLast;
 $timeLast = $timeCurrent;
@@ -162,4 +146,4 @@ echo "Le titre de la dernière page est: " . $driver->getTitle() . "\n";
 echo "L'URL finale est: " . $driver->getCurrentURL() . "\n";
 
 // Sortie
-fin(0, "Agora OK");
+fin(0, "Google OK");

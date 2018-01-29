@@ -22,7 +22,7 @@ check_version "1.19"
 if [ $? -ne 0 ]; then exit_error "Script could not check common-lib version, likely reason is version is lower than 1.19 and obsolete"; fi
 
 # Use this function if your script cannot be run twice simultaneously
-check_script 
+#check_script 
       
 # Define the constants and variables to be used later in your script
 DESTINATAIRES="camus.lejarre@mairie-saint-maur.com,blaise.thauvin@mairie-saint-maur.com"
