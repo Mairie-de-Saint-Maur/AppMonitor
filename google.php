@@ -17,6 +17,7 @@ use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
+use Facebook\WebDriver\Chrome\ChromeOptions;
 
 require_once('vendor/autoload.php');
 require_once('RRDTool.php');
@@ -26,9 +27,9 @@ require_once('RRDTool.php');
 ///////////////////////////////////////////////////////////////////
 function exception_handler($exception) {
    // Prenons une copie d'écran à tout hasard....
-   global $driver;
+   global $driver, $filename;
    if (isset($driver)) {
-      $screenshot = "screenshot-". time() . ".png";
+      $screenshot = "screenshot-$filename-". time() . ".png";
       try {
          $driver->takeScreenshot($screenshot);
       }
@@ -47,21 +48,23 @@ set_exception_handler('exception_handler');
 ///////////////////////////////////////////////////////////////////
 
    function fin($exit_code=0, $message='fin de simulation') {
-      global $driver, $RRD;
+      global $driver, $RRD, $filename;
    
       echo "$message\n";
    
-      // Détruit la classe RRDTool (provoque la sauvegarde des données)
-      // Si le script a échoué: screenshot
-      if ($RRD->timeLogout == 'U') {
-         $screenshot = "screenshot-". time() . ".png";
+  
+      // Si le script a échoué et que $driver est bien un objet: screenshot
+      if ($RRD->timeLogout == 'U' && is_object($driver)) {
+         $screenshot = "screenshot-$filename-". time() . ".png";
          $driver->takeScreenshot($screenshot);
          $exit_code = 1;
       }
+
+      // Détruit la classe RRDTool (provoque la sauvegarde des données)
       unset($RRD);
-   
+ 
       // Ferme le navigateur
-      $driver->quit();
+      if (is_object($driver)) $driver->quit();
       exit($exit_code);
    
    }
@@ -77,7 +80,10 @@ set_exception_handler('exception_handler');
 $host = 'http://test01-x.saintmaur.local:4444/wd/hub';
 
 // Choix du navigateur
-$capabilities = DesiredCapabilities::firefox();
+$options = new ChromeOptions();
+$options->addArguments(array("--start-maximized"));
+$capabilities = DesiredCapabilities::chrome();
+$capabilities->setCapability(ChromeOptions::CAPABILITY, $options);
 
 // Instanciation de la classe permettant le stockage des données en base circulaire
 $filename = pathinfo(__FILE__)['filename'];
@@ -100,7 +106,7 @@ $RRD->timeHome = $timeCurrent - $timeStart;
 $timeLast = $timeCurrent;
 
 // Suppression des éventuels cookies résiduels
-$driver->manage()->deleteAllCookies();
+//$driver->manage()->deleteAllCookies();
 
 
 // On attend l'affichage du bloc de login
@@ -130,7 +136,8 @@ $RRD->timeActions = $timeCurrent - $timeLast;
 $timeLast = $timeCurrent;
 
 // Déconnexion
-
+// Retour sur la home page pour éviter le problème du bouton logout caché au delà de la fenêtre
+$driver->get('https://www.google.fr/');
 $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::cssSelector('span.gb_ab.gbii')))->click();
 $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::id('gb_71')))->click();
 $timeCurrent = round(microtime(true) * 1000);

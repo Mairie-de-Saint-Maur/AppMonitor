@@ -26,9 +26,9 @@ require_once('RRDTool.php');
 ///////////////////////////////////////////////////////////////////
 function exception_handler($exception) {
    // Prenons une copie d'écran à tout hasard....
-   global $driver;
+         global $driver, $filename;
    if (isset($driver)) {
-      $screenshot = "screenshot-". time() . ".png";
+      $screenshot = "screenshot-$filename-". time() . ".png";
       try {
          $driver->takeScreenshot($screenshot);
       }
@@ -47,23 +47,25 @@ set_exception_handler('exception_handler');
 ///////////////////////////////////////////////////////////////////
 
    function fin($exit_code=0, $message='fin de simulation') {
-      global $driver, $RRD;
-   
+      global $driver, $RRD, $filename;
+
       echo "$message\n";
-   
-      // Détruit la classe RRDTool (provoque la sauvegarde des données)
-      // Si le script a échoué: screenshot
-      if ($RRD->timeLogout == 'U') {
-         $screenshot = "screenshot-". time() . ".png";
+
+
+      // Si le script a échoué et que $driver est bien un objet: screenshot
+      if ($RRD->timeLogout == 'U' && is_object($driver)) {
+         $screenshot = "screenshot-$filename-". time() . ".png";
          $driver->takeScreenshot($screenshot);
          $exit_code = 1;
       }
+
+      // Détruit la classe RRDTool (provoque la sauvegarde des données)
       unset($RRD);
-   
+
       // Ferme le navigateur
-      $driver->quit();
+      if (is_object($driver)) $driver->quit();
       exit($exit_code);
-   
+
    }
 
 
@@ -77,7 +79,7 @@ set_exception_handler('exception_handler');
 $host = 'http://test01-x.saintmaur.local:4444/wd/hub';
 
 // Choix du navigateur
-$capabilities = DesiredCapabilities::firefox();
+$capabilities = DesiredCapabilities::chrome();
 
 // Instanciation de la classe permettant le stockage des données en base circulaire
 $filename = pathinfo(__FILE__)['filename'];
@@ -100,7 +102,7 @@ $RRD->timeHome = $timeCurrent - $timeStart;
 $timeLast = $timeCurrent;
 
 // Suppression des éventuels cookies résiduels
-$driver->manage()->deleteAllCookies();
+//$driver->manage()->deleteAllCookies();
 
 
 $element = $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText('Se connecter'))); 
