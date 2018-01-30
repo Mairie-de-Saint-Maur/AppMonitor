@@ -9,17 +9,16 @@
 
 //namespace Facebook\WebDriver;
 
-ini_set('display_startup_errors', 1);
-ini_set('display_errors', 1);
-error_reporting(-1);
 
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
+use Facebook\WebDriver\Chrome\ChromeOptions;
 
 require_once('vendor/autoload.php');
 require_once('RRDTool.php');
+
 require_once('Scenario.php');
 require_once('Google2.php');
 
@@ -86,7 +85,7 @@ function logTime() {
 // Execution du navigateur sur le serveur local, disponible au port ci-dessous parce que le Java y est lancé 
 //$host = 'http://localhost:4444/wd/hub';
 $host = 'http://sm00739.saintmaur.local:4444/wd/hub';
-$host = 'http://test01-x.saintmaur.local:4444/wd/hub';
+//$host = 'http://test01-x.saintmaur.local:4444/wd/hub';
 
 // Choix du navigateur
 $options = new ChromeOptions();
@@ -109,7 +108,7 @@ $driver = RemoteWebDriver::create($host, $capabilities, 10000);
 $filename = pathinfo(__FILE__)['filename'];
 $RRD = new RRDTool($filename);
 
-// Instanciation de la classe de scénario 
+// Instanciation de la classe de scénario
 $scenario = new Scenario($driver);
 $timeLast = round(microtime(true) * 1000);
 
@@ -117,7 +116,7 @@ $scenario->goHome();
 $RRD->timeHome = logTime();
 
 $scenario->Login();
-$RRD->timeLogin = logTime():
+$RRD->timeLogin = logTime();
 
 $scenario->Action();
 $RRD->timeActions = logTime();

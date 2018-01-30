@@ -18,11 +18,12 @@ use Facebook\WebDriver\Chrome\ChromeOptions;
 
 require_once('vendor/autoload.php');
 
-class Google($driver) extends scenario {
+class Google2 extends scenario {
 
    public function gohome() {
       $driver = $this->driver;
-      global $step = 'Home';
+      global $step; 
+      $step = 'Home';
 
       // Ouverture de la page d'accueil de l'application
       $driver->get('https://www.google.fr/');
@@ -36,7 +37,7 @@ class Google($driver) extends scenario {
 
    public function Login() {
       global $step;
-      driver = $this->driver;
+      $driver = $this->driver;
       $step = 'Login';
 
       // On attend l'affichage du bloc de login
@@ -62,7 +63,7 @@ class Google($driver) extends scenario {
    
    public function Action() {
       global $step;
-      driver = $this->driver;
+      $driver = $this->driver;
       $step = 'Action';
 
       // Recherche simple sur le mot Test
@@ -80,7 +81,7 @@ class Google($driver) extends scenario {
 
    public function Logout() {
       global $step;
-      driver = $this->driver;
+      $driver = $this->driver;
       $step = 'Logout';
 
       // Déconnexion

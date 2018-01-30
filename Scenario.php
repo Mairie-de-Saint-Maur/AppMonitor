@@ -1,7 +1,7 @@
 <?php
 //////////////////////////////////////////////////////////////////
 //                                                              //
-//            classe générique de tests applictifs              //
+//            classe générique de tests applicatifs             //
 //                                                              //
 //                   Blaise 30-01-2018   V0.1                   //
 //                                                              //
@@ -18,9 +18,10 @@ use Facebook\WebDriver\Chrome\ChromeOptions;
 
 require_once('vendor/autoload.php');
 
-class Scenario($driver) {
+class Scenario {
 
-   __construct() {
+   function __construct($driver) {
+      $this->driver = $driver;
       set_exception_handler('exception_handler'); 
    }
 
@@ -46,62 +47,63 @@ class Scenario($driver) {
 
 
    // Prend un snapshot de l'état courant du test en indiquant l'heure et l'étape
-   function takeScreenshot() {
+   function takeSnapshot() {
       global $step;
       $driver = $this->driver;
       $name = pathinfo(__FILE__)['filename'];
 
       if (is_object($driver)) {
          $screenshot = "screenshot-$name-$step-". date("Y-m-d_H:i:s") . ".png";
-      try {
-         $driver->takeScreenshot($screenshot);
+         try {
+            $driver->takeScreenshot($screenshot);
+         }
+         catch(Exception $e) {
+            echo "Impossible de prendre une copie d'écran";
+            touch($screenshot);
+            return 1;
+         }
+      return 0;
       }
-      catch(Exception $e) {
-         echo "Impossible de prendre une copie d'écran";
-         touch($screenshot);
-         return 1;
-      }
-   return 0;
    }
 
    public function gohome() {
       $driver = $this->driver;
-      global $step = 'Home';
-      $step = 'Login';
+      global $step; 
+      $step = 'Home';
 
       sleep(1);
-      takeSnapshot();
+      $this->takeSnapshot();
       return 0;
    }
 
 
    public function Login() {
-      driver = $this->driver;
+      $driver = $this->driver;
       global $step;
       $step = 'Login';
 
       sleep(1);
-      takeSnapshot();
+      $this->takeSnapshot();
       return 0;
    }
    
    public function Action() {
-      driver = $this->driver;
+      $driver = $this->driver;
       global $step;
       $step = 'Action';
 
       sleep(1);
-      takeSnapshot();
+      $this->takeSnapshot();
       return 0;
    }
 
    public function Logout() {
-      driver = $this->driver;
+      $driver = $this->driver;
       global $step;
       $step = 'Logout';
 
       sleep(1);
-      takeSnapshot();
+      $this->takeSnapshot();
       return 0;
    }
 
