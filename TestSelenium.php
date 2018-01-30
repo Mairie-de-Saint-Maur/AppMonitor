@@ -1,9 +1,9 @@
 <?php
 //////////////////////////////////////////////////////////////////
 //                                                              //
-//     Script de test applicatif de référence: Google           //
+//     Script de test applicatif pour Selenium 2                //
 //                                                              //
-//                   Blaise 28-01-2018   V0.1                   //
+//                   Blaise 30-01-2018   V0.1                   //
 //                                                              //
 //////////////////////////////////////////////////////////////////
 
@@ -17,10 +17,11 @@ use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
-use Facebook\WebDriver\Chrome\ChromeOptions;
 
 require_once('vendor/autoload.php');
 require_once('RRDTool.php');
+require_once('Scenario.php');
+require_once('Google2.php');
 
 ///////////////////////////////////////////////////////////////////
 //    Gestion des exceptions                                     //
@@ -49,10 +50,10 @@ set_exception_handler('exception_handler');
 
    function fin($exit_code=0, $message='fin de simulation') {
       global $driver, $RRD, $filename;
-   
+
       echo "$message\n";
-   
-  
+
+
       // Si le script a échoué et que $driver est bien un objet: screenshot
       if ($RRD->timeLogout == 'U' && is_object($driver)) {
          $screenshot = "screenshot-$filename-". time() . ".png";
@@ -62,13 +63,21 @@ set_exception_handler('exception_handler');
 
       // Détruit la classe RRDTool (provoque la sauvegarde des données)
       unset($RRD);
- 
+
       // Ferme le navigateur
       if (is_object($driver)) $driver->quit();
       exit($exit_code);
-   
-   }
 
+   }
+// Gestion du temps d'execution de chaque étape
+function logTime() {
+   global $timeLast;
+
+   $timeCurrent = round(microtime(true) * 1000);
+   $elapsed = $timeCurrent - $timeLast;
+   $timeLast = $timeCurrent;
+   return $elapsed;
+}
 
 ///////////////////////////////////////////////////////////////////
 // Paramètres du navigateur cible pour la simulation             //
@@ -76,7 +85,7 @@ set_exception_handler('exception_handler');
 
 // Execution du navigateur sur le serveur local, disponible au port ci-dessous parce que le Java y est lancé 
 //$host = 'http://localhost:4444/wd/hub';
-//$host = 'http://sm00739.saintmaur.local:4444/wd/hub';
+$host = 'http://sm00739.saintmaur.local:4444/wd/hub';
 $host = 'http://test01-x.saintmaur.local:4444/wd/hub';
 
 // Choix du navigateur
@@ -85,64 +94,42 @@ $options->addArguments(array("--start-maximized"));
 $capabilities = DesiredCapabilities::chrome();
 $capabilities->setCapability(ChromeOptions::CAPABILITY, $options);
 
-// Instanciation de la classe permettant le stockage des données en base circulaire
-$filename = pathinfo(__FILE__)['filename'];
-$RRD = new RRDTool($filename);
 
 // Lancement du navigateur sur le client cible, timeout de 5 secondes
 // Stockage heure de début
 $driver = RemoteWebDriver::create($host, $capabilities, 10000);
-$timeStart = round(microtime(true) * 1000);
 
 
 ///////////////////////////////////////////////////////////////////
 // Test applicatif                                               //
 ///////////////////////////////////////////////////////////////////
 
-// Ouverture de la page d'accueil de l'application
-$driver->get('https://www.google.fr/');
-$timeCurrent = round(microtime(true) * 1000);
-$RRD->timeHome = $timeCurrent - $timeStart;
-$timeLast = $timeCurrent;
+
+// Instanciation de la classe permettant le stockage des données en base circulaire
+$filename = pathinfo(__FILE__)['filename'];
+$RRD = new RRDTool($filename);
+
+// Instanciation de la classe de scénario 
+$scenario = new Scenario($driver);
+$timeLast = round(microtime(true) * 1000);
+
+$scenario->goHome();
+$RRD->timeHome = logTime();
+
+$scenario->Login();
+$RRD->timeLogin = logTime():
+
+$scenario->Action();
+$RRD->timeActions = logTime();
+
+$scenario->Logout();
+$RRD->timeLogout = logTime();
 
 // Suppression des éventuels cookies résiduels
-//$driver->manage()->deleteAllCookies();
+$driver->manage()->deleteAllCookies();
 
-
-// On attend l'affichage du bloc de login
-$element = $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('gb_70')));
-$element->click();
-
-// Saisie du login et du mot de passe puis validation
-$element = $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('identifierId')));
-$element->sendKeys('licences@mairie-saint-maur.com');
-$driver->findElement(WebDriverBy::cssSelector('span.RveJvd.snByac'))->click();
-
-$element = $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::name('password')));
-$element->clear();
-$element->sendKeys('M7FohTSh');
-$driver->findElement(WebDriverBy::cssSelector('span.RveJvd.snByac'))->click();
-$timeCurrent = round(microtime(true) * 1000);
-$RRD->timeLogin = $timeCurrent - $timeLast;
-$timeLast = $timeCurrent;
-
-
-// Recherche simple sur le mot Test
-$element = $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('lst-ib')));
-$element->clear();
-$element->sendKeys("test\n");
-$driver->get('https://www.google.fr/');
-$timeCurrent = round(microtime(true) * 1000);
-$RRD->timeActions = $timeCurrent - $timeLast;
-$timeLast = $timeCurrent;
-
-// Déconnexion
-// Retour sur la home page pour éviter le problème du bouton logout caché au delà de la fenêtre
-$driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::cssSelector('span.gb_ab.gbii')))->click();
-$driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::id('gb_71')))->click();
-$timeCurrent = round(microtime(true) * 1000);
-$RRD->timeLogout = $timeCurrent - $timeLast;
-$timeLast = $timeCurrent;
+// Enregistrement des données par destruction de la classe RRD
+unset($RRD);
 
 // Afficher le titre de la page courante
 echo "Le titre de la dernière page est: " . $driver->getTitle() . "\n";
@@ -150,5 +137,8 @@ echo "Le titre de la dernière page est: " . $driver->getTitle() . "\n";
 // Afficher l'URL de la page actuelle
 echo "L'URL finale est: " . $driver->getCurrentURL() . "\n";
 
-// Sortie
-fin(0, "Google OK");
+// Destruction de la classe de scénario
+unset($scenario);
+
+// Fermeture du navigateur et sortie
+fin(0, "$filename OK");
