@@ -20,8 +20,9 @@ require_once('vendor/autoload.php');
 
 class Scenario {
 
-   function __construct($driver) {
+   function __construct($driver, $mail) {
       $this->driver = $driver;
+      $this->mail = $mail;
       set_exception_handler('exception_handler'); 
    }
 
@@ -29,20 +30,22 @@ class Scenario {
    function exception_handler($exception) {
       global $step;
       $driver = $this->driver;
-      $name = pathinfo(__FILE__)['filename'];
+      $mail = $this->mail;
 
       // Prenons une copie d'écran à tout hasard....
       if (is_object($driver)) {
-         $screenshot = "screenshot-$name-$this->step-". date("Y-m-d_H:i:s") . ".png";
+         $screenshot = "screenshot-" . get_class($this) . "-$this->step-". date("Y-m-d_H:i:s") . ".png";
          try {
             $driver->takeScreenshot($screenshot);
          }
          catch(Exception $e) {
             echo "Impossible de prendre une copie d'écran";
+            $mail->Body = $mail->Body . "Impossible de prendre une copie d'écran à  l'étape $this->step<br>";
             touch($screenshot);
          }
      }
-     fin( 1, "Exception attrapée : ". $exception->getMessage() . "!\n");
+     $mail->Body = $mail->Body . "<br>" . $exception->getMessage() . "<br>" ;
+     return 1;
    }
 
 
@@ -50,10 +53,9 @@ class Scenario {
    function takeSnapshot() {
       global $step;
       $driver = $this->driver;
-      $name = pathinfo(__FILE__)['filename'];
 
       if (is_object($driver)) {
-         $screenshot = "screenshot-$name-$step-". date("Y-m-d_H:i:s") . ".png";
+         $screenshot = "screenshot-" . get_class($this) ."-$step-". date("Y-m-d_H:i:s") . ".png";
          try {
             $driver->takeScreenshot($screenshot);
          }
@@ -62,8 +64,9 @@ class Scenario {
             touch($screenshot);
             return 1;
          }
-      return 0;
+         $this->mail->addAttachment($screenshot);
       }
+      return 0;
    }
 
    public function gohome() {

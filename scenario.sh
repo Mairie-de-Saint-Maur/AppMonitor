@@ -57,8 +57,8 @@ touch $FILE
 if [ $? -ne 0 ]; then
    warning "Le script $SCENARIO a échoué"
    /usr/bin/date >>$FILE
-   /usr/bin/mailx -a screenshot*.png -s "ECHEC Scenario $SCENARIO" -r "Supervision_Applicative" $DESTINATAIRES <$FILE
-   rm -f screenshot*.png
+   /usr/bin/mailx -a screenshot-$SCENARIO*.png -s "ECHEC Scenario $SCENARIO" -r "Supervision_Applicative" $DESTINATAIRES <$FILE
+   rm -f screenshot-$SCENARIO*.png
    exit_error "Echec $SCENARIO"
 fi
 

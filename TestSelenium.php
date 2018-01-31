@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 //////////////////////////////////////////////////////////////////
 //                                                              //
@@ -9,6 +10,7 @@
 
 //namespace Facebook\WebDriver;
 
+require_once('vendor/autoload.php');
 
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -16,28 +18,29 @@ use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\Chrome\ChromeOptions;
 
-require_once('vendor/autoload.php');
-require_once('RRDTool.php');
 
+require_once('vendor/phpmailer/phpmailer/class.phpmailer.php');
+require_once('vendor/phpmailer/phpmailer/class.smtp.php');
+require_once('RRDTool.php');
 require_once('Scenario.php');
-require_once('Google2.php');
 
 ///////////////////////////////////////////////////////////////////
 //    Gestion des exceptions                                     //
 ///////////////////////////////////////////////////////////////////
 function exception_handler($exception) {
    // Prenons une copie d'écran à tout hasard....
-   global $driver, $filename;
+   global $driver, $parameter;
    if (isset($driver)) {
-      $screenshot = "screenshot-$filename-". time() . ".png";
+      $screenshot = "screenshot-$parameter-". time() . ".png";
       try {
          $driver->takeScreenshot($screenshot);
       }
       catch(Exception $e) {
-         echo "Impossible de prendre une copie d'écran";
+         addBody("Impossible de prendre une copie d'écran<br>");
          touch($screenshot);
       }
-   }  
+   } 
+   addBody("<br>$exception->getMessage()<br>");
    fin( 1, "Exception attrapée : ". $exception->getMessage() . "!\n");
 }
 
@@ -48,27 +51,26 @@ set_exception_handler('exception_handler');
 ///////////////////////////////////////////////////////////////////
 
    function fin($exit_code=0, $message='fin de simulation') {
-      global $driver, $RRD, $filename;
+      global $driver, $RRD, $filename, $mail;
 
+      addBody("$message<br>");
       echo "$message\n";
-
 
       // Si le script a échoué et que $driver est bien un objet: screenshot
       if ($RRD->timeLogout == 'U' && is_object($driver)) {
-         $screenshot = "screenshot-$filename-". time() . ".png";
-         $driver->takeScreenshot($screenshot);
          $exit_code = 1;
       }
 
-      // Détruit la classe RRDTool (provoque la sauvegarde des données)
-      unset($RRD);
-
       // Ferme le navigateur
       if (is_object($driver)) $driver->quit();
+      if ($exit_code > 0) $mail->send();
       exit($exit_code);
 
    }
-// Gestion du temps d'execution de chaque étape
+
+///////////////////////////////////////////////////////////////////
+// Calcul du temps d'execution de chaque étape                   //
+///////////////////////////////////////////////////////////////////
 function logTime() {
    global $timeLast;
 
@@ -78,6 +80,36 @@ function logTime() {
    return $elapsed;
 }
 
+
+///////////////////////////////////////////////////////////////////
+// Gestion des mails                                             //
+///////////////////////////////////////////////////////////////////
+
+$mail = new PHPMailer(true);                              // Passing `true` enables exceptions
+//Server settings
+$mail->SMTPDebug = 0;                                 // Enable verbose debug output
+$mail->isSMTP();                                      // Set mailer to use SMTP
+$mail->Host = 'smtp.saintmaur.local';                 // Specify main and backup SMTP servers
+$mail->SMTPAuth = false;                               // Enable SMTP authentication
+
+//Recipients
+$mail->setFrom('Supervision_Applicative@mairie-saint-maur.com', 'Supervision Applicative');
+$mail->addAddress('blaise.thauvin@mairie-saint-maur.com', 'Blaise Thauvin');     // Add a recipient
+$mail->addReplyTo('blaise.thauvin@mairie-saint-maur.com', 'Blaise Thauvin');
+
+//Content
+//$mail->Charset('UTF-8');
+$mail->setLanguage('fr', '/opt/AppMonitor/vendor/phpmailer/phpmailer/language/');
+$mail->isHTML(true);                                  // Set email format to HTML
+$mail->Subject = 'Echec scenario';
+$mail->Body    = '';
+
+
+function addBody($text) {
+   global $mail;
+   $mail->Body = $mail->Body . $text;
+}
+
 ///////////////////////////////////////////////////////////////////
 // Paramètres du navigateur cible pour la simulation             //
 ///////////////////////////////////////////////////////////////////
@@ -85,7 +117,7 @@ function logTime() {
 // Execution du navigateur sur le serveur local, disponible au port ci-dessous parce que le Java y est lancé 
 //$host = 'http://localhost:4444/wd/hub';
 $host = 'http://sm00739.saintmaur.local:4444/wd/hub';
-//$host = 'http://test01-x.saintmaur.local:4444/wd/hub';
+$host = 'http://test01-x.saintmaur.local:4444/wd/hub';
 
 // Choix du navigateur
 $options = new ChromeOptions();
@@ -103,41 +135,73 @@ $driver = RemoteWebDriver::create($host, $capabilities, 10000);
 // Test applicatif                                               //
 ///////////////////////////////////////////////////////////////////
 
-
-// Instanciation de la classe permettant le stockage des données en base circulaire
-$filename = pathinfo(__FILE__)['filename'];
-$RRD = new RRDTool($filename);
-
 // Instanciation de la classe de scénario
-$scenario = new Scenario($driver);
-$timeLast = round(microtime(true) * 1000);
+foreach ($argv as $key => $parameter) {
+   if ($key == 0) continue; 
 
-$scenario->goHome();
-$RRD->timeHome = logTime();
+   addBody("<br>$parameter<br>");
+   $error = 0;
 
-$scenario->Login();
-$RRD->timeLogin = logTime();
+   // Instanciation de la classe de scénario
+   require_once("$parameter.php");
+   $scenario = new $parameter($driver, $mail);
 
-$scenario->Action();
-$RRD->timeActions = logTime();
+   // Instanciation de la classe permettant le stockage des données en base circulaire
+   $RRD = new RRDTool($parameter);
+   $timeLast = round(microtime(true) * 1000);
 
-$scenario->Logout();
-$RRD->timeLogout = logTime();
+   $error += $scenario->goHome();
+   $RRD->timeHome = logTime();
 
-// Suppression des éventuels cookies résiduels
-$driver->manage()->deleteAllCookies();
+   $error += $scenario->Login();
+   $RRD->timeLogin = logTime();
 
-// Enregistrement des données par destruction de la classe RRD
-unset($RRD);
+   $error += $scenario->Action();
+   $RRD->timeActions = logTime();
 
-// Afficher le titre de la page courante
-echo "Le titre de la dernière page est: " . $driver->getTitle() . "\n";
+   $error += $scenario->Logout();
+   $RRD->timeLogout = logTime();
 
-// Afficher l'URL de la page actuelle
-echo "L'URL finale est: " . $driver->getCurrentURL() . "\n";
+   // Suppression des éventuels cookies résiduels
+   try {
+      $driver->manage()->deleteAllCookies();
+   }
+   catch(Exception $e) {
+      addBody("Aucun cookie à supprimer<br>");
+   }
+   // Enregistrement des données par destruction de la classe RRD
+   unset($RRD);
 
-// Destruction de la classe de scénario
-unset($scenario);
+   // Afficher le titre de la page courante
+   addBody("Le titre de la dernière page est: " . $driver->getTitle() . "<br>");
+
+   // Afficher l'URL de la page actuelle
+   addBody("L'URL finale est: " . $driver->getCurrentURL() . "<br>");
+
+   // Destruction de la classe de scénario
+   unset($scenario);
+  
+   addBody("Scenario $parameter OK<br>------------------<br>");
+   addBody("Home:    $timeHome ms<br>");
+   addBody( "Login:   $timeLogin ms<br>");
+   addBody("Actions: $timeActions ms<br>");
+   addBody("Logout:  $timeLogout ms<br>");
+   addBody("Total:   " . ($timeHome + $timeLogin + $timeActions + $timeLogout) . " ms<br>");
+   if ($error >0) {
+      try {
+         $mail->send();
+         echo "Message has been sent\n";
+         $mail->Body = '';
+         $mail->clearAttachments();
+      } 
+      catch (Exception $e) {
+         echo "Message could not be sent. Mailer Error:\n". $mail->ErrorInfo . "\n";
+      }
+   }
+   array_map('unlink', glob("screenshot-$parameter-*.png"));
+}
 
 // Fermeture du navigateur et sortie
-fin(0, "$filename OK");
+fin(0, "\nTests Selenium OK\n");
+
+?>

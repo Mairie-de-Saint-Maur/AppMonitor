@@ -1,0 +1,6 @@
+{
+    "require": {
+        "phpmailer/phpmailer": "~5.0",
+        "facebook/webdriver": "^1.1"
+    }
+}
