@@ -22,8 +22,8 @@ class Google extends scenario {
 
    public function gohome() {
       $driver = $this->driver;
-      global $step; 
-      $step = 'Home';
+
+      parent::goHome();
 
       // Ouverture de la page d'accueil de l'application
       $driver->get('https://www.google.fr/');
@@ -36,9 +36,10 @@ class Google extends scenario {
 
 
    public function Login() {
-      global $step;
       $driver = $this->driver;
-      $step = 'Login';
+
+
+      parent::Login();
 
       // On attend l'affichage du bloc de login
       $element = $driver->findElement(WebDriverBy::id('gb_70'));
@@ -62,9 +63,9 @@ class Google extends scenario {
    }
    
    public function Action() {
-      global $step;
       $driver = $this->driver;
-      $step = 'Action';
+
+      parent::Action();
 
       // Recherche simple sur le mot Test
       $element = $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('lst-ib')));
@@ -80,9 +81,10 @@ class Google extends scenario {
    }
 
    public function Logout() {
-      global $step;
       $driver = $this->driver;
-      $step = 'Logout';
+
+
+      parent::Logout();
 
       // Déconnexion
       $driver->findElement(WebDriverBy::cssSelector('span.gb_ab.gbii'))->click();

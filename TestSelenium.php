@@ -8,7 +8,6 @@
 //                                                              //
 //////////////////////////////////////////////////////////////////
 
-//namespace Facebook\WebDriver;
 
 require_once('vendor/autoload.php');
 
@@ -21,6 +20,10 @@ use Facebook\WebDriver\Chrome\ChromeOptions;
 
 require_once('vendor/phpmailer/phpmailer/class.phpmailer.php');
 require_once('vendor/phpmailer/phpmailer/class.smtp.php');
+//require_once('vendor/xp-forge/nsca/src/main/php/org/nagios/nsca/Heartbeat.class.php');
+//require_once('vendor/xp-forge/nsca/src/main/php/org/nagios/nsca/NscaClient.class.php');    
+//require_once('vendor/xp-forge/nsca/src/main/php/org/nagios/nsca/NscaMessage.class.php');   
+//require_once('vendor/xp-forge/nsca/src/main/php/org/nagios/nsca/NscaProtocol.class.php');
 require_once('RRDTool.php');
 require_once('Scenario.php');
 
@@ -95,6 +98,7 @@ $mail->SMTPAuth = false;                               // Enable SMTP authentica
 //Recipients
 $mail->setFrom('Supervision_Applicative@mairie-saint-maur.com', 'Supervision Applicative');
 $mail->addAddress('blaise.thauvin@mairie-saint-maur.com', 'Blaise Thauvin');     // Add a recipient
+$mail->addAddress('camus.lejarre@mairie-saint-maur.com', 'Camus Lejarre'); 
 $mail->addReplyTo('blaise.thauvin@mairie-saint-maur.com', 'Blaise Thauvin');
 
 //Content
@@ -140,6 +144,7 @@ foreach ($argv as $key => $parameter) {
    if ($key == 0) continue; 
 
    addBody("<br>$parameter<br>");
+   $mail->Subject = "ECHEC Scenarion $parameter";
    $error = 0;
 
    // Instanciation de la classe de scénario
@@ -170,6 +175,11 @@ foreach ($argv as $key => $parameter) {
       addBody("Aucun cookie à supprimer<br>");
    }
    // Enregistrement des données par destruction de la classe RRD
+   addBody("Home:    $RRD->timeHome ms<br>");
+   addBody( "Login:   $RRD->timeLogin ms<br>");
+   addBody("Actions: $RRD->timeActions ms<br>");
+   addBody("Logout:  $RRD->timeLogout ms<br>");
+   addBody("Total:   " . ($RRD->timeHome + $RRD->timeLogin + $RRD->timeActions + $RRD->timeLogout) . " ms<br>");
    unset($RRD);
 
    // Afficher le titre de la page courante
@@ -182,11 +192,6 @@ foreach ($argv as $key => $parameter) {
    unset($scenario);
   
    addBody("Scenario $parameter OK<br>------------------<br>");
-   addBody("Home:    $timeHome ms<br>");
-   addBody( "Login:   $timeLogin ms<br>");
-   addBody("Actions: $timeActions ms<br>");
-   addBody("Logout:  $timeLogout ms<br>");
-   addBody("Total:   " . ($timeHome + $timeLogin + $timeActions + $timeLogout) . " ms<br>");
    if ($error >0) {
       try {
          $mail->send();

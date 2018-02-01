@@ -7,6 +7,10 @@ namespace Composer\Autoload;
 class ComposerStaticInit73240ee60abc83187db83137404b5a34
 {
     public static $prefixLengthsPsr4 = array (
+        'P' => 
+        array (
+            'PhpSendNsca\\' => 12,
+        ),
         'F' => 
         array (
             'Facebook\\WebDriver\\' => 19,
@@ -14,6 +18,10 @@ class ComposerStaticInit73240ee60abc83187db83137404b5a34
     );
 
     public static $prefixDirsPsr4 = array (
+        'PhpSendNsca\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/mizzrym/php_send_nsca/src',
+        ),
         'Facebook\\WebDriver\\' => 
         array (
             0 => __DIR__ . '/..' . '/facebook/webdriver/lib',

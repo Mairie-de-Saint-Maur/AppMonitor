@@ -1,0 +1,33 @@
+{
+  "name": "mizzrym/php_send_nsca",
+  "description": "PHP implementation of NSCA client",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Mizzrym",
+      "homepage": "https://github.com/Mizzrym/",
+      "role": "Developer"
+    },
+    {
+      "name": "sebob",
+      "homepage": "https://github.com/sebob",
+      "role": "Developer"
+    },
+    {
+      "name": "Uni-tel",
+      "homepage": "https://github.com/Uni-tel",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=5.3.0"
+  },
+  "suggest": {
+    "ext-mcrypt" : "Required for all encryptions except xor"
+  },
+  "autoload": {
+    "psr-4": {
+      "PhpSendNsca\\": "src"
+    }
+  }
+}

@@ -7,7 +7,6 @@
 //                                                              //
 //////////////////////////////////////////////////////////////////
 
-//namespace Facebook\WebDriver;
 
 
 use Facebook\WebDriver\Remote\DesiredCapabilities;
@@ -70,43 +69,31 @@ class Scenario {
    }
 
    public function gohome() {
-      $driver = $this->driver;
       global $step; 
       $step = 'Home';
 
-      sleep(1);
-      $this->takeSnapshot();
       return 0;
    }
 
 
    public function Login() {
-      $driver = $this->driver;
       global $step;
       $step = 'Login';
 
-      sleep(1);
-      $this->takeSnapshot();
       return 0;
    }
    
    public function Action() {
-      $driver = $this->driver;
       global $step;
       $step = 'Action';
 
-      sleep(1);
-      $this->takeSnapshot();
       return 0;
    }
 
    public function Logout() {
-      $driver = $this->driver;
       global $step;
       $step = 'Logout';
 
-      sleep(1);
-      $this->takeSnapshot();
       return 0;
    }
 
