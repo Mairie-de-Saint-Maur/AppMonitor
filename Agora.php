@@ -29,7 +29,7 @@ class Agora extends scenario {
       $driver->get('http://10.51.0.8/agora/pck_security.home');
 
       $this->takeSnapshot();
-      return 0;
+      return $this->err;
    }
 
 
@@ -59,7 +59,7 @@ class Agora extends scenario {
       //$driver->wait()->until(WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::id('title', 'login')));
 
       $this->takeSnapshot();
-      return 0;
+      return $this->err;
    }
    
    public function Action() {
@@ -77,7 +77,7 @@ class Agora extends scenario {
       $driver->findElement(WebDriverBy::linkText('Rechercher'))->click();
 
       $this->takeSnapshot();
-      return 0;
+      return $this->err;
    }
 
    public function Logout() {
@@ -88,7 +88,7 @@ class Agora extends scenario {
       $driver->findElement(WebDriverBy::linkText('DÉCONNEXION'))->click();
 
       $this->takeSnapshot();
-      return 0;
+      return $this->err;
    }
 
 }

@@ -21,9 +21,9 @@ class RRDTool {
    function __construct($file) {
       $this->rrdFile = $file . ".rrd";
       if (!file_exists($this->rrdFile)) {
-         $parameters = "--step 60 --no-overwrite DS:home:GAUGE:600:0:60000 DS:login:GAUGE:600:0:60000 \
-           DS:actions:GAUGE:600:0:60000 \
-           DS:logout:GAUGE:600:0:60000 \
+         $parameters = "--step 60 --no-overwrite DS:home:GAUGE:120:0:60000 DS:login:GAUGE:120:0:60000 \
+           DS:actions:GAUGE:120:0:60000 \
+           DS:logout:GAUGE:120:0:60000 \
            RRA:AVERAGE:0.5:1:2880 \
            RRA:AVERAGE:0.5:5:2304 \
            RRA:AVERAGE:0.5:30:700 \

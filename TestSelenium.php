@@ -20,10 +20,6 @@ use Facebook\WebDriver\Chrome\ChromeOptions;
 
 require_once('vendor/phpmailer/phpmailer/class.phpmailer.php');
 require_once('vendor/phpmailer/phpmailer/class.smtp.php');
-//require_once('vendor/xp-forge/nsca/src/main/php/org/nagios/nsca/Heartbeat.class.php');
-//require_once('vendor/xp-forge/nsca/src/main/php/org/nagios/nsca/NscaClient.class.php');    
-//require_once('vendor/xp-forge/nsca/src/main/php/org/nagios/nsca/NscaMessage.class.php');   
-//require_once('vendor/xp-forge/nsca/src/main/php/org/nagios/nsca/NscaProtocol.class.php');
 require_once('RRDTool.php');
 require_once('Scenario.php');
 
@@ -31,22 +27,14 @@ require_once('Scenario.php');
 //    Gestion des exceptions                                     //
 ///////////////////////////////////////////////////////////////////
 function exception_handler($exception) {
-   // Prenons une copie d'écran à tout hasard....
-   global $driver, $parameter;
-   if (isset($driver)) {
-      $screenshot = "screenshot-$parameter-". time() . ".png";
-      try {
-         $driver->takeScreenshot($screenshot);
-      }
-      catch(Exception $e) {
-         addBody("Impossible de prendre une copie d'écran<br>");
-         touch($screenshot);
-      }
-   } 
+   global $parameter, $mail, $error;
+   $error += 1;
    addBody("<br>$exception->getMessage()<br>");
+   $mail->Subject = $mail->Subject . "erreur, arret script $parameter";
    fin( 1, "Exception attrapée : ". $exception->getMessage() . "!\n");
 }
 
+$error = 0;
 set_exception_handler('exception_handler');
 
 ///////////////////////////////////////////////////////////////////
@@ -60,13 +48,12 @@ set_exception_handler('exception_handler');
       echo "$message\n";
 
       // Si le script a échoué et que $driver est bien un objet: screenshot
-      if ($RRD->timeLogout == 'U' && is_object($driver)) {
+      if ($RRD->timeLogout == 'U') {
          $exit_code = 1;
       }
 
       // Ferme le navigateur
       if (is_object($driver)) $driver->quit();
-      if ($exit_code > 0) $mail->send();
       exit($exit_code);
 
    }
@@ -132,10 +119,18 @@ $capabilities->setCapability(ChromeOptions::CAPABILITY, $options);
 
 // Lancement du navigateur sur le client cible, timeout de 5 secondes
 // Stockage heure de début
-$driver = RemoteWebDriver::create($host, $capabilities, 10000);
-
-
-///////////////////////////////////////////////////////////////////
+try {
+   $driver = RemoteWebDriver::create($host, $capabilities, 10000);
+} 
+catch(Exception $e) {
+   global $error;
+   echo "Impossible de lancer le navigateur\n";
+   $mail->Subject = "Impossible de lancer le navigateur";
+   $error +=1;
+   echo $e->getMessage();
+   addBody($e->getMessage());
+}   
+//////////////////////////////////////////////////////////////////
 // Test applicatif                                               //
 ///////////////////////////////////////////////////////////////////
 
@@ -144,8 +139,7 @@ foreach ($argv as $key => $parameter) {
    if ($key == 0) continue; 
 
    addBody("<br>$parameter<br>");
-   $mail->Subject = "ECHEC Scenarion $parameter";
-   $error = 0;
+   $mail->Subject = "ECHEC Scenario $parameter";
 
    // Instanciation de la classe de scénario
    require_once("$parameter.php");
@@ -155,17 +149,24 @@ foreach ($argv as $key => $parameter) {
    $RRD = new RRDTool($parameter);
    $timeLast = round(microtime(true) * 1000);
 
-   $error += $scenario->goHome();
-   $RRD->timeHome = logTime();
+   if ($error == 0) {
+      $error += $scenario->goHome();
+      $RRD->timeHome = logTime();
+   }
 
-   $error += $scenario->Login();
-   $RRD->timeLogin = logTime();
+   if ($error == 0) {
+      $error += $scenario->Login();
+      $RRD->timeLogin = logTime();
+   }
 
-   $error += $scenario->Action();
-   $RRD->timeActions = logTime();
-
-   $error += $scenario->Logout();
-   $RRD->timeLogout = logTime();
+   if ($error == 0) {      
+      $error += $scenario->Action();
+      $RRD->timeActions = logTime();
+   }
+   if ($error == 0) {
+      $error += $scenario->Logout();
+      $RRD->timeLogout = logTime();
+   }
 
    // Suppression des éventuels cookies résiduels
    try {

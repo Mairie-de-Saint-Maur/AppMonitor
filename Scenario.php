@@ -22,35 +22,28 @@ class Scenario {
    function __construct($driver, $mail) {
       $this->driver = $driver;
       $this->mail = $mail;
+      $this->err = 0;
       set_exception_handler('exception_handler'); 
    }
 
    // Gestion des exceptions
    function exception_handler($exception) {
-      global $step;
+      global $step, $mail;
       $driver = $this->driver;
-      $mail = $this->mail;
 
       // Prenons une copie d'écran à tout hasard....
-      if (is_object($driver)) {
-         $screenshot = "screenshot-" . get_class($this) . "-$this->step-". date("Y-m-d_H:i:s") . ".png";
-         try {
-            $driver->takeScreenshot($screenshot);
-         }
-         catch(Exception $e) {
-            echo "Impossible de prendre une copie d'écran";
-            $mail->Body = $mail->Body . "Impossible de prendre une copie d'écran à  l'étape $this->step<br>";
-            touch($screenshot);
-         }
-     }
-     $mail->Body = $mail->Body . "<br>" . $exception->getMessage() . "<br>" ;
-     return 1;
+      if (is_object($driver)) $this->takeSnapshot();
+     
+      $mail->Body = $mail->Body . "<br>" . $exception->getMessage() . "<br>" ;
+      $mail->Subject = $mail->Subject . " étape $step";
+      $this->err=1;
+     return $this->err;
    }
 
 
    // Prend un snapshot de l'état courant du test en indiquant l'heure et l'étape
    function takeSnapshot() {
-      global $step;
+      global $step, $mail;
       $driver = $this->driver;
 
       if (is_object($driver)) {
@@ -59,9 +52,10 @@ class Scenario {
             $driver->takeScreenshot($screenshot);
          }
          catch(Exception $e) {
-            echo "Impossible de prendre une copie d'écran";
-            touch($screenshot);
-            return 1;
+            echo "Impossible de prendre une copie d'écran\n";
+            $mail->Body = $mail->Body . "<br>Impossible de prendre une copie d'écran.<br>" . $exception->getMessage() . "<br>" ;
+            $this->err = 1;
+            return $this->err;
          }
          $this->mail->addAttachment($screenshot);
       }
@@ -71,30 +65,26 @@ class Scenario {
    public function gohome() {
       global $step; 
       $step = 'Home';
-
-      return 0;
+      $this->err = 0;
    }
 
 
    public function Login() {
       global $step;
       $step = 'Login';
-
-      return 0;
+      $this->err = 0;
    }
    
    public function Action() {
       global $step;
       $step = 'Action';
-
-      return 0;
+      $this->err = 0;
    }
 
    public function Logout() {
       global $step;
       $step = 'Logout';
-
-      return 0;
+      $this->err = 0;
    }
 
 }
