@@ -26,18 +26,34 @@ require_once('Scenario.php');
 ///////////////////////////////////////////////////////////////////
 //    Gestion des exceptions                                     //
 ///////////////////////////////////////////////////////////////////
+
+//Exceptions "imprévues"
 function exception_handler($exception) {
    global $scenario, $mail, $driver, $error, $step, $parameter;
-
 
    // Prenons une copie d'écran à tout hasard....
    if (is_object($driver)) takeSnapshot();
 
-   fwrite(STDERR, "Catch\n". $exception->getMessage() . "\nCatch\n");
+   fwrite(STDERR, "Arrêt du script à l'étape $step. Catch\n". $exception->getMessage() . "\nCatch\n");
    if (is_object($mail)) {
       $mail->Body = $mail->Body . "<br>" . $exception->getMessage() . "<br>" ;
-      $mail->Subject = $mail->Subject . " étape $step";
+      $mail->Subject = $mail->Subject . " Etape $step";
       $mail->send();
+   }
+   return 1;
+}
+
+// Exceptions "normales"
+function exception_normale($exception) {
+   global $scenario, $mail, $driver, $error, $step, $parameter;
+
+   // Prenons une copie d'écran à tout hasard....
+   if (is_object($driver)) takeSnapshot();
+
+   fwrite(STDERR, "Normale\n". $exception->getMessage() . "\nNormale\n");
+   if (is_object($mail)) {
+      $mail->Body = $mail->Body . "<br>" . $exception->getMessage() . "<br>" ;
+      $mail->Subject = $mail->Subject . " Etape $step";
    }
    $error += 1;
    return $error;
@@ -51,7 +67,7 @@ set_exception_handler('exception_handler');
 ///////////////////////////////////////////////////////////////////
 
    function fin($exit_code=0, $message='fin de simulation') {
-      global $driver, $RRD, $mail;
+      global $driver, $mail;
 
       addBody("$message<br>");
       $mail->Subject = "Sortie normale code $exit_code, message $message";
@@ -59,7 +75,7 @@ set_exception_handler('exception_handler');
 
       // Si le script a échoué 
       if ($error > 0 || $exit_code > 0) {
-         $exit_code = $error;
+         $exit_code = max($error, $exit_code);
          $mail->send();
       }
 
@@ -150,18 +166,36 @@ $capabilities = DesiredCapabilities::chrome();
 $capabilities->setCapability(ChromeOptions::CAPABILITY, $options);
 
 
-// Lancement du navigateur sur le client cible, timeout de 5 secondes
-// Stockage heure de début
+// Lancement du navigateur sur le client cible, timeout de 10 secondes
 try {
    $driver = RemoteWebDriver::create($host, $capabilities, 10000);
 } 
 catch(Exception $e) {
    global $error;
+   fwrite(STDERR, "Première tentative de lancement du navigateur échouée\n");
    fwrite(STDERR, "$e->getMessage()");
-   addBody($e->getMessage());
-   $mail->Subject = "Impossible de lancer le navigateur";
-   $error +=1;
+   $mail->Subject = "Première tentative de lancement du navigateur échouée";
+   addBody("$e->getMessage()");
 }   
+
+// Si on n'a pas réussi à lancer le navigateur, on essaye encore une fois
+if (!is_object($driver)) {
+   try {
+      $driver = RemoteWebDriver::create($host, $capabilities, 10000);
+   }
+   catch(Exception $e) {
+      global $error;
+      fwrite(STDERR, "Deuxième tentative de lancement du navigateur échouée\n");
+      fwrite(STDERR, "$e->getMessage()");
+      $mail->Subject = "Deuxième tentative de lancement du navigateur échouée";
+      addBody("$e->getMessage()");
+      $mail->Subject = "Impossible de lancer le navigateur";
+      $error += 1;
+   }
+}
+
+// A t on réussi à lancer le navigateur?
+if (!is_object($driver)) fin(1, "\nTests Selenium KO, lancement navigateur impossible\n");
 
 //////////////////////////////////////////////////////////////////
 // Test applicatif                                               //
@@ -171,6 +205,9 @@ catch(Exception $e) {
 foreach ($argv as $key => $parameter) {
    if ($key == 0) continue; 
 
+   $error = 0;
+   $mail->Body = '';
+   $mail->clearAttachments();
    addBody("<br>$parameter<br>");
    echo "\nScenario $parameter\n-----------------\n"; 
    $mail->Subject = "ECHEC Scenario $parameter";
@@ -185,7 +222,12 @@ foreach ($argv as $key => $parameter) {
    if ($error == 0) {
       $step = 'Home';
       logTime();
-      $scenario->goHome();
+      try {
+         $scenario->goHome();
+      } 
+      catch(Exception $exception) {
+         exception_normale($exception);
+      }
       $RRD->timeHome = logTime();
       takeSnapshot();
    }
@@ -193,7 +235,12 @@ foreach ($argv as $key => $parameter) {
    if ($error == 0) {
       $step = 'Login';
       logTime();
-      $scenario->Login();
+      try {
+         $scenario->Login();
+      } 
+      catch(Exception $exception) {
+         exception_normale($exception);
+      }
       $RRD->timeLogin = logTime();
       takeSnapshot();
    }
@@ -201,14 +248,24 @@ foreach ($argv as $key => $parameter) {
    if ($error == 0) {   
       $step = 'Actions';   
       logTime();
-      $scenario->Action();
+      try {
+         $scenario->Action();
+      } 
+      catch(Exception $exception) {
+         exception_normale($exception);
+      }
       $RRD->timeActions = logTime();
       takeSnapshot();
    }
    if ($error == 0) {
       $step = 'Logout';
       logTime();
-      $scenario->Logout();
+      try {
+         $scenario->Logout();
+      } 
+      catch(Exception $exception) {
+         exception_normale($exception);
+      }
       $RRD->timeLogout = logTime();
       takeSnapshot();
    }
@@ -248,15 +305,12 @@ foreach ($argv as $key => $parameter) {
       try {
          $mail->send();
          echo "Message has been sent\n";
-         $mail->Body = '';
-         $mail->clearAttachments();
       } 
-      catch (Exception $e) {
+      catch(Exception $e) {
          fwrite(STDERR, "Message could not be sent. Mailer Error:\n". $mail->ErrorInfo . "\n");
       }
    }
    array_map('unlink', glob("screenshot-$parameter-*.png"));
-   $error = 0;
 }
 
 // Fermeture du navigateur et sortie
