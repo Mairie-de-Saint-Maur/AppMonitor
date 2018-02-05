@@ -63,12 +63,11 @@ class RRDTool {
       $timeActions = $this->timeActions;
       $timeLogout = $this->timeLogout;
 
-      echo "Scenario $this->rrdFile\n"; 
       echo "Home:    $timeHome ms\n";
       echo "Login:   $timeLogin ms\n";
       echo "Actions: $timeActions ms\n";
       echo "Logout:  $timeLogout ms\n";
-      echo "Total:   " . ($timeHome + $timeLogin + $timeActions + $timeLogout) . " ms\n\n";
+      echo "Total:   " . ($timeHome + $timeLogin + $timeActions + $timeLogout) . " ms\n";
       exec("$this->rrdUpdate $this->rrdFile -t home:login:actions:logout N:$timeHome:$timeLogin:$timeActions:$timeLogout", $output, $errno
 );
       if ( $errno <> 0 ) print_r($output);

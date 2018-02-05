@@ -7,8 +7,6 @@
 //                                                              //
 //////////////////////////////////////////////////////////////////
 
-//namespace Facebook\WebDriver;
-
 
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -28,9 +26,6 @@ class Institutionnel extends scenario {
       $driver->get('https://www.saint-maur.com/');
 
       $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText('Se connecter')));
-
-      $this->takeSnapshot();
-      return 0;
    }
 
 
@@ -46,9 +41,6 @@ class Institutionnel extends scenario {
       $driver->findElement(WebDriverBy::id('user'))->sendKeys('blaise.thauvin@mairie-saint-maur.com');
       $driver->findElement(WebDriverBy::id('motdepasse'))->sendKeys('OAN5NFrXf0l6GafxQSZd');
       $driver->findElement(WebDriverBy::id('submit_login'))->click();
-
-      $this->takeSnapshot();
-      return 0;
    }
    
    public function Action() {
@@ -61,9 +53,6 @@ class Institutionnel extends scenario {
 
       // clic sur bouton "mon compte
       $driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText('Mon compte')))->click();
-
-      $this->takeSnapshot();
-      return 0;
    }
 
    public function Logout() {
@@ -72,9 +61,6 @@ class Institutionnel extends scenario {
 
       // Déconnexion
       $driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText('Se déconnecter')))->click();
-
-      $this->takeSnapshot();
-      return 0;
    }
 
 }

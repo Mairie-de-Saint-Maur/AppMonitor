@@ -7,8 +7,6 @@
 //                                                              //
 //////////////////////////////////////////////////////////////////
 
-//namespace Facebook\WebDriver;
-
 
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -28,10 +26,7 @@ class Google extends scenario {
       // Ouverture de la page d'accueil de l'application
       $driver->get('https://www.google.fr/');
       // On attend l'affichage de la page
-      $element = $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('gb_70')));
-
-      $this->takeSnapshot();
-      return 0;
+      $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('gb_70')));
    }
 
 
@@ -42,11 +37,11 @@ class Google extends scenario {
       parent::Login();
 
       // On attend l'affichage du bloc de login
-      $element = $driver->findElement(WebDriverBy::id('gb_70'));
-      $element->click();
+      $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::id('gb_70')));
+      $driver->findElement(WebDriverBy::id('gb_70'))->click();
 
       // Saisie du login et du mot de passe puis validation
-      $element = $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('identifierId')));
+      $element = $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::id('identifierId')));
       $element->sendKeys('licences@mairie-saint-maur.com');
       $driver->findElement(WebDriverBy::cssSelector('span.RveJvd.snByac'))->click();
 
@@ -56,10 +51,7 @@ class Google extends scenario {
       $driver->findElement(WebDriverBy::cssSelector('span.RveJvd.snByac'))->click();
       
       // On attend l'affichage de la page une fois identifié
-      $element = $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name('btnK')));
-
-      $this->takeSnapshot();
-      return 0;
+      $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name('btnK')));
    }
    
    public function Action() {
@@ -74,15 +66,11 @@ class Google extends scenario {
 
       // Retour à la home pour éviter le problème de largeur de page en de bouton invisible
       $driver->get('https://www.google.fr/');
-      $element = $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name('btnK')));
-
-      $this->takeSnapshot();
-      return 0;
+      $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name('btnK')));
    }
 
    public function Logout() {
       $driver = $this->driver;
-
 
       parent::Logout();
 
@@ -90,9 +78,6 @@ class Google extends scenario {
       $driver->findElement(WebDriverBy::cssSelector('span.gb_ab.gbii'))->click();
       $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::id('gb_71')));
       $driver->findElement(WebDriverBy::id('gb_71'))->click();
-
-      $this->takeSnapshot();
-      return 0;
    }
 
 }

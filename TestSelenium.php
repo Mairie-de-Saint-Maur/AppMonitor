@@ -27,11 +27,20 @@ require_once('Scenario.php');
 //    Gestion des exceptions                                     //
 ///////////////////////////////////////////////////////////////////
 function exception_handler($exception) {
-   global $parameter, $mail, $error;
+   global $scenario, $mail, $driver, $error, $step, $parameter;
+
+
+   // Prenons une copie d'écran à tout hasard....
+   if (is_object($driver)) takeSnapshot();
+
+   fwrite(STDERR, "Catch\n". $exception->getMessage() . "\nCatch\n");
+   if (is_object($mail)) {
+      $mail->Body = $mail->Body . "<br>" . $exception->getMessage() . "<br>" ;
+      $mail->Subject = $mail->Subject . " étape $step";
+      $mail->send();
+   }
    $error += 1;
-   addBody("<br>$exception->getMessage()<br>");
-   $mail->Subject = $mail->Subject . "erreur, arret script $parameter";
-   fin( 1, "Exception attrapée : ". $exception->getMessage() . "!\n");
+   return $error;
 }
 
 $error = 0;
@@ -42,14 +51,16 @@ set_exception_handler('exception_handler');
 ///////////////////////////////////////////////////////////////////
 
    function fin($exit_code=0, $message='fin de simulation') {
-      global $driver, $RRD, $filename, $mail;
+      global $driver, $RRD, $mail;
 
       addBody("$message<br>");
+      $mail->Subject = "Sortie normale code $exit_code, message $message";
       echo "$message\n";
 
-      // Si le script a échoué et que $driver est bien un objet: screenshot
-      if ($RRD->timeLogout == 'U') {
-         $exit_code = 1;
+      // Si le script a échoué 
+      if ($error > 0 || $exit_code > 0) {
+         $exit_code = $error;
+         $mail->send();
       }
 
       // Ferme le navigateur
@@ -85,7 +96,7 @@ $mail->SMTPAuth = false;                               // Enable SMTP authentica
 //Recipients
 $mail->setFrom('Supervision_Applicative@mairie-saint-maur.com', 'Supervision Applicative');
 $mail->addAddress('blaise.thauvin@mairie-saint-maur.com', 'Blaise Thauvin');     // Add a recipient
-$mail->addAddress('camus.lejarre@mairie-saint-maur.com', 'Camus Lejarre'); 
+//$mail->addAddress('camus.lejarre@mairie-saint-maur.com', 'Camus Lejarre'); 
 $mail->addReplyTo('blaise.thauvin@mairie-saint-maur.com', 'Blaise Thauvin');
 
 //Content
@@ -99,6 +110,28 @@ $mail->Body    = '';
 function addBody($text) {
    global $mail;
    $mail->Body = $mail->Body . $text;
+}
+
+///////////////////////////////////////////////////////////////////
+// Prend un snapshot de l'état courant du test en indiquant l'heure et l'étape
+///////////////////////////////////////////////////////////////////
+function takeSnapshot() {
+   global $mail, $driver, $error, $step, $parameter;
+
+   if (is_object($driver)) {
+      $screenshot = "screenshot-$parameter-$step-". date("Y-m-d_H-i-s") . ".png";
+      try {
+         $driver->takeScreenshot($screenshot);
+      }
+      catch(Exception $e) {
+         fwrite(STDERR, "Impossible de prendre une copie d'écran\n");
+         $mail->Body = $mail->Body . "<br>Impossible de prendre une copie d'écran.<br>" . $e->getMessage() . "<br>" ;
+         $error += 1;
+         return $error;
+      }
+      $mail->addAttachment($screenshot);
+   }
+   return 0;
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -124,21 +157,22 @@ try {
 } 
 catch(Exception $e) {
    global $error;
-   echo "Impossible de lancer le navigateur\n";
+   fwrite(STDERR, "$e->getMessage()");
+   addBody($e->getMessage());
    $mail->Subject = "Impossible de lancer le navigateur";
    $error +=1;
-   echo $e->getMessage();
-   addBody($e->getMessage());
 }   
+
 //////////////////////////////////////////////////////////////////
 // Test applicatif                                               //
 ///////////////////////////////////////////////////////////////////
 
-// Instanciation de la classe de scénario
+// Boucle sur les arguments passés en ligne de commande
 foreach ($argv as $key => $parameter) {
    if ($key == 0) continue; 
 
    addBody("<br>$parameter<br>");
+   echo "\nScenario $parameter\n-----------------\n"; 
    $mail->Subject = "ECHEC Scenario $parameter";
 
    // Instanciation de la classe de scénario
@@ -147,33 +181,47 @@ foreach ($argv as $key => $parameter) {
 
    // Instanciation de la classe permettant le stockage des données en base circulaire
    $RRD = new RRDTool($parameter);
-   $timeLast = round(microtime(true) * 1000);
 
    if ($error == 0) {
-      $error += $scenario->goHome();
+      $step = 'Home';
+      logTime();
+      $scenario->goHome();
       $RRD->timeHome = logTime();
+      takeSnapshot();
    }
 
    if ($error == 0) {
-      $error += $scenario->Login();
+      $step = 'Login';
+      logTime();
+      $scenario->Login();
       $RRD->timeLogin = logTime();
+      takeSnapshot();
    }
 
-   if ($error == 0) {      
-      $error += $scenario->Action();
+   if ($error == 0) {   
+      $step = 'Actions';   
+      logTime();
+      $scenario->Action();
       $RRD->timeActions = logTime();
+      takeSnapshot();
    }
    if ($error == 0) {
-      $error += $scenario->Logout();
+      $step = 'Logout';
+      logTime();
+      $scenario->Logout();
       $RRD->timeLogout = logTime();
+      takeSnapshot();
    }
 
    // Suppression des éventuels cookies résiduels
-   try {
-      $driver->manage()->deleteAllCookies();
-   }
-   catch(Exception $e) {
-      addBody("Aucun cookie à supprimer<br>");
+   if (is_object($driver)) {
+      try {
+         $driver->manage()->deleteAllCookies();
+      }
+      catch(Exception $e) {
+         addBody("Aucun cookie à supprimer<br>");
+         echo "Aucun cookie à supprimer\n";
+      }
    }
    // Enregistrement des données par destruction de la classe RRD
    addBody("Home:    $RRD->timeHome ms<br>");
@@ -181,19 +229,22 @@ foreach ($argv as $key => $parameter) {
    addBody("Actions: $RRD->timeActions ms<br>");
    addBody("Logout:  $RRD->timeLogout ms<br>");
    addBody("Total:   " . ($RRD->timeHome + $RRD->timeLogin + $RRD->timeActions + $RRD->timeLogout) . " ms<br>");
+   if ( $RRD->timeLogout == 'U' ) $error+=1;
    unset($RRD);
 
    // Afficher le titre de la page courante
-   addBody("Le titre de la dernière page est: " . $driver->getTitle() . "<br>");
+   if (is_object($driver)) addBody("Le titre de la dernière page est: " . $driver->getTitle() . "<br>");
 
    // Afficher l'URL de la page actuelle
-   addBody("L'URL finale est: " . $driver->getCurrentURL() . "<br>");
+   if (is_object($driver)) addBody("L'URL finale est: " . $driver->getCurrentURL() . "<br>");
+
+   echo "Niveau d'erreur = $error\n";
 
    // Destruction de la classe de scénario
    unset($scenario);
   
    addBody("Scenario $parameter OK<br>------------------<br>");
-   if ($error >0) {
+   if ($error > 0 ) {
       try {
          $mail->send();
          echo "Message has been sent\n";
@@ -201,10 +252,11 @@ foreach ($argv as $key => $parameter) {
          $mail->clearAttachments();
       } 
       catch (Exception $e) {
-         echo "Message could not be sent. Mailer Error:\n". $mail->ErrorInfo . "\n";
+         fwrite(STDERR, "Message could not be sent. Mailer Error:\n". $mail->ErrorInfo . "\n");
       }
    }
    array_map('unlink', glob("screenshot-$parameter-*.png"));
+   $error = 0;
 }
 
 // Fermeture du navigateur et sortie

@@ -7,8 +7,6 @@
 //                                                              //
 //////////////////////////////////////////////////////////////////
 
-//namespace Facebook\WebDriver;
-
 
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -27,9 +25,6 @@ class Agora extends scenario {
 
       // Ouverture de la page d'accueil de l'application
       $driver->get('http://10.51.0.8/agora/pck_security.home');
-
-      $this->takeSnapshot();
-      return $this->err;
    }
 
 
@@ -57,9 +52,6 @@ class Agora extends scenario {
       // On attend l'affichage effectif de la première page
       $driver->wait()->until(WebDriverExpectedCondition::titleContains('Agor@Baby'));
       //$driver->wait()->until(WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::id('title', 'login')));
-
-      $this->takeSnapshot();
-      return $this->err;
    }
    
    public function Action() {
@@ -75,9 +67,6 @@ class Agora extends scenario {
 
       $driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText('Rechercher')));
       $driver->findElement(WebDriverBy::linkText('Rechercher'))->click();
-
-      $this->takeSnapshot();
-      return $this->err;
    }
 
    public function Logout() {
@@ -86,9 +75,6 @@ class Agora extends scenario {
 
       $driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText('DÉCONNEXION')));
       $driver->findElement(WebDriverBy::linkText('DÉCONNEXION'))->click();
-
-      $this->takeSnapshot();
-      return $this->err;
    }
 
 }
