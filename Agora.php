@@ -19,6 +19,14 @@ require_once('vendor/autoload.php');
 class Agora extends scenario {
 
 
+   function __construct($driver) {
+      global $mail;
+
+      parent::__construct($driver);
+      $mail->addAddress('camus.lejarre@mairie-saint-maur.com', 'Camus Lejarre');
+      $mail->addAddress('agora@infocom94.fr, 'Support Agora Infocom');
+   }
+
    public function gohome() {
       $driver = $this->driver;
       parent::goHome();

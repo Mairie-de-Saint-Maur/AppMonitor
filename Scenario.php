@@ -10,10 +10,9 @@
 class Scenario {
    public $step;
 
-   function __construct($driver, $mail) {
+   function __construct($driver) {
       $this->step = 'unset';
       $this->driver = $driver;
-      $this->mail = $mail;
       $this->err = 0;
    }
 

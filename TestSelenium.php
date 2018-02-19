@@ -112,7 +112,6 @@ $mail->SMTPAuth = false;                               // Enable SMTP authentica
 //Recipients
 $mail->setFrom('Supervision_Applicative@mairie-saint-maur.com', 'Supervision Applicative');
 $mail->addAddress('blaise.thauvin@mairie-saint-maur.com', 'Blaise Thauvin');     // Add a recipient
-//$mail->addAddress('camus.lejarre@mairie-saint-maur.com', 'Camus Lejarre'); 
 $mail->addReplyTo('blaise.thauvin@mairie-saint-maur.com', 'Blaise Thauvin');
 
 //Content
@@ -214,7 +213,7 @@ foreach ($argv as $key => $parameter) {
 
    // Instanciation de la classe de scénario
    require_once("$parameter.php");
-   $scenario = new $parameter($driver, $mail);
+   $scenario = new $parameter($driver);
 
    // Instanciation de la classe permettant le stockage des données en base circulaire
    $RRD = new RRDTool($parameter);
@@ -226,9 +225,10 @@ foreach ($argv as $key => $parameter) {
          $scenario->goHome();
       } 
       catch(Exception $exception) {
+         fwrite(STDERR, "Normale\n". $exception->getMessage() . "\nNormale\n");
          exception_normale($exception);
       }
-      $RRD->timeHome = logTime();
+      if ($error == 0) $RRD->timeHome = logTime();
       takeSnapshot();
    }
 
@@ -239,9 +239,10 @@ foreach ($argv as $key => $parameter) {
          $scenario->Login();
       } 
       catch(Exception $exception) {
+         fwrite(STDERR, "Normale\n". $exception->getMessage() . "\nNormale\n");
          exception_normale($exception);
       }
-      $RRD->timeLogin = logTime();
+      if ($error == 0) $RRD->timeLogin = logTime();
       takeSnapshot();
    }
 
@@ -252,9 +253,10 @@ foreach ($argv as $key => $parameter) {
          $scenario->Action();
       } 
       catch(Exception $exception) {
+         fwrite(STDERR, "Normale\n". $exception->getMessage() . "\nNormale\n");
          exception_normale($exception);
       }
-      $RRD->timeActions = logTime();
+      if ($error == 0) $RRD->timeActions = logTime();
       takeSnapshot();
    }
    if ($error == 0) {
@@ -264,9 +266,10 @@ foreach ($argv as $key => $parameter) {
          $scenario->Logout();
       } 
       catch(Exception $exception) {
+         fwrite(STDERR, "Normale\n". $exception->getMessage() . "\nNormale\n");
          exception_normale($exception);
       }
-      $RRD->timeLogout = logTime();
+      if ($error == 0) $RRD->timeLogout = logTime();
       takeSnapshot();
    }
 
