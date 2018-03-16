@@ -25,13 +25,6 @@ require_once('nsca/src/EonNsca.php');
 
 
 ///////////////////////////////////////////////////////////////////
-// Config NSCA 		                                             //
-///////////////////////////////////////////////////////////////////
-$nsca_msg = "Selenium Web Test : UNKNOWN STATE" ;
-$nsca_status = EonNsca::STATE_UNKNOWN;
-$nsca = new EonNsca();
-
-///////////////////////////////////////////////////////////////////
 //    Gestion des exceptions                                     //
 ///////////////////////////////////////////////////////////////////
 
@@ -208,10 +201,17 @@ if (!is_object($driver)) fin(1, "\nTests Selenium KO, lancement navigateur impos
 ///////////////////////////////////////////////////////////////////
 // Test applicatif                                               //
 ///////////////////////////////////////////////////////////////////
+$nsca = new EonNsca();
 
 // Boucle sur les arguments passés en ligne de commande
 foreach ($argv as $key => $parameter) {
    if ($key == 0) continue; 
+   
+	///////////////////////////////////////////////////////////////////
+	// Config NSCA 		                                             //
+	///////////////////////////////////////////////////////////////////
+	$nsca_msg = "Selenium Web Test : UNKNOWN STATE" ;
+	$nsca_status = EonNsca::STATE_UNKNOWN;
 
    $error = 0;
    $mail->Body = '';
