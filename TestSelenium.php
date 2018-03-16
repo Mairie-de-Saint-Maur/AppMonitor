@@ -8,7 +8,6 @@
 //                                                              //
 //////////////////////////////////////////////////////////////////
 
-
 require_once('vendor/autoload.php');
 
 use Facebook\WebDriver\Remote\DesiredCapabilities;
@@ -22,6 +21,15 @@ require_once('vendor/phpmailer/phpmailer/class.phpmailer.php');
 require_once('vendor/phpmailer/phpmailer/class.smtp.php');
 require_once('RRDTool.php');
 require_once('Scenario.php');
+require_once('nsca/src/EonNsca.php');
+
+
+///////////////////////////////////////////////////////////////////
+// Config NSCA 		                                             //
+///////////////////////////////////////////////////////////////////
+$nsca_msg = "Selenium Web Test : UNKNOWN STATE" ;
+$nsca_status = EonNsca::STATE_UNKNOWN;
+$nsca = new EonNsca();
 
 ///////////////////////////////////////////////////////////////////
 //    Gestion des exceptions                                     //
@@ -60,14 +68,14 @@ function exception_normale($exception) {
 }
 
 $error = 0;
-set_exception_handler('exception_handler');
+//set_exception_handler('exception_handler');
 
 ///////////////////////////////////////////////////////////////////
 //  Sortie propre                                                //
 ///////////////////////////////////////////////////////////////////
 
    function fin($exit_code=0, $message='fin de simulation') {
-      global $driver, $mail;
+      global $driver, $mail, $nsca;
 
       addBody("$message<br>");
       $mail->Subject = "Sortie normale code $exit_code, message $message";
@@ -196,7 +204,8 @@ if (!is_object($driver)) {
 // A t on réussi à lancer le navigateur?
 if (!is_object($driver)) fin(1, "\nTests Selenium KO, lancement navigateur impossible\n");
 
-//////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////
 // Test applicatif                                               //
 ///////////////////////////////////////////////////////////////////
 
@@ -312,8 +321,18 @@ foreach ($argv as $key => $parameter) {
       catch(Exception $e) {
          fwrite(STDERR, "Message could not be sent. Mailer Error:\n". $mail->ErrorInfo . "\n");
       }
+	  $nsca_status = EonNsca::STATE_CRITICAL ;
+	  $nsca_msg = "Selenium Web Test : FAILURE" ;
    }
+   else
+   {
+	   $nsca_status = EonNsca::STATE_OK ;
+	   $nsca_msg = "Selenium Web Test : SUCCESS" ;
+   }
+
    array_map('unlink', glob("screenshot-$parameter-*.png"));
+   
+   $nsca->send('Applications', $parameter, $nsca_status, $nsca_msg);
 }
 
 // Fermeture du navigateur et sortie

@@ -24,7 +24,9 @@ class Agora extends scenario {
 
       parent::__construct($driver);
       $mail->addAddress('camus.lejarre@mairie-saint-maur.com', 'Camus Lejarre');
-      $mail->addAddress('agora@infocom94.fr, 'Support Agora Infocom');
+      $mail->addAddress('agora@infocom94.fr', 'Support Agora Infocom');
+      $this->nagios_hostname="Agora";
+      $this->nagios_servicename="agora_nsca";
    }
 
    public function gohome() {
