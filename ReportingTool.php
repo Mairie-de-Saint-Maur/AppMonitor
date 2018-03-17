@@ -71,7 +71,8 @@ class ReportingTool {
 
    // Update du fichier rrd
    public function update() {
-	  $this->nsca_client->send('Applications', $nsca_service, $nsca_state, $nsca_msg);
+	  echo "NSCA Request : $this->nsca_service / $this->nsca_state / $this->nsca_msg\n" ;
+	  $this->nsca_client->send('Applications', $this->nsca_service, $this->nsca_state, $this->nsca_msg);
 	  
       $timeHome = $this->timeHome;
       $timeLogin = $this->timeLogin;

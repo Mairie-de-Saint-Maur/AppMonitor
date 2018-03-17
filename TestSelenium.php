@@ -303,8 +303,7 @@ foreach ($argv as $key => $parameter) {
 
    echo "Niveau d'erreur = $error\n";
 
-   // Destruction de la classe de scénario
-   unset($scenario);
+
   
    addBody("Scenario $parameter OK<br>------------------<br>");
    if ($error > 0 ) {
@@ -326,7 +325,11 @@ foreach ($argv as $key => $parameter) {
 
    array_map('unlink', glob("screenshot-$parameter-*.png"));
    $RRD->nsca_report($nsca_status, $nsca_msg);
+   
+   
    unset($RRD);
+   // Destruction de la classe de scénario
+   unset($scenario);
 }
 
 // Fermeture du navigateur et sortie
