@@ -19,9 +19,9 @@ use Facebook\WebDriver\Chrome\ChromeOptions;
 
 require_once('vendor/phpmailer/phpmailer/class.phpmailer.php');
 require_once('vendor/phpmailer/phpmailer/class.smtp.php');
-require_once('RRDTool.php');
+require_once('ReportingTool.php');
 require_once('Scenario.php');
-require_once('nsca/src/EonNsca.php');
+
 
 
 ///////////////////////////////////////////////////////////////////
@@ -68,7 +68,7 @@ $error = 0;
 ///////////////////////////////////////////////////////////////////
 
    function fin($exit_code=0, $message='fin de simulation') {
-      global $driver, $mail, $nsca;
+      global $driver, $mail;
 
       addBody("$message<br>");
       $mail->Subject = "Sortie normale code $exit_code, message $message";
@@ -201,17 +201,11 @@ if (!is_object($driver)) fin(1, "\nTests Selenium KO, lancement navigateur impos
 ///////////////////////////////////////////////////////////////////
 // Test applicatif                                               //
 ///////////////////////////////////////////////////////////////////
-$nsca = new EonNsca();
-
+$nsca_status = EonNsca::STATE_UNKNOWN;
+$nsca_msg = "Selenium Web Test : UNKNOWN STATE";
 // Boucle sur les arguments passés en ligne de commande
 foreach ($argv as $key => $parameter) {
    if ($key == 0) continue; 
-   
-	///////////////////////////////////////////////////////////////////
-	// Config NSCA 		                                             //
-	///////////////////////////////////////////////////////////////////
-	$nsca_msg = "Selenium Web Test : UNKNOWN STATE" ;
-	$nsca_status = EonNsca::STATE_UNKNOWN;
 
    $error = 0;
    $mail->Body = '';
@@ -225,7 +219,7 @@ foreach ($argv as $key => $parameter) {
    $scenario = new $parameter($driver);
 
    // Instanciation de la classe permettant le stockage des données en base circulaire
-   $RRD = new RRDTool($parameter);
+   $RRD = new ReportingTool($parameter);
 
    if ($error == 0) {
       $step = 'Home';
@@ -299,7 +293,7 @@ foreach ($argv as $key => $parameter) {
    addBody("Logout:  $RRD->timeLogout ms<br>");
    addBody("Total:   " . ($RRD->timeHome + $RRD->timeLogin + $RRD->timeActions + $RRD->timeLogout) . " ms<br>");
    if ( $RRD->timeLogout == 'U' ) $error+=1;
-   unset($RRD);
+
 
    // Afficher le titre de la page courante
    if (is_object($driver)) addBody("Le titre de la dernière page est: " . $driver->getTitle() . "<br>");
@@ -331,8 +325,8 @@ foreach ($argv as $key => $parameter) {
    }
 
    array_map('unlink', glob("screenshot-$parameter-*.png"));
-   
-   $nsca->send('Applications', $parameter, $nsca_status, $nsca_msg);
+   $RRD->nsca_report($nsca_status, $nsca_msg);
+   unset($RRD);
 }
 
 // Fermeture du navigateur et sortie

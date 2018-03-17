@@ -6,19 +6,32 @@
 //            Blaise 20-01-2018   V0.1                          //
 //                                                              //
 //////////////////////////////////////////////////////////////////
-class RRDTool {
+require_once('nsca/src/EonNsca.php');
+
+class ReportingTool {
 
    private $rrdTool = '/opt/rrdtool-1.7.0/bin/rrdtool';
    private $rrdUpdate = '/opt/rrdtool-1.7.0/bin/rrdupdate';
    private $rrdFile = 'default.rrd';
+   
+   private $nsca_client ;	
+   private $nsca_msg ;
+   private $nsca_state ;
+   private $nsca_service ;
 
    public $timeHome    = 'U';
    public $timeLogin   = 'U';
    public $timeActions = 'U';
    public $timeLogout  = 'U';
 
+
    // Création du fichier RRD si nécessaire lors de l'instanciation
    function __construct($file) {
+      $this->nsca_client = new EonNsca();
+	  $this->nsca_msg = "Selenium Web Test : UNKNOWN STATE" ;
+	  $this->nsca_state = EonNsca::STATE_UNKNOWN;
+	  $this->nsca_service = $file ;
+	  
       $this->rrdFile = $file . ".rrd";
       if (!file_exists($this->rrdFile)) {
          $parameters = "--step 60 --no-overwrite DS:home:GAUGE:120:0:60000 DS:login:GAUGE:120:0:60000 \
@@ -58,6 +71,8 @@ class RRDTool {
 
    // Update du fichier rrd
    public function update() {
+	  $this->nsca_client->send('Applications', $nsca_service, $nsca_state, $nsca_msg);
+	  
       $timeHome = $this->timeHome;
       $timeLogin = $this->timeLogin;
       $timeActions = $this->timeActions;
@@ -74,5 +89,10 @@ class RRDTool {
       return $errno;
    }
 
+   public function nsca_report($state, $msg)
+   {
+	   $this->nsca_state = $state ;
+	   $this->nsca_msg = $msg;
+   }
 }
 ?>
