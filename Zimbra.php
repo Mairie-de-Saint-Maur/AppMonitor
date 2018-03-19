@@ -18,6 +18,13 @@ require_once('vendor/autoload.php');
 
 class Zimbra extends scenario {
 
+   function __construct($driver) {
+      global $mail;
+
+      parent::__construct($driver);
+      $mail->addAddress('camus.lejarre@mairie-saint-maur.com', 'Camus Lejarre');
+   }
+
 	public function gohome() {
 		$driver = $this->driver;
 		parent::goHome();
@@ -26,7 +33,7 @@ class Zimbra extends scenario {
 		$driver->get('https://zimbra.mairie-saint-maur.com/');
 		
 		// Vérification de la présence du formulaire
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name('username')));
+		$driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name('username')));
 	}
 
 	public function Login() {
@@ -35,9 +42,12 @@ class Zimbra extends scenario {
 
 		// Saisie du login et du mot de passe puis validation
 		//$driver->open("/zimbra/");
-		$driver->type("id=username", "support.informatique");
-		$driver->type("id=password", "Sidsi94100");
-		$driver->click("css=input.ZLoginButton.DwtButton");
+		$driver->findElement(WebDriverBy::id('username'))->clear();
+		$driver->findElement(WebDriverBy::id('username'))->sendKeys("support.informatique");
+		$driver->findElement(WebDriverBy::id('password'))->clear();
+		$driver->findElement(WebDriverBy::id('password'))->sendKeys("Sidsi94100");
+		
+		$driver->findElement(WebDriverBy::cssSelector("input.ZLoginButton.DwtButton"))->click();
 
 		//Vérification du chargement de la page
 		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('div.ImgAppBanner')));
@@ -48,9 +58,8 @@ class Zimbra extends scenario {
 		parent::Action();
 
 		// clic sur lien "Réception"
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('#zti__main_Mail__2_textCell > span')))->click();
-		//Clic sur l'onglet calendrier
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('#zb__App__Calendar_title')))->click();
+		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('#zti__main_Mail__2_textCell')))->click();
+		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('#CHECK_MAIL_left_icon')))->click();
 	}
 
 	public function Logout() {
@@ -58,7 +67,8 @@ class Zimbra extends scenario {
 		parent::Logout();
 
 		// Déconnexion
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('css=#logOff')))->click();
+		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('div.DwtLinkButtonDropDownArrowRow')))->click();
+		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('#logOff')))->click();
 	}
 }
 ?>
