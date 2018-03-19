@@ -16,7 +16,7 @@ use Facebook\WebDriver\Chrome\ChromeOptions;
 
 require_once('vendor/autoload.php');
 
-class Artotheque extends scenario {
+class Zimbra extends scenario {
 
 	public function gohome() {
 		$driver = $this->driver;
