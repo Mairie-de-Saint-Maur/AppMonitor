@@ -43,9 +43,9 @@ class Admimail extends scenario {
 		// Saisie du login et du mot de passe puis validation
 		$driver->switchTo()->frame($driver->findElement(WebDriverBy::id("ext-gen1139_loginIframeDom")));
 		$driver->findElement(WebDriverBy::id('username'))->clear();
-		$driver->findElement(WebDriverBy::id('username'))->sendKeys("clejarre");
+		$driver->findElement(WebDriverBy::id('username'))->sendKeys("tdsi");
 		$driver->findElement(WebDriverBy::id('password'))->clear();
-		$driver->findElement(WebDriverBy::id('password'))->sendKeys("04Madlb83");
+		$driver->findElement(WebDriverBy::id('password'))->sendKeys("DSI94100");
 		
 		$driver->findElement(WebDriverBy::id("connect"))->click();
 
