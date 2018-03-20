@@ -156,7 +156,8 @@ function takeSnapshot() {
 
 // Execution du navigateur sur le serveur local, disponible au port ci-dessous parce que le Java y est lancé 
 //$host = 'http://localhost:4444/wd/hub';
-//host = 'http://sm00739.saintmaur.local:4444/wd/hub';
+//host = 'http://sm00739.saintmaur.local:4444/wd/hub'; //Blaise
+//$host = 'http://sm00597.saintmaur.local:4444/wd/hub'; //Camus
 $host = 'http://test01-x.saintmaur.local:4444/wd/hub';
 
 // Choix du navigateur
