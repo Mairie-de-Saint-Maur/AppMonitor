@@ -67,24 +67,24 @@ $error = 0;
 //  Sortie propre                                                //
 ///////////////////////////////////////////////////////////////////
 
-   function fin($exit_code=0, $message='fin de simulation') {
-      global $driver, $mail;
+function fin($exit_code=0, $message='fin de simulation') {
+   global $driver, $mail;
 
-      addBody("$message<br>");
-      $mail->Subject = "Sortie normale code $exit_code, message $message";
-      echo "$message\n";
+   addBody("$message<br>");
+   $mail->Subject = "Sortie normale code $exit_code, message $message";
+   echo "$message\n";
 
-      // Si le script a échoué 
-      if ($error > 0 || $exit_code > 0) {
-         $exit_code = max($error, $exit_code);
-         $mail->send();
-      }
-
-      // Ferme le navigateur
-      if (is_object($driver)) $driver->quit();
-      exit($exit_code);
-
+   // Si le script a échoué 
+   if ($error > 0 || $exit_code > 0) {
+      $exit_code = max($error, $exit_code);
+      $mail->send();
    }
+
+   // Ferme le navigateur
+   if (is_object($driver)) $driver->quit();
+   exit($exit_code);
+
+}
 
 ///////////////////////////////////////////////////////////////////
 // Calcul du temps d'execution de chaque étape                   //
@@ -102,26 +102,29 @@ function logTime() {
 ///////////////////////////////////////////////////////////////////
 // Gestion des mails                                             //
 ///////////////////////////////////////////////////////////////////
+function initialiseMail() {
+   global $mail;
+   if (isset($mail)) unset($mail);                       // Start fresh 
+   $mail = new PHPMailer(true);                          // Passing `true` enables exceptions
 
-$mail = new PHPMailer(true);                              // Passing `true` enables exceptions
-//Server settings
-$mail->SMTPDebug = 0;                                 // Enable verbose debug output
-$mail->isSMTP();                                      // Set mailer to use SMTP
-$mail->Host = 'smtp.saintmaur.local';                 // Specify main and backup SMTP servers
-$mail->SMTPAuth = false;                               // Enable SMTP authentication
+   //Server settings
+   $mail->SMTPDebug = 0;                                 // Enable verbose debug output
+   $mail->isSMTP();                                      // Set mailer to use SMTP
+   $mail->Host = 'smtp.saintmaur.local';                 // Specify main and backup SMTP servers
+   $mail->SMTPAuth = false;                              // Disable SMTP authentication
 
-//Recipients
-$mail->setFrom('Supervision_Applicative@mairie-saint-maur.com', 'Supervision Applicative');
-$mail->addAddress('blaise.thauvin@mairie-saint-maur.com', 'Blaise Thauvin');     // Add a recipient
-$mail->addReplyTo('blaise.thauvin@mairie-saint-maur.com', 'Blaise Thauvin');
+   //Recipients
+   $mail->setFrom('Supervision_Applicative@mairie-saint-maur.com', 'Supervision Applicative');
+   $mail->addAddress('blaise.thauvin@mairie-saint-maur.com', 'Blaise Thauvin');     // Add a recipient
+   $mail->addReplyTo('blaise.thauvin@mairie-saint-maur.com', 'Blaise Thauvin');
 
-//Content
-//$mail->Charset('UTF-8');
-$mail->setLanguage('fr', '/opt/AppMonitor/vendor/phpmailer/phpmailer/language/');
-$mail->isHTML(true);                                  // Set email format to HTML
-$mail->Subject = 'Echec scenario';
-$mail->Body    = '';
-
+   //Content
+   //$mail->Charset('UTF-8');
+   $mail->setLanguage('fr', '/opt/AppMonitor/vendor/phpmailer/phpmailer/language/');
+   $mail->isHTML(true);                                  // Set email format to HTML
+   $mail->Subject = 'Echec scenario';
+   $mail->Body    = '';
+}
 
 function addBody($text) {
    global $mail;
@@ -159,6 +162,9 @@ function takeSnapshot() {
 //host = 'http://sm00739.saintmaur.local:4444/wd/hub'; //Blaise
 //$host = 'http://sm00597.saintmaur.local:4444/wd/hub'; //Camus
 $host = 'http://test01-x.saintmaur.local:4444/wd/hub';
+
+// Initialisation du mail d'erreur
+initialiseMail();
 
 // Choix du navigateur
 $options = new ChromeOptions();
@@ -209,8 +215,7 @@ foreach ($argv as $key => $parameter) {
    if ($key == 0) continue; 
 
    $error = 0;
-   $mail->Body = '';
-   $mail->clearAttachments();
+   initialiseMail();
    addBody("<br>$parameter<br>");
    echo "\nScenario $parameter\n-----------------\n"; 
    $mail->Subject = "ECHEC Scenario $parameter";
