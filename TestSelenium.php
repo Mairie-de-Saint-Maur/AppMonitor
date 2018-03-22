@@ -10,12 +10,14 @@
 
 require_once('vendor/autoload.php');
 
+//Fichier de configuration
+require_once('config.php');
+
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\Chrome\ChromeOptions;
-
 
 require_once('vendor/phpmailer/phpmailer/class.phpmailer.php');
 require_once('vendor/phpmailer/phpmailer/class.smtp.php');
@@ -29,7 +31,8 @@ require_once('Scenario.php');
 ///////////////////////////////////////////////////////////////////
 
 //Exceptions "imprévues"
-function exception_handler($exception) {
+function exception_handler($exception)
+{
    global $scenario, $mail, $driver, $error, $step, $parameter;
 
    // Prenons une copie d'écran à tout hasard....
@@ -45,7 +48,8 @@ function exception_handler($exception) {
 }
 
 // Exceptions "normales"
-function exception_normale($exception) {
+function exception_normale($exception)
+{
    global $scenario, $mail, $driver, $error, $step, $parameter;
 
    // Prenons une copie d'écran à tout hasard....
@@ -67,7 +71,8 @@ $error = 0;
 //  Sortie propre                                                //
 ///////////////////////////////////////////////////////////////////
 
-function fin($exit_code=0, $message='fin de simulation') {
+function fin($exit_code=0, $message='fin de simulation')
+{
    global $driver, $mail;
 
    addBody("$message<br>");
@@ -89,7 +94,8 @@ function fin($exit_code=0, $message='fin de simulation') {
 ///////////////////////////////////////////////////////////////////
 // Calcul du temps d'execution de chaque étape                   //
 ///////////////////////////////////////////////////////////////////
-function logTime() {
+function logTime()
+{
    global $timeLast;
 
    $timeCurrent = round(microtime(true) * 1000);
@@ -102,7 +108,8 @@ function logTime() {
 ///////////////////////////////////////////////////////////////////
 // Gestion des mails                                             //
 ///////////////////////////////////////////////////////////////////
-function initialiseMail() {
+function initialiseMail()
+{
    global $mail;
    if (isset($mail)) unset($mail);                       // Start fresh 
    $mail = new PHPMailer(true);                          // Passing `true` enables exceptions
@@ -126,7 +133,8 @@ function initialiseMail() {
    $mail->Body    = '';
 }
 
-function addBody($text) {
+function addBody($text)
+{
    global $mail;
    $mail->Body = $mail->Body . $text;
 }
@@ -134,7 +142,8 @@ function addBody($text) {
 ///////////////////////////////////////////////////////////////////
 // Prend un snapshot de l'état courant du test en indiquant l'heure et l'étape
 ///////////////////////////////////////////////////////////////////
-function takeSnapshot() {
+function takeSnapshot()
+{
    global $mail, $driver, $error, $step, $parameter;
 
    if (is_object($driver)) {
@@ -157,11 +166,8 @@ function takeSnapshot() {
 // Paramètres du navigateur cible pour la simulation             //
 ///////////////////////////////////////////////////////////////////
 
-// Execution du navigateur sur le serveur local, disponible au port ci-dessous parce que le Java y est lancé 
-//$host = 'http://localhost:4444/wd/hub';
-//host = 'http://sm00739.saintmaur.local:4444/wd/hub'; //Blaise
-//$host = 'http://sm00597.saintmaur.local:4444/wd/hub'; //Camus
-$host = 'http://test01-x.saintmaur.local:4444/wd/hub';
+// Execution du navigateur sur le serveur défini par la conf
+$host = HOST;
 
 // Initialisation du mail d'erreur
 initialiseMail();
@@ -174,7 +180,8 @@ $capabilities->setCapability(ChromeOptions::CAPABILITY, $options);
 
 
 // Lancement du navigateur sur le client cible, timeout de 10 secondes
-try {
+try
+{
    $driver = RemoteWebDriver::create($host, $capabilities, 10000);
 } 
 catch(Exception $e) {
