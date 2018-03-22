@@ -7,9 +7,11 @@
 //                                                              //
 //////////////////////////////////////////////////////////////////
 require_once('nsca/src/EonNsca.php');
+require_once('NiceSsh.php');
 
 class ReportingTool {
-
+   private $ssh_connection;
+	
    private $rrdTool = '/opt/rrdtool-1.7.0/bin/rrdtool';
    private $rrdUpdate = '/opt/rrdtool-1.7.0/bin/rrdupdate';
    private $rrdFile = 'default.rrd';
@@ -32,6 +34,8 @@ class ReportingTool {
 	  $this->nsca_state = EonNsca::STATE_UNKNOWN;
 	  $this->nsca_service = $file ;
 	  
+      $this->ssh_connection = new NiceSsh();
+      
       $this->rrdFile = $file . ".rrd";
       if (!file_exists($this->rrdFile)) {
          $parameters = "--step 60 --no-overwrite DS:home:GAUGE:120:0:60000 DS:login:GAUGE:120:0:60000 \
@@ -69,10 +73,12 @@ class ReportingTool {
       $this->update();
    }
 
-   // Update du fichier rrd
+   // Update du fichier rrd et du status nagios NSCA
    public function update() {
 	  echo "NSCA Request : $this->nsca_service / $this->nsca_state / $this->nsca_msg\n" ;
 	  $this->nsca_client->send('Applications', $this->nsca_service, $this->nsca_state, $this->nsca_msg);
+	  
+	  $this->ssh_report();
 	  
       $timeHome = $this->timeHome;
       $timeLogin = $this->timeLogin;
@@ -90,10 +96,37 @@ class ReportingTool {
       return $errno;
    }
 
+   // Met à jour le statut et le message Nagios NSCA
    public function nsca_report($state, $msg)
    {
 	   $this->nsca_state = $state ;
 	   $this->nsca_msg = $msg;
+   }
+   
+   // Met à jour le statut sur le serveur distant
+   public function ssh_report()
+   {
+	   $clear_state = "";
+	   switch($this->nsca_state)
+	   {
+			case 0:
+				$clear_state = "OK";
+				break;
+			case 1:
+				$clear_state = "WARNING";
+				break;
+			case 2:
+				$clear_state = "CRITICAL";
+				break;
+			case 3:
+				$clear_state = "UNKNOWN";
+				break;
+	   }
+	   
+
+	   $cmd = "echo '".$clear_state."' > /opt/AppStatus/$this->nsca_service.status" ;
+	   $this->ssh_connection->connect();
+	   $this->ssh_connection->exec($cmd);
    }
 }
 ?>

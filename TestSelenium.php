@@ -336,6 +336,7 @@ foreach ($argv as $key => $parameter) {
    unset($RRD);
    // Destruction de la classe de scénario
    unset($scenario);
+   unset($mail);
 }
 
 // Fermeture du navigateur et sortie
