@@ -11,7 +11,7 @@
 require_once('vendor/autoload.php');
 
 //Fichier de configuration
-require_once('config.php');
+//require_once('config.php');
 
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -167,7 +167,7 @@ function takeSnapshot()
 ///////////////////////////////////////////////////////////////////
 
 // Execution du navigateur sur le serveur défini par la conf
-$host = HOST;
+$host = "http://test01-x.saintmaur.local:4444/wd/hub";
 
 // Initialisation du mail d'erreur
 initialiseMail();
