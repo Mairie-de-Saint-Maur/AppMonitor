@@ -39,15 +39,19 @@ class Admimail extends scenario {
 	public function Login() {
 		$driver = $this->driver;
 		parent::Login();
-
-		// Saisie du login et du mot de passe puis validation
+		
+		//On bascule vers le contenu de l'iframe
 		$driver->switchTo()->frame($driver->findElement(WebDriverBy::id("ext-gen1139_loginIframeDom")));
-		$driver->findElement(WebDriverBy::id('username'))->clear();
+		
+		//On attend pour être sûr d'avoir le contenu de l'iframe
+		$driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("username")))->clear();
+		$driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("password")))->clear();
+		
+		// Saisie du login et du mot de passe puis validation
 		$driver->findElement(WebDriverBy::id('username'))->sendKeys("tdsi");
-		$driver->findElement(WebDriverBy::id('password'))->clear();
 		$driver->findElement(WebDriverBy::id('password'))->sendKeys("DSI94100");
 		
-		$driver->findElement(WebDriverBy::id("connect"))->click();
+		$driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("connect")))->click();
 
 		//Vérification du chargement de la page
 		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('a#index_menu_global_Board')));
