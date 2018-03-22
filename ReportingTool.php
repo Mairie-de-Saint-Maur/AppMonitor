@@ -35,6 +35,8 @@ class ReportingTool {
 	  $this->nsca_service = $file ;
 	  
       $this->ssh_connection = new NiceSsh();
+	  $this->ssh_connection->connect();
+	  $this->ssh_connection->exec("mkdir -p /home/cms/Ametys_CMS/application/cms/skins/intranet-kmu/resources/listapp/app_status/");
       
       $this->rrdFile = $file . ".rrd";
       if (!file_exists($this->rrdFile)) {
@@ -123,10 +125,9 @@ class ReportingTool {
 				break;
 	   }
 	   
-
-	   $cmd = "echo '".$clear_state."' > /opt/AppStatus/$this->nsca_service.status" ;
-	   $this->ssh_connection->connect();
+	   $cmd = "echo '".$clear_state."' > /home/cms/Ametys_CMS/application/cms/skins/intranet-kmu/resources/listapp/app_status/$this->nsca_service.status" ;
 	   $this->ssh_connection->exec($cmd);
    }
 }
+
 ?>
