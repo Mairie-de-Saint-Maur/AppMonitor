@@ -1,7 +1,7 @@
 <?php
 class NiceSSH {
     // SSH Host
-    private $ssh_host = 'intranet-x.mairie-saint-maur.com';
+    private $ssh_host = 'www01-d.saintmaur.local';
     // SSH Port
     private $ssh_port = 22;
     // SSH Server Fingerprint
