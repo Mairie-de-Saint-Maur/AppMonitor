@@ -24,4 +24,5 @@ save_job:
 deploy_job:
   stage: deploy
   script:
-  - 'sudo cd /opt/AppMonitor/ && sudo git fetch origin ; sudo git rebase master ; git checkout master ; sudo git pull'
+  - 'sudo cd /opt/AppMonitor/ && sudo git fetch origin && sudo git rebase master && sudo git checkout master && sudo git pull'
+  - 'pwd'
