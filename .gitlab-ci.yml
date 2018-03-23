@@ -1,0 +1,27 @@
+## Pipeline déploiement Gitlab CI pour AppMonitor
+## Application de supervision applicative PHP/Selenium
+stages:
+  - test
+  - save
+  - deploy
+
+## Test de syntaxe PHP
+test_job:
+  stage: test
+  script: 
+  - 'sudo find . -name \*.php -exec php -l "{}" \;'
+
+
+## Sauvegarde ancienne version
+save_job:
+  stage: save
+  script:
+  - 'sudo rm -rf /opt/AppMonitor_old/'
+  - 'sudo cp -rf /opt/AppMonitor/ /opt/AppMonitor_old/'
+
+
+## Déploiement du nouveau code
+deploy_job:
+  stage: deploy
+  script:
+  - 'sudo cd /opt/AppMonitor/ && git pull'
