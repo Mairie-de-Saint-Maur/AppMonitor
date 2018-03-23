@@ -5,6 +5,7 @@ stages:
   - save
   - deploy
 
+
 ## Test de syntaxe PHP
 test_job:
   stage: test
@@ -24,5 +25,4 @@ save_job:
 deploy_job:
   stage: deploy
   script:
-  - 'sudo cd /opt/AppMonitor/ && sudo git --work-tree=/opt/AppMonitor --git-dir=/opt/AppMonitor/.git checkout master && sudo git --work-tree=/opt/AppMonitor --git-dir=/opt/AppMonitor/.git pull'
-  - 'pwd'
+  - 'sudo git --work-tree=/opt/AppMonitor --git-dir=/opt/AppMonitor/.git checkout master && sudo git --work-tree=/opt/AppMonitor --git-dir=/opt/AppMonitor/.git pull'
