@@ -24,4 +24,4 @@ save_job:
 deploy_job:
   stage: deploy
   script:
-  - 'sudo cd /opt/AppMonitor/ && sudo git pull'
+  - 'sudo cd /opt/AppMonitor/ && sudo git pull origin master'
