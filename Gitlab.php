@@ -18,13 +18,6 @@ require_once('vendor/autoload.php');
 
 class Gitlab extends scenario {
 
-   function __construct($driver) {
-      global $mail;
-
-      parent::__construct($driver);
-      $mail->addAddress('hugo.stephan@mairie-saint-maur.com', 'Hugo Stephan');
-   }
-
 	public function gohome() {
 		$driver = $this->driver;
 		parent::goHome();
