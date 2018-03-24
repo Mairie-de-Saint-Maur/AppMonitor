@@ -27,6 +27,8 @@ class Gitlab extends scenario {
 		
 		// Vérification de la présence du formulaire
 		$driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('user_login')));
+		$driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('user_password')));
+		$driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name('commit')));
 	}
 
 	public function Login() {
