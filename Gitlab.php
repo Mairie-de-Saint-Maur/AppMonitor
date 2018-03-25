@@ -42,8 +42,6 @@ class Gitlab extends scenario {
 		$driver->findElement(WebDriverBy::id('user_login'))->sendKeys("support.informatique");
 		$driver->findElement(WebDriverBy::id('user_password'))->clear();
 		$driver->findElement(WebDriverBy::cssSelector('div#submit-container move-submit-down input'))->click();
-		
-		$driver->findElement(WebDriverBy::name("commit"))->click();
 
 		//Vérification du chargement de la page
 		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('div.blank-state-icon')));
