@@ -45,7 +45,7 @@ class Gitlab extends scenario {
 		$driver->findElement(WebDriverBy::cssSelector('div.submit-container.move-submit-down input'))->click();
 
 		//Vérification du chargement de la page
-		//$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::partialLinkText('Explore public projects')));
+		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::partialLinkText('Explore public projects')));
 	}
    
 	public function Action() {
@@ -61,7 +61,9 @@ class Gitlab extends scenario {
 		parent::Logout();
 
 		// Déconnexion
-		$driver->findElement(WebDriverBy::partialLinkText('Sign out'))->click();
+		$driver->findElement(WebDriverBy::cssSelector('a.header-user-dropdown-toggle'))->click();
+		$driver->findElement(WebDriverBy::cssSelector('a.sign-out-link'))->click();
+		//$driver->findElement(WebDriverBy::partialLinkText('Sign out'))->click();
 	}
 }
 ?>
