@@ -9,8 +9,6 @@
 
 class Scenario {
    public $step;
-   public $nagios_hostname;
-   public $nagios_servicename;
 
    function __construct($driver) {
       $this->step = 'unset';
