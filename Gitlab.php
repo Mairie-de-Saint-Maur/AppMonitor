@@ -26,9 +26,8 @@ class Gitlab extends scenario {
 		$driver->get('http://gitlab.saintmaur.local:9091/');
 		
 		// Vérification de la présence du formulaire
-		$driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('username')));
-		$driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('password')));
-		$driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name('commit')));
+		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('username')));
+		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('password')));
 		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::partialLinkText('Standard')));
 	}
 
@@ -42,7 +41,7 @@ class Gitlab extends scenario {
 		$driver->findElement(WebDriverBy::id('user_login'))->clear();
 		$driver->findElement(WebDriverBy::id('user_login'))->sendKeys("support.informatique");
 		$driver->findElement(WebDriverBy::id('user_password'))->clear();
-		$driver->findElement(WebDriverBy::id('user_password'))->sendKeys("azerty94100");
+		$driver->findElement(WebDriverBy::cssSelector('div#submit-container move-submit-down input'))->click();
 		
 		$driver->findElement(WebDriverBy::name("commit"))->click();
 
