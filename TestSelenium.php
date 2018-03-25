@@ -301,7 +301,7 @@ foreach ($argv as $key => $parameter) {
    }
    // Enregistrement des données par destruction de la classe RRD
    addBody("Home:    $RRD->timeHome ms<br>");
-   addBody( "Login:   $RRD->timeLogin ms<br>");
+   addBody("Login:   $RRD->timeLogin ms<br>");
    addBody("Actions: $RRD->timeActions ms<br>");
    addBody("Logout:  $RRD->timeLogout ms<br>");
    addBody("Total:   " . ($RRD->timeHome + $RRD->timeLogin + $RRD->timeActions + $RRD->timeLogout) . " ms<br>");
