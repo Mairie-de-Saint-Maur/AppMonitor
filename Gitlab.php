@@ -44,7 +44,7 @@ class Gitlab extends scenario {
 		$driver->findElement(WebDriverBy::cssSelector('div.submit-container.move-submit-down input'))->click();
 
 		//Vérification du chargement de la page
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('div.blank-state-icon')));
+		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('div.blank-state-row')));
 	}
    
 	public function Action() {
