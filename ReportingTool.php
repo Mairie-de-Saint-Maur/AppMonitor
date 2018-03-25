@@ -38,7 +38,7 @@ class ReportingTool {
 	  $this->ssh_connection->connect();
 	  $this->ssh_connection->exec("mkdir -p /var/www/html/dev/listapp/app_status/");
       
-      $this->rrdFile = $file . ".rrd";
+      $this->rrdFile = "./rrd/".$file . ".rrd";
       if (!file_exists($this->rrdFile)) {
          $parameters = "--step 60 --no-overwrite DS:home:GAUGE:120:0:60000 DS:login:GAUGE:120:0:60000 \
            DS:actions:GAUGE:120:0:60000 \
