@@ -35,6 +35,8 @@ class Gitlab extends scenario {
 		$driver = $this->driver;
 		parent::Login();
 
+		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::partialLinkText('Standard')))->click();
+		
 		// Saisie du login et du mot de passe puis validation
 		$driver->findElement(WebDriverBy::id('user_login'))->clear();
 		$driver->findElement(WebDriverBy::id('user_login'))->sendKeys("support.informatique");
