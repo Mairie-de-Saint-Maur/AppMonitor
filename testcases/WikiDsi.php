@@ -50,7 +50,7 @@ class WikiDsi extends scenario {
 		$driver = $this->driver;
 		parent::Action();
 
-		// clic sur lien "Explore public projects"
+		// clic sur lien "Modifications récentes" et vérification du chargement de la page
 		$driver->findElement(WebDriverBy::partialLinkText('Modifications récentes'))->click();
 		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::partialLinkText('Afficher les nouvelles modifications depuis le')));
 	}
@@ -59,7 +59,7 @@ class WikiDsi extends scenario {
 		$driver = $this->driver;
 		parent::Logout();
 
-		// Déconnexion par le menu déroulant et Sign out
+		// Déconnexion par le lien Se déconnecter
 		$driver->findElement(WebDriverBy::partialLinkText('Se déconnecter'))->click();
 	}
 }

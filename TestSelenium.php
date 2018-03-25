@@ -22,7 +22,7 @@ use Facebook\WebDriver\Chrome\ChromeOptions;
 require_once('vendor/phpmailer/phpmailer/class.phpmailer.php');
 require_once('vendor/phpmailer/phpmailer/class.smtp.php');
 require_once('ReportingTool.php');
-require_once('Scenario.php');
+require_once('testcases/Scenario.php');
 
 
 
@@ -228,7 +228,7 @@ foreach ($argv as $key => $parameter) {
    $mail->Subject = "ECHEC Scenario $parameter";
 
    // Instanciation de la classe de scénario
-   require_once("$parameter.php");
+   require_once("testcases/$parameter.php");
    $scenario = new $parameter($driver);
 
    // Instanciation de la classe permettant le stockage des données en base circulaire
