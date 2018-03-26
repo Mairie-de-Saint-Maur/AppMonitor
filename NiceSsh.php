@@ -1,30 +1,33 @@
 <?php
 class NiceSSH {
     // SSH Host
-    private $ssh_host = 'www01-d.saintmaur.local';
+    private $ssh_host = SSH_HOST;
     // SSH Port
-    private $ssh_port = 22;
+    private $ssh_port = SSH_PORT;
     // SSH Server Fingerprint
-    private $ssh_server_fp = '19:f8:27:1f:df:64:02:d4:38:5d:83:16:f7:dc:91:cf';
+    private $ssh_server_fp = SSH_FP;
     // SSH Username
-    private $ssh_auth_user = 'root';
+    private $ssh_auth_user = SSH_AUTH_USER;
     // SSH Public Key File
-    private $ssh_auth_pub = '/root/.ssh/id_rsa.pub';
+    private $ssh_auth_pub = SSH_AUTH_PUB;
     // SSH Private Key File
-    private $ssh_auth_priv = '/root/.ssh/id_rsa';
+    private $ssh_auth_priv = SSH_AUTH_PRIV;
     // SSH Private Key Passphrase (null == no passphrase)
     private $ssh_auth_pass = null ;
     // SSH Connection
     private $connection;
    
     public function connect() {
+		//Test de connection
         if (!($this->connection = ssh2_connect($this->ssh_host, $this->ssh_port))) {
             throw new Exception('Cannot connect to server');
         }
+		//calcul de la FG
         $fingerprint = ssh2_fingerprint($this->connection,SSH2_FINGERPRINT_HEX);
        /* if (strcmp($this->ssh_server_fp, $fingerprint) !== 0) {
             throw new Exception('Unable to verify server identity!');
         }*/
+		//test de la clé publique
         if (!ssh2_auth_pubkey_file($this->connection, $this->ssh_auth_user, $this->ssh_auth_pub, $this->ssh_auth_priv, $this->ssh_auth_pass)) {
             throw new Exception('Autentication rejected by server');
         }
