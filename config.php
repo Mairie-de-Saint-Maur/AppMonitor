@@ -13,7 +13,7 @@ $RRD_TOOL = "/opt/rrdtool-1.7.0/bin/rrdtool";
 
 $RRD_UPD = "/opt/rrdtool-1.7.0/bin/rrdupdate";
 
-$RRD_DEFAULT_FILE; = "default.rrd";
+$RRD_DEFAULT_FILE = "default.rrd";
 
 $SSH_HOST = "www01-d.saintmaur.local";
 
