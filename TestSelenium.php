@@ -11,20 +11,14 @@
 require_once('vendor/autoload.php');
 
 //Fichier de configuration
-//require_once('config.php');
+require_once('config.php');
 
+//Facebook Webdriver
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\Chrome\ChromeOptions;
-
-require_once('vendor/phpmailer/phpmailer/class.phpmailer.php');
-require_once('vendor/phpmailer/phpmailer/class.smtp.php');
-require_once('ReportingTool.php');
-require_once('testcases/Scenario.php');
-
-
 
 ///////////////////////////////////////////////////////////////////
 //    Gestion des exceptions                                     //
@@ -147,7 +141,7 @@ function takeSnapshot()
    global $mail, $driver, $error, $step, $parameter;
 
    if (is_object($driver)) {
-      $screenshot = "screenshot-$parameter-$step-". date("Y-m-d_H-i-s") . ".png";
+      $screenshot = SCREENSHOT_DIR."screenshot-$parameter-$step-". date("Y-m-d_H-i-s") . ".png";
       try {
          $driver->takeScreenshot($screenshot);
       }
@@ -167,7 +161,7 @@ function takeSnapshot()
 ///////////////////////////////////////////////////////////////////
 
 // Execution du navigateur sur le serveur défini par la conf
-$host = "http://test01-x.saintmaur.local:4444/wd/hub";
+$host = SELENIUM_HOST;
 
 // Initialisation du mail d'erreur
 initialiseMail();

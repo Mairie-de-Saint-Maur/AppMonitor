@@ -12,9 +12,9 @@ require_once('NiceSsh.php');
 class ReportingTool {
    private $ssh_connection;
 	
-   private $rrdTool = '/opt/rrdtool-1.7.0/bin/rrdtool';
-   private $rrdUpdate = '/opt/rrdtool-1.7.0/bin/rrdupdate';
-   private $rrdFile = 'default.rrd';
+   private $rrdTool = RRD_TOOL;
+   private $rrdUpdate = RRD_UPD;
+   private $rrdFile = RRD_DEFAULT_FILE;
    
    private $nsca_client ;	
    private $nsca_msg ;
@@ -29,15 +29,21 @@ class ReportingTool {
 
    // Création du fichier RRD si nécessaire lors de l'instanciation
    function __construct($file) {
+	   
+	   //Préparation du client NSCA - envoi de commandes à NAGIOS
       $this->nsca_client = new EonNsca();
 	  $this->nsca_msg = "Selenium Web Test : UNKNOWN STATE" ;
 	  $this->nsca_state = EonNsca::STATE_UNKNOWN;
 	  $this->nsca_service = $file ;
 	  
+	  //établissement de la connexion SSH
       $this->ssh_connection = new NiceSsh();
 	  $this->ssh_connection->connect();
+	  
+	  //Création du répertoire pour accueillir les fichiers statuts par appli
 	  $this->ssh_connection->exec("mkdir -p /var/www/html/dev/listapp/app_status/");
       
+	  //Vérification de l'existance du fichier RRD et création si besoin
       $this->rrdFile = "./rrd/".$file . ".rrd";
       if (!file_exists($this->rrdFile)) {
          $parameters = "--step 60 --no-overwrite DS:home:GAUGE:120:0:60000 DS:login:GAUGE:120:0:60000 \
@@ -125,7 +131,10 @@ class ReportingTool {
 				break;
 	   }
 	   
+	   //écriture dans le fichier .status
 	   $cmd = "echo '".$clear_state."' > /var/www/html/dev/listapp/app_status/$this->nsca_service.status" ;
+	   
+	   //Exécution de la commande SSH
 	   $this->ssh_connection->exec($cmd);
    }
 }
