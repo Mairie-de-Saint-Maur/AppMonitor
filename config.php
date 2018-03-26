@@ -1,10 +1,5 @@
 <?php
 
-require_once('vendor/phpmailer/phpmailer/class.phpmailer.php');
-require_once('vendor/phpmailer/phpmailer/class.smtp.php');
-require_once('ReportingTool.php');
-require_once('testcases/Scenario.php');
-
 define(SCREENSHOT_DIR, "");
 
 define(SELENIUM_HOST, "http://test01-x.saintmaur.local:4444/wd/"); 
@@ -27,4 +22,10 @@ define($SSH_AUTH_PUB, '/root/.ssh/id_rsa.pub') ;
 
 define(SSH_AUTH_PRIV, '/root/.ssh/id_rsa');
 
+require_once('vendor/phpmailer/phpmailer/class.phpmailer.php');
+require_once('vendor/phpmailer/phpmailer/class.smtp.php');
+require_once('ReportingTool.php');
+require_once('testcases/Scenario.php');
+
 ?>
+
