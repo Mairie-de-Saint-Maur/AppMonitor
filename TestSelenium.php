@@ -163,6 +163,8 @@ function takeSnapshot()
 // Execution du navigateur sur le serveur défini par la conf
 $host = SELENIUM_HOST;
 
+echo "SELENIUM_HOST = " . SELENIUM_HOST;
+
 // Initialisation du mail d'erreur
 initialiseMail();
 
