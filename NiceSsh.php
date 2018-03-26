@@ -1,4 +1,13 @@
 <?php
+//////////////////////////////////////////////////////////////////
+//                                                              //
+//      Classe de gestion des connexions/commandes SSH          //
+//                                                              //
+//                STEPHAN Hugo 26-03-2018   V0.1                //
+//                                                              //
+//////////////////////////////////////////////////////////////////
+
+
 class NiceSSH {
     // SSH Host
     private $ssh_host = SSH_HOST;
