@@ -1,7 +1,7 @@
 <?php
 //////////////////////////////////////////////////////////////////
 //                                                              //
-//     classe de test applicatif de référence: Admimail           //
+//     classe de test applicatif de référence: CIRIL Finances   //
 //                                                              //
 //                   Camus 19-03-2018   V0.1                    //
 //                                                              //
@@ -30,7 +30,7 @@ class CirilFinances extends scenario {
 		parent::goHome();
 
 		// Ouverture de la page d'accueil de l'application
-		$driver->get('http://10.0.0.48:83');
+		$driver->get('http://10.0.0.52:83/');
 		
 		// Vérification de la présence du formulaire
 		$driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name("choixAppli")));

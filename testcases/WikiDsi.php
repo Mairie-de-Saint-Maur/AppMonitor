@@ -15,7 +15,7 @@ use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\Chrome\ChromeOptions;
 
 require_once('vendor/autoload.php');
-
+//
 class WikiDsi extends scenario {
 
 	public function gohome() {
