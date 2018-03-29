@@ -43,14 +43,30 @@ class CirilFinances extends scenario {
 		// Saisie du login et du mot de passe puis validation
 		$driver->switchTo()->frame($driver->findElement(WebDriverBy::name("choixAppli")));
 		$driver->findElement(WebDriverBy::id('identifiant'))->clear();
-		$driver->findElement(WebDriverBy::id('identifiant'))->sendKeys("SMFV221");
+		$driver->findElement(WebDriverBy::id('identifiant'))->sendKeys("smdfdsi");
 		$driver->findElement(WebDriverBy::id('motPasse'))->clear();
-		$driver->findElement(WebDriverBy::id('motPasse'))->sendKeys("glp1962");
+		$driver->findElement(WebDriverBy::id('motPasse'))->sendKeys("Orage1752");
 		
 		$driver->findElement(WebDriverBy::cssSelector("input[type=submit]"))->click();
 
-		//Vérification du chargement de la page
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('#Header_EnteteColoree')));
+		//GESTION DE LA POPUP
+		
+		//On récupère l'ID de la fenêtre principale
+		$mainWindowHandler = $driver->getWindowHandle();
+
+		//On attend 1 sec que la popup s'ouvre
+		sleep(1);
+		//On récpère la liste des fenêtres
+		$allWindowHandlers = $driver->getWindowHandles();
+		
+		//On boucle sur les fenêtres en fermant celle qui ne sont pas la fenêtre principale
+		foreach($allWindowHandlers as $currWindowHandler) {
+			if ($currWindowHandler != $mainWindowHandler) {
+				$driver->switchTo()->window($currWindowHandler);
+				$driver->close();
+			}
+		}
+		$driver->switchTo()->window($mainWindowHandler);
 	}
    
 	public function Action() {
@@ -58,8 +74,9 @@ class CirilFinances extends scenario {
 		parent::Action();
 
 		// clic sur lien "Réception"
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("input.bouton_input[title='Masquer le menu']")))->click();
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("input.bouton_input[title='Montrer le menu']")))->click();
+		$driver->switchTo()->frame($driver->findElement(WebDriverBy::name("choixAppli")));
+		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("burger_button")))->click();
+		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("notifications_button")))->click();
 	}
 
 	public function Logout() {
@@ -67,9 +84,8 @@ class CirilFinances extends scenario {
 		parent::Logout();
 
 		// Déconnexion
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("input[tabindex='120']")))->click();
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("a.menuLine[style='background-image:url(/medias/imgweb3/composants/button_quit.png);']")))->click();
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("input[tabindex='1510']")))->click();
+		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("identite_button")))->click();
+		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("deconnexion")))->click();
 	}
 }
 ?>
