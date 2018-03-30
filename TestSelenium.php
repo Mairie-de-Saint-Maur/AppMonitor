@@ -119,7 +119,7 @@ function initialiseMail()
    $mail->addAddress('blaise.thauvin@mairie-saint-maur.com', 'Blaise Thauvin');     // Add a recipient
    $mail->addAddress('hugo.stephan@mairie-saint-maur.com', 'Hugo STEPHAN');     // Add a recipient
    $mail->addReplyTo('blaise.thauvin@mairie-saint-maur.com', 'Blaise Thauvin');
-   $mail->addReplyTo('hugo.stephan@mairie-saint-maur.com', 'Blaise Thauvin');
+   $mail->addReplyTo('hugo.stephan@mairie-saint-maur.com', 'Hugo STEPHAN');
 
    //Content
    //$mail->Charset('UTF-8');
