@@ -25,7 +25,7 @@ if [ $? -ne 0 ]; then exit_error "Script could not check common-lib version, lik
 check_script 
 
 # Fichier de résultat
-FILE=close_wait.rrd      
+FILE=rrd/close_wait.rrd      
 
 # Check parameters passed to your script. The common-lib provides several parameter checking functions.
 #Test number of parameters passed to the script
