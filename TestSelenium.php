@@ -84,6 +84,7 @@ function fin($exit_code=0, $message='fin de simulation')
    {
 	   $driver->close();
 	   $driver->quit();
+	   $driver->dispose();
    }	  
    exit($exit_code);
 
