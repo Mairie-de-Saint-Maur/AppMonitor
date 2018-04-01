@@ -80,7 +80,11 @@ function fin($exit_code=0, $message='fin de simulation')
    }
 
    // Ferme le navigateur
-   if (is_object($driver)) $driver->quit();
+   if (is_object($driver))
+   {
+	   $driver->close();
+	   $driver->quit();
+   }	  
    exit($exit_code);
 
 }
