@@ -78,7 +78,7 @@ if [ $NB -gt 1800 ]; then i
    warning "$NB close_wait en attente, reboot néccessaire"
    # On kill
    ssh test01-x.saintmaur.local ps -eF | grep selenium | grep jar | awk '{print $2}' | xargs kill
-   ssh test01-x.saintmaur.loca /usr/bin/su - blaise -c "export DISPLAY=:99;/usr/bin/java -jar /opt/selenium/selenium-server-standalone-2.53.1.jar >/var/log/selenium.log 2>/var/log/selenium-errors.log &"
+   ssh test01-x.saintmaur.loca /usr/bin/su - blaise -c "export DISPLAY=:99;/usr/bin/java -jar /opt/selenium/selenium-server-standalone-3.9.1.jar >/var/log/selenium.log 2>/var/log/selenium-errors.log &"
 
 else 
    exit_ok "$NB close_wait en attente"
