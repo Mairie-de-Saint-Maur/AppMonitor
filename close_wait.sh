@@ -39,7 +39,7 @@ fi
 
 
 # Main
-cd /opt/smdf
+cd /opt/AppMonitor
 
 #Compte le nombre de "close_wait" en attente" sur machine distante
 NB=`ssh test01-x.saintmaur.local netstat -np|grep 127.0.0.1|grep CLOSE_WAIT|wc -l`
