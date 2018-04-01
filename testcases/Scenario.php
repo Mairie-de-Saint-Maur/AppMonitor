@@ -11,6 +11,7 @@ class Scenario {
    public $step;
 
    function __construct($driver) {
+      global $mail;
       $this->step = 'unset';
       $this->driver = $driver;
       $this->err = 0;
