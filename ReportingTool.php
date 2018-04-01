@@ -78,7 +78,12 @@ class ReportingTool {
    // La destruction de la classe entraine l'enregistrement du log avec les valeurs par défaut
    // Cela permet de conserver la trace des plantages dans les données d'exécution
    function __destruct() {
-      $this->update();
+      global $driver;
+	  $this->update();
+	 if(is_object($driver) && $driver!=null)
+	 {
+		 $driver->quit();
+	 }
    }
 
    // Update du fichier rrd et du status nagios NSCA
