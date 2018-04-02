@@ -22,7 +22,7 @@ class Artotheque extends scenario {
       global $mail;
 
       parent::__construct($driver);
-      $mail->addAddress('iblaise.thauvin@mairie-saint-maur.com', 'Blaise Thauvin');
+#      $mail->addAddress('blaise.thauvin@mairie-saint-maur.com', 'Blaise Thauvin');
    }
 
    public function gohome() {

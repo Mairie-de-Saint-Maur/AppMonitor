@@ -120,9 +120,9 @@ function initialiseMail()
 
    //Recipients
    $mail->setFrom('Supervision_Applicative@mairie-saint-maur.com', 'Supervision Applicative');
-   $mail->addAddress('blaise.thauvin@mairie-saint-maur.com', 'Blaise Thauvin');     // Add a recipient
+#   $mail->addAddress('blaise.thauvin@mairie-saint-maur.com', 'Blaise Thauvin');     // Add a recipient
    $mail->addAddress('hugo.stephan@mairie-saint-maur.com', 'Hugo STEPHAN');     // Add a recipient
-   $mail->addReplyTo('blaise.thauvin@mairie-saint-maur.com', 'Blaise Thauvin');
+#   $mail->addReplyTo('blaise.thauvin@mairie-saint-maur.com', 'Blaise Thauvin');
    $mail->addReplyTo('hugo.stephan@mairie-saint-maur.com', 'Hugo STEPHAN');
 
    //Content
