@@ -18,6 +18,13 @@ require_once('vendor/autoload.php');
 
 class Artotheque extends scenario {
 
+   function __construct($driver) {
+      global $mail;
+
+      parent::__construct($driver);
+#      $mail->addAddress('blaise.thauvin@mairie-saint-maur.com', 'Blaise Thauvin');
+   }
+
    public function gohome() {
       $driver = $this->driver;
       parent::goHome();

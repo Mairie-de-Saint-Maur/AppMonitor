@@ -80,7 +80,11 @@ function fin($exit_code=0, $message='fin de simulation')
    }
 
    // Ferme le navigateur
-   if (is_object($driver)) $driver->quit();
+   if (is_object($driver))
+   {
+	   $driver->close();
+	   $driver->quit();
+   }	  
    exit($exit_code);
 
 }
@@ -116,8 +120,10 @@ function initialiseMail()
 
    //Recipients
    $mail->setFrom('Supervision_Applicative@mairie-saint-maur.com', 'Supervision Applicative');
-   $mail->addAddress('blaise.thauvin@mairie-saint-maur.com', 'Blaise Thauvin');     // Add a recipient
-   $mail->addReplyTo('blaise.thauvin@mairie-saint-maur.com', 'Blaise Thauvin');
+#   $mail->addAddress('blaise.thauvin@mairie-saint-maur.com', 'Blaise Thauvin');     // Add a recipient
+   $mail->addAddress('hugo.stephan@mairie-saint-maur.com', 'Hugo STEPHAN');     // Add a recipient
+#   $mail->addReplyTo('blaise.thauvin@mairie-saint-maur.com', 'Blaise Thauvin');
+   $mail->addReplyTo('hugo.stephan@mairie-saint-maur.com', 'Hugo STEPHAN');
 
    //Content
    //$mail->Charset('UTF-8');
