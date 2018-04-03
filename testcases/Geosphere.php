@@ -39,7 +39,7 @@ class Geosphere extends scenario {
 	public function Login() {
 		$driver = $this->driver;
 		parent::Login();
-
+		
 		//On rentre dans la frame login:
 		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("input#RadTextBoxLogin")));
 		
@@ -47,59 +47,36 @@ class Geosphere extends scenario {
 		$driver->findElement(WebDriverBy::cssSelector("input#RadTextBoxLogin"))->clear();
 		$driver->findElement(WebDriverBy::cssSelector("input#RadTextBoxLogin"))->sendKeys("SMDFINFORMATIQUE");
 		$driver->findElement(WebDriverBy::cssSelector("input#RadTextBoxMDP"))->clear();
-		$driver->findElement(WebDriverBy::cssSelector("input#RadTextBoxMDP"))->sendKeys("");
+		$driver->findElement(WebDriverBy::cssSelector("input#RadTextBoxMDP"))->sendKeys("VFDMOE2016");
 		
-		$driver->findElement(WebDriverBy::cssSelector("button[type=submit]"))->click();
+		$driver->findElement(WebDriverBy::cssSelector("input[type=submit]"))->click();
 
 		//Vérification du chargement de la page
-		$driver->switchTo()->defaultContent();
-		$driver->switchTo()->frame($driver->findElement(WebDriverBy::cssSelector("frame[name=login]")));
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("frame[name=bandeauHaut]")));
-		$driver->switchTo()->frame($driver->findElement(WebDriverBy::cssSelector("frame[name=bandeauHaut]")));
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('.bandeauuser')));
+		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("iframeADS")));
 	}
    
 	public function Action() {
 		$driver = $this->driver;
 		parent::Action();
 		
-		//Navigation dans les frames jusqu'au lien
-		$driver->switchTo()->defaultContent();
-		$driver->switchTo()->frame($driver->findElement(WebDriverBy::cssSelector("frame[name=login]")));
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("frame[name=work]")));
-		$driver->switchTo()->frame($driver->findElement(WebDriverBy::cssSelector("frame[name=work]")));
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("frame[name=menu]")));
-		$driver->switchTo()->frame($driver->findElement(WebDriverBy::cssSelector("frame[name=menu]")));
+		//On charge à la place le contenu de la frame
+		$driver->get('http://172.24.1.32/adscs/Default.aspx');
 		
-		// clic sur lien "Réception"
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("form[name=loginForm] td.menuLnk a[href='javascript:f_redirectSeancesList();']")))->click();
-		
-		//Vérification du chargement
-		//Navigation dans les frames jusqu'à l'élément
-		$driver->switchTo()->defaultContent();
-		$driver->switchTo()->frame($driver->findElement(WebDriverBy::cssSelector("frame[name=login]")));
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("frame[name=work]")));
-		$driver->switchTo()->frame($driver->findElement(WebDriverBy::cssSelector("frame[name=work]")));
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("frame[name=main]")));
-		$driver->switchTo()->frame($driver->findElement(WebDriverBy::cssSelector("frame[name=main]")));
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("frame[name=action]")));
-		$driver->switchTo()->frame($driver->findElement(WebDriverBy::cssSelector("frame[name=action]")));
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector(".actionBtn")));
+		//On affiche le menu d'abord
+		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("RadDockActions_C_HyperlinkRechercher")))->click();
+		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector(".outlooktop2")));
 	}
 
 	public function Logout() {
 		$driver = $this->driver;
 		parent::Logout();
 
-		//Navigation dans les frames jusqu'au lien
-		$driver->switchTo()->defaultContent();
-		$driver->switchTo()->frame($driver->findElement(WebDriverBy::cssSelector("frame[name=login]")));
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("frame[name=work]")));
-		$driver->switchTo()->frame($driver->findElement(WebDriverBy::cssSelector("frame[name=work]")));
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("frame[name=menu]")));
-		$driver->switchTo()->frame($driver->findElement(WebDriverBy::cssSelector("frame[name=menu]")));
-		// Déconnexion -> On trouve l'élément dont le lien commence par ...
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("a[href^='javascript:top.login.bandeauHaut.setDeconnection']")))->click();
+		//On affiche le menu d'abord
+		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector(".RadMenu")));
+		$driver->findElement(WebDriverBy::cssSelector("ul.rmRootGroup.rmHorizontal > li.rmItem.rmLast"))->click();
+		
+		//on clique sur déconnexion
+		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector(".menuUser")))->click();
 	}
 }
 ?>
