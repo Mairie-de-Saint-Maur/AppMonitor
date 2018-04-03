@@ -9,7 +9,7 @@
 
 define("SCREENSHOT_DIR", "");
 
-define("SELENIUM_HOST", "http://sm00597.saintmaur.local:4444/wd/hub"); 
+define("SELENIUM_HOST", "http://test-applicatif.saintmaur.local:4444/wd/hub"); 
 
 define("RRD_TOOL", "/opt/rrdtool-1.7.0/bin/rrdtool");
 
