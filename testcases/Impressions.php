@@ -67,7 +67,7 @@ class Impressions extends scenario {
 		parent::Logout();
 
 		//On affiche le menu d'abord
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("a[href=index.php?ctrl=AuthentificationCtrl&action=deconnexion]")))->click();
+		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("a[href='index.php?ctrl=AuthentificationCtrl&action=deconnexion']")))->click();
 		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("login")));
 	}
 }
