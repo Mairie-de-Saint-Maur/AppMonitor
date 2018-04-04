@@ -1,9 +1,9 @@
 <?php
 //////////////////////////////////////////////////////////////////
 //                                                              //
-//     classe de test applicatif de référence: AIRS Delib       //
+//     classe de test applicatif de référence: Impressions      //
 //                                                              //
-//                   Camus 26-03-2018   V0.1                    //
+//                   Camus 04-04-2018   V0.2                    //
 //                                                              //
 //////////////////////////////////////////////////////////////////
 

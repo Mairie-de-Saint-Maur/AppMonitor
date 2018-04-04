@@ -1,9 +1,9 @@
 <?php
 //////////////////////////////////////////////////////////////////
 //                                                              //
-//     classe de test applicatif de référence: CIRIL Finances   //
+//     classe de test applicatif de référence: CIRIL RH         //
 //                                                              //
-//                   Camus 19-03-2018   V0.1                    //
+//                   Camus 04-04-2018   V0.2                    //
 //                                                              //
 //////////////////////////////////////////////////////////////////
 
