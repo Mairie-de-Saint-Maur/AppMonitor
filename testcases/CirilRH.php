@@ -16,7 +16,7 @@ use Facebook\WebDriver\Chrome\ChromeOptions;
 
 require_once('vendor/autoload.php');
 
-class CirilFinances extends scenario {
+class CirilRH extends scenario {
 
    function __construct($driver) {
       global $mail;
