@@ -337,10 +337,10 @@ foreach ($argv as $key => $parameter) {
 
 
    // Afficher le titre de la page courante
-   if (is_object($driver) && !empty($driver->getTitle())) addBody("Le titre de la dernière page est: " . $driver->getTitle() . "<br>");
+   if (is_object($driver) && $driver->getTitle() != null) addBody("Le titre de la dernière page est: " . $driver->getTitle() . "<br>");
 
    // Afficher l'URL de la page actuelle
-   if (is_object($driver) && !empty($driver->getCurrentURL())) addBody("L'URL finale est: " . $driver->getCurrentURL() . "<br>");
+   if (is_object($driver) && $driver->getCurrentURL() != null) addBody("L'URL finale est: " . $driver->getCurrentURL() . "<br>");
 
    echo "Niveau d'erreur = $error\n";
 
