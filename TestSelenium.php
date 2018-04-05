@@ -250,7 +250,7 @@ foreach ($argv as $key => $parameter) {
 
    $error = 0;
    initialiseMail();
-   initialiseDriver(5000);
+   initialiseDriver(8000);
    addBody("<br>$parameter<br>");
    echo "\nScenario $parameter\n-----------------\n"; 
    $mail->Subject = "ECHEC Scenario $parameter";
