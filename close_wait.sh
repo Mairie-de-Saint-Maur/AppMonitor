@@ -74,7 +74,7 @@ fi
 rrdupdate $FILE -t nb N:$NB
 
 
-if [ $NB -gt 1800 ]; then i
+if [ $NB -gt 100 ]; then i
    warning "$NB close_wait en attente, reboot néccessaire"
    # On kill
    ssh test01-x.saintmaur.local ps -eF | grep selenium | grep jar | awk '{print $2}' | xargs kill
