@@ -136,7 +136,7 @@ function initialiseMail()
 function addBody($text)
 {
    global $mail;
-   if(!isset($mail)) { $mail = new StdClass(); }
+   if(!isset($mail) || !isset($mail->Body)) { initialiseMail(); }
    $mail->Body = $mail->Body . $text;
 }
 
