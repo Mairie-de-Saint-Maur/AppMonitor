@@ -178,6 +178,7 @@ $options->addArguments(array("--start-maximized"));
 $capabilities = DesiredCapabilities::chrome();
 $capabilities->setCapability(ChromeOptions::CAPABILITY, $options);
 
+$driver = null ;
 
 // Lancement du navigateur sur le client cible, timeout de 10 secondes
 try
