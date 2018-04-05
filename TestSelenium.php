@@ -202,7 +202,7 @@ function initialiseDriver($timeout)
 	// Si on n'a pas réussi à lancer le navigateur, on essaye encore une fois
 	if (!is_object($driver)) {
 	   try {
-		  $driver = RemoteWebDriver::create($host, $capabilities, $timeout);
+		  $driver = RemoteWebDriver::create($host, $capabilities, $timeout, $timeout);
 	   }
 	   catch(Exception $e) {
 		  global $error;
