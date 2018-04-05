@@ -25,7 +25,8 @@ if [ $? -ne 0 ]; then exit_error "Script could not check common-lib version, lik
 check_script 
 
 # Fichier de résultat
-FILE=rrd/close_wait.rrd      
+FILE_CW=rrd/close_wait.rrd      
+FILE_TW=rrd/time_wait.rrd      
 
 # Check parameters passed to your script. The common-lib provides several parameter checking functions.
 #Test number of parameters passed to the script
@@ -42,11 +43,37 @@ fi
 cd /opt/AppMonitor
 
 #Compte le nombre de "close_wait" en attente" sur machine distante
-NB=`ssh test01-x.saintmaur.local netstat -np|grep 127.0.0.1|grep CLOSE_WAIT|wc -l`
+NB_CW=`ssh test01-x.saintmaur.local netstat -np|grep 127.0.0.1|grep CLOSE_WAIT|wc -l`
+#Compte le nombre de "time_wait" en attente" sur machine distante
+NB_TW=`ssh test01-x.saintmaur.local netstat -np|grep 127.0.0.1|grep TIME_WAIT|wc -l`
 
 # Vérifie si le fichier RRD est créé, s'il ne l'est pas, on le crée
-if [ ! -e $FILE ]; then
-   rrdtool create $FILE --step 60 --no-overwrite DS:nb:GAUGE:120:0:60000 \
+if [ ! -e $FILE_CW ]; then
+   rrdtool create $FILE_CW --step 60 --no-overwrite DS:nb:GAUGE:120:0:60000 \
+           RRA:AVERAGE:0.5:1:2880 \
+           RRA:AVERAGE:0.5:5:2304 \
+           RRA:AVERAGE:0.5:30:700 \
+           RRA:AVERAGE:0.5:120:775 \
+           RRA:AVERAGE:0.5:1440:3700 \
+           RRA:MIN:0.5:1:2880 \
+           RRA:MIN:0.5:5:2304 \
+           RRA:MIN:0.5:30:700 \
+           RRA:MIN:0.5:120:775 \
+           RRA:MIN:0.5:1440:3700 \
+           RRA:MAX:0.5:1:2880 \
+           RRA:MAX:0.5:5:2304 \
+           RRA:MAX:0.5:30:700 \
+           RRA:MAX:0.5:120:775 \
+           RRA:MAX:0.5:1440:3700 \
+           RRA:LAST:0.5:1:2880 \
+           RRA:LAST:0.5:5:2304 \
+           RRA:LAST:0.5:30:700 \
+           RRA:LAST:0.5:120:775 \
+           RRA:LAST:0.5:1440:3700
+fi
+# Vérifie si le fichier RRD est créé, s'il ne l'est pas, on le crée
+if [ ! -e $FILE_TW ]; then
+   rrdtool create $FILE_TW --step 60 --no-overwrite DS:nb:GAUGE:120:0:60000 \
            RRA:AVERAGE:0.5:1:2880 \
            RRA:AVERAGE:0.5:5:2304 \
            RRA:AVERAGE:0.5:30:700 \
@@ -71,14 +98,15 @@ fi
 
 
 # Met à jour le fichier RRD
-rrdupdate $FILE -t nb N:$NB
+rrdupdate $FILE_CW -t nb N:$NB_CW
+rrdupdate $FILE_TW -t nb N:$NB_TW
 
 
-if [ $NB -gt 100 ]; then i
-   warning "$NB close_wait en attente, reboot néccessaire"
+if [ $NB_CW -gt 100 ]; then i
+   warning "$NB_CW close_wait en attente et $NB_TW time wait en attente. Redémarrage du serveur selenium."
    # On kill
    ssh test01-x.saintmaur.local ps -eF | grep selenium | grep jar | awk '{print $2}' | xargs kill
-   ssh test01-x.saintmaur.loca /usr/bin/su - blaise -c "export DISPLAY=:99;/usr/bin/java -jar /opt/selenium/selenium-server-standalone-3.9.1.jar >/var/log/selenium.log 2>/var/log/selenium-errors.log &"
+   ssh test01-x.saintmaur.local /usr/bin/su - blaise -c "export DISPLAY=:99;/usr/bin/java -jar /opt/selenium/selenium-server-standalone-3.9.1.jar >/var/log/selenium.log 2>/var/log/selenium-errors.log &"
 
 else 
    exit_ok "$NB close_wait en attente"
