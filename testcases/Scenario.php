@@ -16,6 +16,11 @@ class Scenario {
       $this->driver = $driver;
       $this->err = 0;
    }
+   
+   function __destruct() {
+	   $this->driver->close();
+	   $this->driver->quit();
+   }
 
 
    public function gohome() {
