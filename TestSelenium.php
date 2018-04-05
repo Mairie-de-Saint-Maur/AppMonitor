@@ -139,6 +139,7 @@ function addBody($text)
    $mail->Body = $mail->Body . $text;
 }
 
+
 ///////////////////////////////////////////////////////////////////
 // Prend un snapshot de l'état courant du test en indiquant l'heure et l'étape
 ///////////////////////////////////////////////////////////////////
@@ -162,6 +163,69 @@ function takeSnapshot()
    return 0;
 }
 
+
+///////////////////////////////////////////////////////////////////
+// Initialise et paramètre le navigateur pour la simulation      //
+///////////////////////////////////////////////////////////////////
+function initialiseDriver($timeout)
+{
+	global $driver ;
+	// Execution du navigateur sur le serveur défini par la conf
+	$host = SELENIUM_HOST;
+
+	// Initialisation du mail d'erreur
+	initialiseMail();
+
+
+	// Choix du navigateur
+	$options = new ChromeOptions();
+	$options->addArguments(array("--start-maximized"));
+	$capabilities = DesiredCapabilities::chrome();
+	$capabilities->setCapability(ChromeOptions::CAPABILITY, $options);
+
+	$driver = null ;
+
+	// Lancement du navigateur sur le client cible, timeout de 10 secondes
+	try
+	{
+	   $driver = RemoteWebDriver::create($host, $capabilities, $timeout);
+	} 
+	catch(Exception $e) {
+	   global $error;
+	   fwrite(STDERR, "Première tentative de lancement du navigateur échouée\n");
+	   fwrite(STDERR, "$e->getMessage()");
+	   $mail->Subject = "Première tentative de lancement du navigateur échouée";
+	   addBody("$e->getMessage()");
+	}   
+
+	// Si on n'a pas réussi à lancer le navigateur, on essaye encore une fois
+	if (!is_object($driver)) {
+	   try {
+		  $driver = RemoteWebDriver::create($host, $capabilities, $timeout);
+	   }
+	   catch(Exception $e) {
+		  global $error;
+		  fwrite(STDERR, "Deuxième tentative de lancement du navigateur échouée\n");
+		  fwrite(STDERR, "$e->getMessage()");
+		  $mail->Subject = "Deuxième tentative de lancement du navigateur échouée";
+		  addBody("$e->getMessage()");
+		  $mail->Subject = "Impossible de lancer le navigateur";
+		  $error += 1;
+		}
+	}
+
+	// A t on réussi à lancer le navigateur? Si non on arrête le script ici
+	if (!is_object($driver)) fin(1, "\nTests Selenium KO, lancement navigateur impossible\n");
+}
+
+function closeDriver()
+{
+	global $driver;
+	
+	$driver->close();
+	$driver->quit();
+}
+
 ///////////////////////////////////////////////////////////////////
 // Paramètres du navigateur cible pour la simulation             //
 ///////////////////////////////////////////////////////////////////
@@ -170,47 +234,8 @@ function takeSnapshot()
 $host = SELENIUM_HOST;
 
 // Initialisation du mail d'erreur
-initialiseMail();
-
-// Choix du navigateur
-$options = new ChromeOptions();
-$options->addArguments(array("--start-maximized"));
-$capabilities = DesiredCapabilities::chrome();
-$capabilities->setCapability(ChromeOptions::CAPABILITY, $options);
-
 $driver = null ;
-
-// Lancement du navigateur sur le client cible, timeout de 10 secondes
-try
-{
-   $driver = RemoteWebDriver::create($host, $capabilities, 10000);
-} 
-catch(Exception $e) {
-   global $error;
-   fwrite(STDERR, "Première tentative de lancement du navigateur échouée\n");
-   fwrite(STDERR, "$e->getMessage()");
-   $mail->Subject = "Première tentative de lancement du navigateur échouée";
-   addBody("$e->getMessage()");
-}   
-
-// Si on n'a pas réussi à lancer le navigateur, on essaye encore une fois
-if (!is_object($driver)) {
-   try {
-      $driver = RemoteWebDriver::create($host, $capabilities, 10000);
-   }
-   catch(Exception $e) {
-      global $error;
-      fwrite(STDERR, "Deuxième tentative de lancement du navigateur échouée\n");
-      fwrite(STDERR, "$e->getMessage()");
-      $mail->Subject = "Deuxième tentative de lancement du navigateur échouée";
-      addBody("$e->getMessage()");
-      $mail->Subject = "Impossible de lancer le navigateur";
-      $error += 1;
-   }
-}
-
-// A t on réussi à lancer le navigateur?
-if (!is_object($driver)) fin(1, "\nTests Selenium KO, lancement navigateur impossible\n");
+initialiseMail();
 
 
 ///////////////////////////////////////////////////////////////////
@@ -224,6 +249,7 @@ foreach ($argv as $key => $parameter) {
 
    $error = 0;
    initialiseMail();
+   initialiseDriver();
    addBody("<br>$parameter<br>");
    echo "\nScenario $parameter\n-----------------\n"; 
    $mail->Subject = "ECHEC Scenario $parameter";
@@ -345,6 +371,8 @@ foreach ($argv as $key => $parameter) {
    // Destruction de la classe de scénario
    unset($scenario);
    unset($mail);
+   
+   closeDriver($driver);
 }
 
 // Fermeture du navigateur et sortie
