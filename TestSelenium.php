@@ -67,7 +67,7 @@ $error = 0;
 
 function fin($exit_code=0, $message='fin de simulation')
 {
-   global $driver, $mail;
+   global $driver, $mail, $error;
 
    addBody("$message<br>");
    $mail->Subject = "Sortie normale code $exit_code, message $message";
