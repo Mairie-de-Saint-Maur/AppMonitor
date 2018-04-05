@@ -168,7 +168,7 @@ function takeSnapshot()
 ///////////////////////////////////////////////////////////////////
 // Initialise et paramètre le navigateur pour la simulation      //
 ///////////////////////////////////////////////////////////////////
-function initialiseDriver($timeout)
+function initialiseDriver($connection_timeout, $request_timeout)
 {
 	global $driver ;
 	// Execution du navigateur sur le serveur défini par la conf
@@ -202,7 +202,7 @@ function initialiseDriver($timeout)
 	// Si on n'a pas réussi à lancer le navigateur, on essaye encore une fois
 	if (!is_object($driver)) {
 	   try {
-		  $driver = RemoteWebDriver::create($host, $capabilities, $timeout, $timeout);
+		  $driver = RemoteWebDriver::create($host, $capabilities, $connection_timeout, $request_timeout);
 	   }
 	   catch(Exception $e) {
 		  global $error;
@@ -250,7 +250,7 @@ foreach ($argv as $key => $parameter) {
 
    $error = 0;
    initialiseMail();
-   initialiseDriver(HTTP_TIMEOUT);
+   initialiseDriver(CONNECT_TIMEOUT, QUERY_TIMEOUT);
    addBody("<br>$parameter<br>");
    echo "\nScenario $parameter\n-----------------\n"; 
    $mail->Subject = "ECHEC Scenario $parameter";
