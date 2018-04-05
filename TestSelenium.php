@@ -189,7 +189,7 @@ function initialiseDriver($timeout)
 	// Lancement du navigateur sur le client cible, timeout de 10 secondes
 	try
 	{
-	   $driver = RemoteWebDriver::create($host, $capabilities, $timeout);
+	   $driver = RemoteWebDriver::create($host, $capabilities, $timeout, $timeout);
 	} 
 	catch(Exception $e) {
 	   global $error;
