@@ -109,7 +109,7 @@ if [ $NB_CW -gt 100 ]; then i
    ssh test01-x.saintmaur.local /usr/bin/su - blaise -c "export DISPLAY=:99;/usr/bin/java -jar /opt/selenium/selenium-server-standalone-3.9.1.jar >/var/log/selenium.log 2>/var/log/selenium-errors.log &"
 
 else 
-   exit_ok "$NB close_wait en attente"
+   exit_ok "$NB_CW close_wait en attente"
 fi
 
 
