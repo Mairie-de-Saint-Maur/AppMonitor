@@ -76,7 +76,7 @@ function fin($exit_code=0, $message='fin de simulation')
    // Si le script a échoué 
    if ($error > 0 || $exit_code > 0) {
       $exit_code = max($error, $exit_code);
-	  //$mail->send();
+	  $mail->send();
    }
 
    // Ferme le navigateur
