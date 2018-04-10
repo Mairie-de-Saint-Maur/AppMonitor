@@ -49,6 +49,11 @@ NB_CW=`ssh test01-x.saintmaur.local netstat -np|grep 127.0.0.1|grep CLOSE_WAIT|w
 NB_TW=`ssh test01-x.saintmaur.local netstat -np|grep 127.0.0.1|grep TIME_WAIT|wc -l`
 #Compte le nombre d'instance de chrome en cours d'execution
 NB_CHROME=`ssh test01-x.saintmaur.local ps -ef | grep chrome | wc -l`
+#Verifie si la connexion au hub est OK
+TIMEDOUT=`curl -Ss http://test01-x.saintmaur.local:4444/grid/console# --max-time 15 | grep "Operation timed out after 15"`
+#Verifie si le hub n'est pas en surcharge
+OVERLOAD=`curl -Ss http://test01-x.saintmaur.local:4444/grid/console# --max-time 15 | grep "waiting for a slot to be free"`
+
 
 # Vérifie si le fichier RRD close_wait est créé, s'il ne l'est pas, on le crée
 if [ ! -e $FILE_CW ]; then
@@ -129,7 +134,18 @@ rrdupdate $FILE_TW -t nb N:$NB_TW
 rrdupdate $FILE_CHROME -t nb N:$NB_CHROME
 
 
-if [ $NB_CW -gt 100 ]; then i
+# Nouvelle condition
+if [ -n $TIMEDOUT ] || [ -n $OVERLOAD ] ; then 
+   warning "Le hub ne repond plus et/ou est en surcharge. Redemarrage."
+   # On kill
+   #ssh test01-x.saintmaur.local reboot
+   #sleep 15;
+   #ssh test02-x.saintmaur.local reboot
+fi
+
+
+# Ancienne condition
+if [ $NB_CW -gt 100 ]; then 
    warning "$NB_CW close_wait en attente et $NB_TW time wait en attente. Redémarrage du serveur selenium."
    # On kill
    ssh test01-x.saintmaur.local ps -eF | grep selenium | grep jar | awk '{print $2}' | xargs kill
