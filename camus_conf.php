@@ -3,13 +3,13 @@
 //                                                              //
 //     Fichier de configuration AppMonitor                      //
 //                                                              //
-//                STEPHAN Hugo 26-03-2018   V0.1                //
+//                LEJARRE Camus 10-04-2018   V0.2               //
 //                                                              //
 //////////////////////////////////////////////////////////////////
 
-define("SCREENSHOT_DIR", "");
+define("SCREENSHOT_DIR", "./screenshots/");
 
-define("SELENIUM_HOST", "http://test-applicatif.saintmaur.local:4444/wd/hub"); 
+define("SELENIUM_HOST", "http://sm00597.saintmaur.local:4444/wd/hub"); 
 
 define("RRD_TOOL", "/opt/rrdtool-1.7.0/bin/rrdtool");
 
