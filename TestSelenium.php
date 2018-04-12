@@ -200,7 +200,7 @@ function takeSnapshot()
 ///////////////////////////////////////////////////////////////////
 function initialiseDriver($connection_timeout, $request_timeout)
 {
-	global $driver ;
+	global $driver, $mail ;
 	// Execution du navigateur sur le serveur défini par la conf
 	$host = SELENIUM_HOST;
 
@@ -298,7 +298,7 @@ $nsca_msg = "Selenium Web Test : UNKNOWN STATE";
    $scenario = new $parameter($driver);
 
    // Instanciation de la classe permettant le stockage des données en base circulaire
-   $RRD = new ReportingTool($parameter);
+   $RRD = new ReportingTool($parameter, $driver);
 	
    if ($error == 0) {
       $step = 'Home';
@@ -371,10 +371,10 @@ $nsca_msg = "Selenium Web Test : UNKNOWN STATE";
 
 
    // Afficher le titre de la page courante
-   if (is_object($driver) && $driver->getTitle() != null) addBody("Le titre de la dernière page est: " . $driver->getTitle() . "<br>");
+   //if (is_object($driver) && $driver->getTitle() != null) addBody("Le titre de la dernière page est: " . $driver->getTitle() . "<br>");
 
    // Afficher l'URL de la page actuelle
-   if (is_object($driver) && $driver->getCurrentURL() != null) addBody("L'URL finale est: " . $driver->getCurrentURL() . "<br>");
+   //if (is_object($driver) && $driver->getCurrentURL() != null) addBody("L'URL finale est: " . $driver->getCurrentURL() . "<br>");
 
    //echo "\n\e[1;34mNiveau d'erreur\e[0m : $error\n\n";
 
@@ -396,7 +396,7 @@ $nsca_msg = "Selenium Web Test : UNKNOWN STATE";
 	   $nsca_msg = "\e[0;32mSUCCESS\e[0m" ;
    }
 
-   array_map('unlink', glob("screenshot-$parameter-*.png"));
+   array_map('unlink', glob(SCREENSHOT_DIR."screenshot-$parameter-*.png"));
    $RRD->nsca_report($nsca_status, $nsca_msg);
    
    

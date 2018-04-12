@@ -20,6 +20,7 @@ class ReportingTool {
    private $nsca_msg ;
    private $nsca_state ;
    private $nsca_service ;
+   private $driver;
 
    public $timeHome    = 'U';
    public $timeLogin   = 'U';
@@ -28,8 +29,10 @@ class ReportingTool {
 
 
    // Création du fichier RRD si nécessaire lors de l'instanciation
-   function __construct($file) {
+   function __construct($file, $driver) {
 	   
+      $this->driver = $driver ;
+
 	   //Préparation du client NSCA - envoi de commandes à NAGIOS
       $this->nsca_client = new EonNsca();
 	  $this->nsca_msg = "UNKNOWN STATE" ;
@@ -87,6 +90,8 @@ class ReportingTool {
    // Cela permet de conserver la trace des plantages dans les données d'exécution
    function __destruct() {
 	  $this->update();
+	  $this->driver->close();
+	  $this->driver->quit();
    }
 
    // Update du fichier rrd et du status nagios NSCA
