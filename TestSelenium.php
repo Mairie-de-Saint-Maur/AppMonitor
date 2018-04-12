@@ -10,8 +10,27 @@
 
 require_once('vendor/autoload.php');
 
+
+/* GET OPT : -s(obligatoire) pour le nom du scenario; -c(facultatif) pour le fichier de config à utiliser
+ * retourne un array avec :
+ * $cl_opt[s] = nom du scenario
+ * $cl_opt[c] = fichier de config à utiliser ou FALSE si rien n'a été saisi
+ */
+$cl_opt = getopt("s:c::");
+
+//Si les options génèrent une erreur, on stoppe le script
+if(!$cl_opt or !isset($cl_opt['s'])){
+	echo "\n\e[0;31m /!\ ERREUR\e[0m : Les options passées sont non conformes\n\n";
+	exit;
+}else{
+	//Recup fichier de config ou appeler la valeur par défaut
+	$conf = (isset($cl_opt['c']))? $cl_opt['c'] : 'config.php';
+	$parameter = $cl_opt['s'];
+}
+
 //Fichier de configuration
-require_once('config.php');
+require_once($conf);
+echo "Chargement du fichier de configuration \e[1;33m$conf\e[0m\n";
 
 //Facebook Webdriver
 use Facebook\WebDriver\Remote\DesiredCapabilities;
@@ -48,8 +67,19 @@ function exception_normale($exception)
 
    // Prenons une copie d'écran à tout hasard....
    if (is_object($driver)) takeSnapshot();
+	
+	//Traitement du message d'exception pour le rendre plus lisible
+	//On coupe la fin qui propose la documentation
+	$ex_message = substr($exception->getMessage(), 0, strpos($exception->getMessage(),'  ('));
+	$duration = '';
+	if (strpos($exception->getMessage(),'milliseconds')){
+		$start = strpos($exception->getMessage(),'timeout:')+8;
+		$end = strpos($exception->getMessage(),'milliseconds')+11;
+		$duration = "La commande s'est terminée après".substr($exception->getMessage(),$start,$end-$start)."es.";
+	}
+	
+   fwrite(STDERR, "\e[0;31m/!\ \e[0mLe scénario s'est arrêté prématurément à l'étape \e[1;33m$step\e[0m.\n\nSelenium a renvoyé cette erreur :\n\e[1;37m".$ex_message."\e[0m".$duration."\n\n");
 
-   fwrite(STDERR, "Normale\n". $exception->getMessage() . "\nNormale\n");
    if (is_object($mail)) {
       $mail->Body = $mail->Body . "<br>" . $exception->getMessage() . "<br>" ;
       $mail->Subject = $mail->Subject . " Etape $step";
@@ -216,7 +246,7 @@ function initialiseDriver($connection_timeout, $request_timeout)
 	}
 
 	// A t on réussi à lancer le navigateur? Si non on arrête le script ici
-	if (!is_object($driver)) fin(1, "\nTests Selenium KO, lancement navigateur impossible\n");
+	if (!is_object($driver)) fin(1, "\nTests Selenium \e[0;31mKO, lancement navigateur impossible !\e[0m\n");
 }
 
 function closeDriver()
@@ -244,24 +274,32 @@ initialiseMail();
 ///////////////////////////////////////////////////////////////////
 $nsca_status = EonNsca::STATE_UNKNOWN;
 $nsca_msg = "Selenium Web Test : UNKNOWN STATE";
-// Boucle sur les arguments passés en ligne de commande
-foreach ($argv as $key => $parameter) {
-   if ($key == 0) continue; 
 
    $error = 0;
    initialiseMail();
    initialiseDriver(CONNECT_TIMEOUT, QUERY_TIMEOUT);
    addBody("<br>$parameter<br>");
-   echo "\nScenario $parameter\n-----------------\n"; 
+   //Titre coloré : permet de mieux repérer le début de l'exécution du script #USER_FRIENDLY
+   echo "\n\e[0;37mDemarrage du scenario \e[1;34m$parameter\n\e[0;35m\n";
+
    $mail->Subject = "ECHEC Scenario $parameter";
 
    // Instanciation de la classe de scénario
-   require_once("testcases/$parameter.php");
+   //Vérification d'existence du scénario :
+   if(file_exists ("testcases/$parameter.php")){
+	   require_once("testcases/$parameter.php");
+   }else{
+	   echo "\e[0;31m /!\ ERREUR\e[0m : le fichier scénario \"\e[1;34m$parameter.php\e[0m\" n'a pas été trouvé.\n\n";
+	   exit;
+   }
+   
+   echo "\e[0m";
+   
    $scenario = new $parameter($driver);
 
    // Instanciation de la classe permettant le stockage des données en base circulaire
    $RRD = new ReportingTool($parameter);
-
+	
    if ($error == 0) {
       $step = 'Home';
       logTime();
@@ -269,8 +307,7 @@ foreach ($argv as $key => $parameter) {
          $scenario->goHome();
       } 
       catch(Exception $exception) {
-         fwrite(STDERR, "Normale\n". $exception->getMessage() . "\nNormale\n");
-         exception_normale($exception);
+		exception_normale($exception);
       }
       if ($error == 0) $RRD->timeHome = logTime();
       takeSnapshot();
@@ -283,7 +320,6 @@ foreach ($argv as $key => $parameter) {
          $scenario->Login();
       } 
       catch(Exception $exception) {
-         fwrite(STDERR, "Normale\n". $exception->getMessage() . "\nNormale\n");
          exception_normale($exception);
       }
       if ($error == 0) $RRD->timeLogin = logTime();
@@ -297,7 +333,6 @@ foreach ($argv as $key => $parameter) {
          $scenario->Action();
       } 
       catch(Exception $exception) {
-         fwrite(STDERR, "Normale\n". $exception->getMessage() . "\nNormale\n");
          exception_normale($exception);
       }
       if ($error == 0) $RRD->timeActions = logTime();
@@ -310,7 +345,6 @@ foreach ($argv as $key => $parameter) {
          $scenario->Logout();
       } 
       catch(Exception $exception) {
-         fwrite(STDERR, "Normale\n". $exception->getMessage() . "\nNormale\n");
          exception_normale($exception);
       }
       if ($error == 0) $RRD->timeLogout = logTime();
@@ -324,7 +358,7 @@ foreach ($argv as $key => $parameter) {
       }
       catch(Exception $e) {
          addBody("Aucun cookie à supprimer<br>");
-         echo "Aucun cookie à supprimer\n";
+         echo "\e[0;31m /!\ ERREUR\e[0m : Aucun cookie à supprimer\n\n";
       }
    }
    // Enregistrement des données par destruction de la classe RRD
@@ -342,26 +376,24 @@ foreach ($argv as $key => $parameter) {
    // Afficher l'URL de la page actuelle
    if (is_object($driver) && $driver->getCurrentURL() != null) addBody("L'URL finale est: " . $driver->getCurrentURL() . "<br>");
 
-   echo "Niveau d'erreur = $error\n";
+   //echo "\n\e[1;34mNiveau d'erreur\e[0m : $error\n\n";
 
-
-  
    addBody("Scenario $parameter OK<br>------------------<br>");
    if ($error > 0 ) {
       try {
          $mail->send();
-         echo "Message has been sent\n";
+         echo "\e[1;34mINFO\e[0m : Mail has been sent !\n\n";
       } 
       catch(Exception $e) {
-         fwrite(STDERR, "Message could not be sent. Mailer Error:\n". $mail->ErrorInfo . "\n");
+         fwrite(STDERR, "Mail could not be sent. Mailer Error:\n". $mail->ErrorInfo . "\n");
       }
 	  $nsca_status = EonNsca::STATE_CRITICAL ;
-	  $nsca_msg = "Selenium Web Test : FAILURE" ;
+	  $nsca_msg = "\e[0;31mFAILURE\e[0m" ;
    }
    else
    {
 	   $nsca_status = EonNsca::STATE_OK ;
-	   $nsca_msg = "Selenium Web Test : SUCCESS" ;
+	   $nsca_msg = "\e[0;32mSUCCESS\e[0m" ;
    }
 
    array_map('unlink', glob("screenshot-$parameter-*.png"));
@@ -374,9 +406,8 @@ foreach ($argv as $key => $parameter) {
    unset($mail);
    
    closeDriver($driver);
-}
-
+   
 // Fermeture du navigateur et sortie
-fin(0, "\nTests Selenium OK\n");
+fin(0, "\n\e[1;34mFin des tests Selenium\e[0m\n");
 
 ?>

@@ -32,12 +32,15 @@ class ReportingTool {
 	   
 	   //Préparation du client NSCA - envoi de commandes à NAGIOS
       $this->nsca_client = new EonNsca();
-	  $this->nsca_msg = "Selenium Web Test : UNKNOWN STATE" ;
+	  $this->nsca_msg = "UNKNOWN STATE" ;
 	  $this->nsca_state = EonNsca::STATE_UNKNOWN;
 	  $this->nsca_service = $file ;
 	  
 	  //établissement de la connexion SSH
       $this->ssh_connection = new NiceSsh();
+	  
+	  echo "\e[1;34mConnexion SSH\e[0m au serveur ".SSH_HOST.":".SSH_PORT."\n\n";
+	  
 	  $this->ssh_connection->connect();
 	  
 	  //Création du répertoire pour accueillir les fichiers statuts par appli
@@ -70,7 +73,12 @@ class ReportingTool {
            RRA:LAST:0.5:120:775 \
            RRA:LAST:0.5:1440:3700";
          exec("$this->rrdTool create $this->rrdFile $parameters", $output, $errno);
-         if ( $errno <> 0 ) print_r($output);
+         if ( $errno <> 0 ){
+			 echo "\n\e[0;31m/!\ ERREUR RRD\e[0m ".$errno."";
+			 if ($errno == 127) echo " : Commande introuvable";
+			 echo "\n\n";
+			 if ($output) print_r($output);
+		 }
          return $errno;
       }
    }
@@ -83,7 +91,12 @@ class ReportingTool {
 
    // Update du fichier rrd et du status nagios NSCA
    public function update() {
-	  echo "NSCA Request : $this->nsca_service / $this->nsca_state / $this->nsca_msg\n" ;
+	   $mask = "  %13.13s : %-20.20s \n";
+	  echo "\e[1;34mNSCA Request\e[0m :\n";
+		printf($mask,'Scenario',$this->nsca_service);
+		printf($mask,"Niv. d'erreur",$this->nsca_state);
+		printf($mask,'Resultat',$this->nsca_msg);
+		
 	  $this->nsca_client->send('Applications', $this->nsca_service, $this->nsca_state, $this->nsca_msg);
 	  
 	  $this->ssh_report();
@@ -92,15 +105,33 @@ class ReportingTool {
       $timeLogin = $this->timeLogin;
       $timeActions = $this->timeActions;
       $timeLogout = $this->timeLogout;
-
-      echo "Home:    $timeHome ms\n";
-      echo "Login:   $timeLogin ms\n";
-      echo "Actions: $timeActions ms\n";
-      echo "Logout:  $timeLogout ms\n";
-      echo "Total:   " . ($timeHome + $timeLogin + $timeActions + $timeLogout) . " ms\n";
+		
+	$mask = "|%-9.9s |%10.10s |\n";
+	  echo "\n|----------------------|\n";
+      printf($mask,"Etape","Temps");
+	  echo "|----------------------|\n";
+      printf($mask,"Home",($this->timeHome != 'U') ? $this->timeHome.' ms' : 'Timeout');
+      printf($mask, "Login",($this->timeLogin != 'U') ? $this->timeLogin.' ms' : 'Timeout');
+      printf($mask, "Actions",($this->timeActions != 'U') ? $this->timeActions.' ms' : 'Timeout');
+      printf($mask, "Logout",($this->timeLogout != 'U') ? $this->timeLogout.' ms' : 'Timeout');
+	  echo "|----------------------|\n";
+      printf($mask, "TOTAL",($timeHome + $timeLogin + $timeActions + $timeLogout) . " ms");
+	  echo "|----------------------|\n\n";
       exec("$this->rrdUpdate $this->rrdFile -t home:login:actions:logout N:$timeHome:$timeLogin:$timeActions:$timeLogout", $output, $errno
 );
-      if ( $errno <> 0 ) print_r($output);
+		if ( $errno <> 0 ){
+			echo "\n\e[0;31m /!\ ERREUR RRD\e[0m ".$errno." : ";
+			if ($errno == 127) echo " : Commande introuvable";
+			if ($output){
+				if($errno == 1){
+					echo substr($output[11], 7);
+					echo "\n";
+				}else{
+					echo "\n\n";
+					print_r($output);
+				}
+			}
+		}
       return $errno;
    }
 
