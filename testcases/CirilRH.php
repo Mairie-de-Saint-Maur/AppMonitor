@@ -85,7 +85,7 @@ class CirilRH extends scenario {
 
 		// Déconnexion
 		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("identite_button")))->click();
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("deconnexion")))->click();
+		$driver->wait()->until(WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::id("deconnexion")))->click();
 	}
 }
 ?>

@@ -23,8 +23,18 @@ if(!$cl_opt or !isset($cl_opt['s'])){
 	echo "\n\e[0;31m /!\ ERREUR\e[0m : Les options passées sont non conformes\n\n";
 	exit;
 }else{
+	//Vérification de la présence d'un fichier config.php par défaut
+	if(!file_exists("config.php")){
+		echo "Fichier de configuration \e[1;33mconfig.php \e[0;31mNON TROUVÉ.\nImpossible de continuer.\e[0m.\n";
+		exit;
+	}
 	//Recup fichier de config ou appeler la valeur par défaut
 	$conf = (isset($cl_opt['c']))? $cl_opt['c'] : 'config.php';
+	//on vérifie si le fichier demandé existe ou on impose le fichier config.php
+	if(!file_exists($conf)){
+		echo "Fichier de configuration \e[1;33m$conf \e[0;31mNON TROUVÉ\e[0m, utilisation de \e[1;33mconfig.php\e[0m à la place\n";
+		$conf = 'config.php';
+	}
 	$parameter = $cl_opt['s'];
 }
 
@@ -98,10 +108,10 @@ $error = 0;
 function fin($exit_code=0, $message='fin de simulation')
 {
    global $driver, $mail, $error;
-
+	
    addBody("$message<br>");
    $mail->Subject = "Sortie normale code $exit_code, message $message";
-   echo "$message\n";
+   echo "\n\e[1;34m$message\e[0m\n";
 
    // Si le script a échoué 
    if ($error > 0 || $exit_code > 0) {
@@ -408,6 +418,5 @@ $nsca_msg = "Selenium Web Test : UNKNOWN STATE";
    closeDriver($driver);
    
 // Fermeture du navigateur et sortie
-fin(0, "\n\e[1;34mFin des tests Selenium\e[0m\n");
-
+fin(0, "Fin des tests Selenium");
 ?>
