@@ -42,7 +42,7 @@ class CirilRH extends scenario {
 
 		// Saisie du login et du mot de passe puis validation
 		$driver->switchTo()->frame($driver->findElement(WebDriverBy::name("choixAppli")));
-		$driver->findElement(WebDriverBy::id('identifiant'))->clear();
+		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('identifiant')))->clear();
 		$driver->findElement(WebDriverBy::id('identifiant'))->sendKeys("smdfdsi");
 		$driver->findElement(WebDriverBy::id('motPasse'))->clear();
 		$driver->findElement(WebDriverBy::id('motPasse'))->sendKeys("Orage1752");
