@@ -9,7 +9,7 @@
 
 define("SCREENSHOT_DIR", "./screenshots/");
 
-define("SELENIUM_HOST", "http://test01-x.saintmaur.local:4444/wd/hub");
+define("SELENIUM_HOST", "http://srv-eon.saintmaur.local:4444/wd/hub");
 
 define("RRD_TOOL", "/opt/rrdtool-1.7.0/bin/rrdtool");
 
@@ -38,4 +38,3 @@ require_once('ReportingTool.php');
 require_once('testcases/Scenario.php');
 
 ?>
-
