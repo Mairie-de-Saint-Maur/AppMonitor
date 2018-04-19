@@ -52,29 +52,7 @@ class ReportingTool {
 	  //Vérification de l'existance du fichier RRD et création si besoin
       $this->rrdFile = "./rrd/".$file . ".rrd";
       if (!file_exists($this->rrdFile)) {
-         $parameters = "--step 60 --no-overwrite DS:home:GAUGE:120:0:60000 DS:login:GAUGE:120:0:60000 \
-           DS:actions:GAUGE:120:0:60000 \
-           DS:logout:GAUGE:120:0:60000 \
-           RRA:AVERAGE:0.5:1:2880 \
-           RRA:AVERAGE:0.5:5:2304 \
-           RRA:AVERAGE:0.5:30:700 \
-           RRA:AVERAGE:0.5:120:775 \
-           RRA:AVERAGE:0.5:1440:3700 \
-           RRA:MIN:0.5:1:2880 \
-           RRA:MIN:0.5:5:2304 \
-           RRA:MIN:0.5:30:700 \
-           RRA:MIN:0.5:120:775 \
-           RRA:MIN:0.5:1440:3700 \
-           RRA:MAX:0.5:1:2880 \
-           RRA:MAX:0.5:5:2304 \
-           RRA:MAX:0.5:30:700 \
-           RRA:MAX:0.5:120:775 \
-           RRA:MAX:0.5:1440:3700 \
-           RRA:LAST:0.5:1:2880 \
-           RRA:LAST:0.5:5:2304 \
-           RRA:LAST:0.5:30:700 \
-           RRA:LAST:0.5:120:775 \
-           RRA:LAST:0.5:1440:3700";
+         $parameters = "--step 60 --no-overwrite DS:home:GAUGE:120:0:60000 DS:login:GAUGE:120:0:60000 DS:actions:GAUGE:120:0:60000 DS:logout:GAUGE:120:0:60000 RRA:AVERAGE:0.5:1:2880 RRA:AVERAGE:0.5:5:2304 RRA:AVERAGE:0.5:30:700 RRA:AVERAGE:0.5:120:775 RRA:AVERAGE:0.5:1440:3700 RRA:MIN:0.5:1:2880 RRA:MIN:0.5:5:2304 RRA:MIN:0.5:30:700 RRA:MIN:0.5:120:775 RRA:MIN:0.5:1440:3700 RRA:MAX:0.5:1:2880 RRA:MAX:0.5:5:2304 RRA:MAX:0.5:30:700 RRA:MAX:0.5:120:775 RRA:MAX:0.5:1440:3700 RRA:LAST:0.5:1:2880 RRA:LAST:0.5:5:2304 RRA:LAST:0.5:30:700 RRA:LAST:0.5:120:775 RRA:LAST:0.5:1440:3700";
          exec("$this->rrdTool create $this->rrdFile $parameters", $output, $errno);
          if ( $errno <> 0 ){
 			 echo "\n\e[0;31m/!\ ERREUR RRD\e[0m ".$errno."";
