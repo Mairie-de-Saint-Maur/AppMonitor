@@ -29,8 +29,8 @@ define("SSH_AUTH_PUB", '/root/.ssh/id_rsa.pub') ;
 
 define("SSH_AUTH_PRIV", '/root/.ssh/id_rsa');
 
-define("CONNECT_TIMEOUT", 7000);
-define("QUERY_TIMEOUT", 60000);
+define("CONNECT_TIMEOUT", 15000);
+define("QUERY_TIMEOUT", 75000);
 
 require_once('vendor/phpmailer/phpmailer/class.phpmailer.php');
 require_once('vendor/phpmailer/phpmailer/class.smtp.php');
