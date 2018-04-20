@@ -110,11 +110,11 @@ function fin($exit_code=0, $message='fin de simulation')
    global $driver, $mail, $error, $parameter;
 	
    addBody("$message<br>");
-   $mail->Subject = "Sortie normale $parameter code $exit_code - $error, message $message";
+   $mail->Subject = "Sortie normale $parameter code $exit_code - $error, $message";
    echo "\n\e[1;34m$message\e[0m\n";
 
    // Si le script a échoué 
-   if ($error > 0 || $exit_code > 0) {
+   if ($exit_code > 0) {
       $exit_code = max($error, $exit_code);
 	  $mail->send();
    }
@@ -195,7 +195,7 @@ function takeSnapshot()
       catch(Exception $e) {
          fwrite(STDERR, "Impossible de prendre une copie d'écran\n");
          $mail->Body = $mail->Body . "<br>Impossible de prendre une copie d'écran.<br>" . $e->getMessage() . "<br>" ;
-         $error += 1;
+         $error += 4;
          return $error;
       }
       $mail->addAttachment($screenshot);
@@ -250,7 +250,7 @@ function initialiseDriver($connection_timeout, $request_timeout)
 		  $mail->Subject = "Deuxième tentative de lancement du navigateur échouée";
 		  addBody("$e->getMessage()");
 		  $mail->Subject = "Impossible de lancer le navigateur";
-		  $error += 1;
+		  $error += 2;
 		}
 	}
 
@@ -377,7 +377,7 @@ $nsca_msg = "Selenium Web Test : UNKNOWN STATE";
    addBody("Actions: $RRD->timeActions ms<br>");
    addBody("Logout:  $RRD->timeLogout ms<br>");
    addBody("Total:   " . ($RRD->timeHome + $RRD->timeLogin + $RRD->timeActions + $RRD->timeLogout) . " ms<br>");
-   if ( $RRD->timeLogout == 'U' ) $error+=1;
+   if ( $RRD->timeLogout == 'U' ) $error+=4;
 
 
    // Afficher le titre de la page courante
@@ -397,13 +397,13 @@ $nsca_msg = "Selenium Web Test : UNKNOWN STATE";
       catch(Exception $e) {
          fwrite(STDERR, "Mail could not be sent. Mailer Error:\n". $mail->ErrorInfo . "\n");
       }
-	  $nsca_status = EonNsca::STATE_CRITICAL ;
-	  $nsca_msg = "\e[0;31mFAILURE\e[0m" ;
+      $nsca_status = EonNsca::STATE_CRITICAL ;
+      $nsca_msg = "\e[0;31mFAILURE\e[0m" ;
    }
    else
    {
-	   $nsca_status = EonNsca::STATE_OK ;
-	   $nsca_msg = "\e[0;32mSUCCESS\e[0m" ;
+      $nsca_status = EonNsca::STATE_OK ;
+      $nsca_msg = "\e[0;32mSUCCESS\e[0m" ;
    }
 
    array_map('unlink', glob(SCREENSHOT_DIR."screenshot-$parameter-*.png"));
