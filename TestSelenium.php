@@ -107,10 +107,10 @@ $error = 0;
 
 function fin($exit_code=0, $message='fin de simulation')
 {
-   global $driver, $mail, $error;
+   global $driver, $mail, $error, $parameter;
 	
    addBody("$message<br>");
-   $mail->Subject = "Sortie normale code $exit_code, message $message";
+   $mail->Subject = "Sortie normale $parameter code $exit_code - $error, message $message";
    echo "\n\e[1;34m$message\e[0m\n";
 
    // Si le script a échoué 
@@ -219,7 +219,7 @@ function initialiseDriver($connection_timeout, $request_timeout)
 
 	// Choix du navigateur
 	$options = new ChromeOptions();
-	$options->addArguments(array("--start-maximized"));
+	$options->addArguments(array("--start-maximized", "--no-sandbox","--disable-setuid-sandbox"));
 	$capabilities = DesiredCapabilities::chrome();
 	$capabilities->setCapability(ChromeOptions::CAPABILITY, $options);
 
