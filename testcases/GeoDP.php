@@ -4,6 +4,7 @@
 //     classe de test applicatif de référence: GeoDP            //
 //                                                              //
 //                  Blaise 18-04-2018   V0.1                    //
+//                  Camus  23-04-2018   V0.2                    //
 //                                                              //
 //////////////////////////////////////////////////////////////////
 
@@ -21,7 +22,7 @@ class GeoDP extends scenario {
       global $mail;
 
       parent::__construct($driver);
-      $mail->addAddress('blaise.thauvin@mairie-saint-maur.com', 'Blaise Thauvin');
+		$mail->addAddress('camus.lejarre@mairie-saint-maur.com', 'Camus Lejarre');
    }
 
 	public function gohome() {
@@ -66,11 +67,12 @@ class GeoDP extends scenario {
 		parent::Logout();
 
 		//clic sur menu déconnexion
-                //$driver->switchTo()->window($driver->findElement(WebDriverBy::name("leftFrame")));
-                $driver->switchTo()->window($driver->findElement(WebDriverBy::cssSelector("frame[name=leftFrame]")));
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("#image18 > div.div_menu.div_menu_survol")))->click();
-                $driver->switchTo()->frame($driver->findElement(WebDriverBy::cssSelector("frame[name=mainFrame]")));
-                $driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name("Txt_Identifiant")));
+		$driver->switchTo()->defaultContent();
+		$driver->switchTo()->frame($driver->findElement(WebDriverBy::id("leftFrame")));
+		$driver->wait()->until(WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::cssSelector("a.lien_menu[href='../deconnexion.asp'")))->click();
+		$driver->switchTo()->defaultContent();
+		$driver->switchTo()->frame($driver->findElement(WebDriverBy::id("mainFrame")));
+		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name("Txt_Identifiant")));
 	}
 }
 ?>
