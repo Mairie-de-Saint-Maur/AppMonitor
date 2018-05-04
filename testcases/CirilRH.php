@@ -18,17 +18,14 @@ require_once('vendor/autoload.php');
 
 class CirilRH extends scenario {
 
-   function __construct($driver) {
-      global $mail;
+	protected $driver = null;
 
-      parent::__construct($driver);
-      $mail->addAddress('camus.lejarre@mairie-saint-maur.com', 'Camus Lejarre');
-   }
+	function __construct($driver) {
+		$this->driver = $driver;
+		$this->steps = ['Home','Login','Action','Logout'];
+	}
 
 	public function Home() {
-		$driver = $this->driver;
-		parent::Home();
-
 		// Ouverture de la page d'accueil de l'application
 		$driver->get('http://10.0.0.52:83/');
 		
@@ -37,9 +34,6 @@ class CirilRH extends scenario {
 	}
 
 	public function Login() {
-		$driver = $this->driver;
-//		parent::Login();
-
 		// Saisie du login et du mot de passe puis validation
 		$driver->switchTo()->frame($driver->findElement(WebDriverBy::name("choixAppli")));
 		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('identifiant')))->clear();
@@ -70,9 +64,6 @@ class CirilRH extends scenario {
 	}
    
 	public function Action() {
-		$driver = $this->driver;
-//		parent::Action();
-
 		// clic sur lien "Réception"
 		$driver->switchTo()->frame($driver->findElement(WebDriverBy::name("choixAppli")));
 		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("burger_button")))->click();
@@ -80,9 +71,6 @@ class CirilRH extends scenario {
 	}
 
 	public function Logout() {
-		$driver = $this->driver;
-//		parent::Logout();
-
 		// Déconnexion
 		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("identite_button")))->click();
 		$driver->wait()->until(WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::id("deconnexion")))->click();

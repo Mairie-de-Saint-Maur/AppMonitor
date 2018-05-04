@@ -22,7 +22,7 @@ class Admimail extends scenario {
 
 	function __construct($driver) {
 		$this->driver = $driver;
-		//$this->steps = ['Home','Login','Action','Logout'];
+		$this->steps = ['Home','Login','Action','Logout'];
 	}
 
 	public function Home() {

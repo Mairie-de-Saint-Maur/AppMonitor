@@ -19,12 +19,11 @@ require_once('vendor/autoload.php');
 class Agora extends scenario {
 	
 	protected $driver = null;
-	
 
-   function __construct($driver) {
-	   $this->driver = $driver;
-	   $this->steps = ['Home','Login','Action','Logout'];
-   }
+	function __construct($driver) {
+		$this->driver = $driver;
+		$this->steps = ['Home','Login','Action','Logout'];
+	}
 
    public function Home() {
       // Ouverture de la page d'accueil de l'application
