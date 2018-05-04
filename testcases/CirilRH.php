@@ -25,9 +25,9 @@ class CirilRH extends scenario {
       $mail->addAddress('camus.lejarre@mairie-saint-maur.com', 'Camus Lejarre');
    }
 
-	public function gohome() {
+	public function Home() {
 		$driver = $this->driver;
-		parent::goHome();
+		parent::Home();
 
 		// Ouverture de la page d'accueil de l'application
 		$driver->get('http://10.0.0.52:83/');
