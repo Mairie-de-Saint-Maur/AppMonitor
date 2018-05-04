@@ -35,7 +35,7 @@ if(!$cl_opt or !isset($cl_opt['s'])){
 	$conf = (isset($cl_opt['c']))? $cl_opt['c'] : 'config.php';
 	
 	//Recup de l'intervalle passé en paramétre ou utilisation de celui par défaut: 24/24h
-	$interval = (isset($cl_opt['i']))? $cl_opt['i'] : '0-24';
+	$interval = (isset($cl_opt['i']))? $cl_opt['i'] : '7-22';
 
 	//on vérifie si le fichier demandé existe ou on impose le fichier config.php
 	if(!file_exists($conf)){
