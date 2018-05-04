@@ -4,17 +4,62 @@
 //            classe générique de tests applicatifs             //
 //                                                              //
 //                   Blaise 30-01-2018   V0.1                   //
+//                   Camus  26-04-2018   V0.2                   //
 //                                                              //
 //////////////////////////////////////////////////////////////////
 
 class Scenario {
-   public $step;
-
+	protected $step;
+	protected $driver;
+	protected $name;
+	protected $steps = ['gohome', 'Login', 'Action', 'Logout'];
+   
    function __construct($driver) {
-      global $mail;
       $this->step = 'unset';
       $this->driver = $driver;
       $this->err = 0;
+   }
+   
+   function createScenario($driver, $name){
+
+		// Instanciation de la classe de scénario
+		//Vérification d'existence du scénario :
+		echo "Vérification d'existence du scénario \e[1;33m$name\e[0m\n";
+		if(file_exists ("testcases/$name.php")){
+		   require_once("testcases/$name.php");
+		}else{
+		   echo "\e[0;31m /!\ ERREUR\e[0m : le fichier scénario \"\e[1;34m$name.php\e[0m\" n'a pas été trouvé.\n\n";
+		   exit;
+		}
+		echo "[\e[0;32mOK\e[0m]\n\n";
+
+		$scenario = new $name($driver);
+		$scenario->setName($name);
+		return $scenario;
+   }
+   
+   function getName(){
+	   return $this->name;
+   }
+   
+   function setName($name){
+	   $this->name = $name;
+   }
+   
+   function getStep(){
+	   return $this->step;
+   }
+   
+   function getSteps(){
+	   return $this->steps;
+   }
+   
+   function setSteps(array $steps){
+	   $this->steps = $steps;
+   }
+   
+   function getDriver(){
+	   return $this->driver;
    }
    
    function __destruct() {
@@ -22,27 +67,16 @@ class Scenario {
 	   $this->driver->quit();
    }
 
-
-   public function gohome() {
-      $this->step = 'Home';
-      $this->err = 0;
+   public function init_step($step) {
+		if (!method_exists($this, $step)){
+			echo "\e[0;31m /!\ ERREUR\e[0m : le scénario ne contient pas d'étape \"\e[1;34m$step\e[0m\".\n\n";
+			exit;
+		}else{
+			
+			echo "Etape \e[1;33m$step\e[0m";
+			$this->step = $step;
+			$this->err = 0;
+		}
    }
-
-
-   public function Login() {
-      $this->step = 'Login';
-      $this->err = 0;
-   }
-   
-   public function Action() {
-      $this->step = 'Action';
-      $this->err = 0;
-   }
-
-   public function Logout() {
-      $this->step = 'Logout';
-      $this->err = 0;
-   }
-
 }
 ?>

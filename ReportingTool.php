@@ -10,23 +10,25 @@ require_once('nsca/src/EonNsca.php');
 require_once('NiceSsh.php');
 
 class ReportingTool {
-   private $ssh_connection;
-	
-   private $rrdTool = RRD_TOOL;
-   private $rrdUpdate = RRD_UPD;
-   private $rrdFile = RRD_DEFAULT_FILE;
-   
-   private $nsca_client ;	
-   private $nsca_msg ;
-   private $nsca_state ;
-   private $nsca_service ;
-   private $driver;
+	private $ssh_connection;
 
-   public $timeHome    = 'U';
-   public $timeLogin   = 'U';
-   public $timeActions = 'U';
-   public $timeLogout  = 'U';
+	private $rrdTool = RRD_TOOL;
+	private $rrdUpdate = RRD_UPD;
+	private $rrdFile = RRD_DEFAULT_FILE;
 
+	private $nsca_client ;	
+	private $nsca_msg ;
+	private $nsca_state ;
+	private $nsca_service ;
+	private $driver;
+
+	/* On n'utilise plus d'étapes définies, on se base sur les étapes demandées par le scénario
+	public $timeHome    = 'U';
+	public $timeLogin   = 'U';
+	public $timeActions = 'U';
+	public $timeLogout  = 'U';
+	*/
+	private $times = array();
 
    // Création du fichier RRD si nécessaire lors de l'instanciation
    function __construct($file, $driver) {
@@ -72,36 +74,43 @@ class ReportingTool {
 	  $this->driver->quit();
    }
 
-   // Update du fichier rrd et du status nagios NSCA
-   public function update() {
-	   $mask = "  %13.13s : %-20.20s \n";
-	  echo "\e[1;34mNSCA Request\e[0m :\n";
-		printf($mask,'Scenario',$this->nsca_service);
-		printf($mask,"Niv. d'erreur",$this->nsca_state);
-		printf($mask,'Resultat',$this->nsca_msg);
+	// Update du fichier rrd et du status nagios NSCA
+	public function update()
+	{
+		echo "\e[1;34mEnvoi de la requête NSCA\e[0m : ".$this->nsca_service." -> ".$this->nsca_msg.' ('.$this->nsca_state.')';
+		//Envoi de la requête
+		$this->nsca_client->send('Applications', $this->nsca_service, $this->nsca_state, $this->nsca_msg);
+		//Commande SSH pour écrire le statut dans le fichier .status
+		$this->ssh_report();
 		
-	  $this->nsca_client->send('Applications', $this->nsca_service, $this->nsca_state, $this->nsca_msg);
-	  
-	  $this->ssh_report();
-	  
-      $timeHome = $this->timeHome;
-      $timeLogin = $this->timeLogin;
-      $timeActions = $this->timeActions;
-      $timeLogout = $this->timeLogout;
+		//Tableau des temps
+		$mask = "|%-9.9s |%10.10s |\n";
+		echo "\n\n|----------------------|\n";
+		printf($mask,"Etape","Temps");
+		echo "|----------------------|\n";
 		
-	$mask = "|%-9.9s |%10.10s |\n";
-	  echo "\n|----------------------|\n";
-      printf($mask,"Etape","Temps");
-	  echo "|----------------------|\n";
-      printf($mask,"Home",($this->timeHome != 'U') ? $this->timeHome.' ms' : 'Timeout');
-      printf($mask, "Login",($this->timeLogin != 'U') ? $this->timeLogin.' ms' : 'Timeout');
-      printf($mask, "Actions",($this->timeActions != 'U') ? $this->timeActions.' ms' : 'Timeout');
-      printf($mask, "Logout",($this->timeLogout != 'U') ? $this->timeLogout.' ms' : 'Timeout');
-	  echo "|----------------------|\n";
-      printf($mask, "TOTAL",($timeHome + $timeLogin + $timeActions + $timeLogout) . " ms");
-	  echo "|----------------------|\n\n";
-      exec("$this->rrdUpdate $this->rrdFile -t home:login:actions:logout N:$timeHome:$timeLogin:$timeActions:$timeLogout", $output, $errno
-);
+		$total_time = 0;
+		$command_steps = '';
+		$command_times = '';
+		foreach($this->times as $step => $time){
+			$time = (isset($time))? $time : 'U' ;
+			$total_time += $time;
+			if($command_steps != '') $command_steps .= ':';
+			if($command_times != '') $command_times .= ':';
+			$command_steps .= $step;
+			$command_times .= $time;
+			printf($mask,$step,($time != 'U') ? $time.' ms' : 'Timeout');
+			
+		}
+		echo "|----------------------|\n";
+		printf($mask, "TOTAL",($total_time) . " ms");
+		echo "|----------------------|\n\n";
+		
+		//Composition de la commande avec la liste des étapes
+		//exec("$this->rrdUpdate $this->rrdFile -t home:login:actions:logout N:$timeHome:$timeLogin:$timeActions:$timeLogout", $output, $
+		//Commande dynamique - ATTENTION : l'objet RRD dans cacti ne permet que 4 étapes.
+		exec("$this->rrdUpdate $this->rrdFile -t home:login:actions:logout N:$command_times", $output, $errno
+		);
 		if ( $errno <> 0 ){
 			echo "\n\e[0;31m /!\ ERREUR RRD\e[0m ".$errno." : ";
 			if ($errno == 127) echo " : Commande introuvable";
@@ -115,8 +124,8 @@ class ReportingTool {
 				}
 			}
 		}
-      return $errno;
-   }
+		return $errno;
+	}
 
    // Met à jour le statut et le message Nagios NSCA
    public function nsca_report($state, $msg)
@@ -145,12 +154,33 @@ class ReportingTool {
 				break;
 	   }
 	   
-	   //écriture dans le fichier .status
+	   //commande d'écriture dans le fichier .status
 	   $cmd = "echo '".$clear_state."' > /var/www/html/dev/listapp/app_status/$this->nsca_service.status" ;
 	   
 	   //Exécution de la commande SSH
 	   $this->ssh_connection->exec($cmd);
    }
+   
+   /////////////////////////////
+   //    SETTERS ET GETTERS   //
+   /////////////////////////////
+	
+	function getTimes(){
+		return $this->times;
+	}
+	
+	function getTime($step){
+		return $this->times[$step];
+	}
+	
+	function setTime($step, $time){
+		$this->times[$step] = $time;
+	}
+	
+	function setSteps($steps){
+		foreach($steps as $step){
+			$this->times[$step] = 'U';
+		}
+	}
 }
-
 ?>

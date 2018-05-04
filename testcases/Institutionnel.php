@@ -18,49 +18,45 @@ require_once('vendor/autoload.php');
 
 class Institutionnel extends scenario {
 
+	protected $driver = null;
+	
+
+   function __construct($driver) {
+	   $this->driver = $driver;
+	   $this->steps = ['gohome','Login','Action','Logout'];
+   }
+
    public function gohome() {
-      $driver = $this->driver;
-      parent::goHome();
-
       // Ouverture de la page d'accueil de l'application
-      $driver->get('https://www.saint-maur.com/');
+      $this->driver->get('https://www.saint-maur.com/');
 
-      $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText('Se connecter')));
+      $this->driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText('Se connecter')));
    }
 
 
    public function Login() {
-      $driver = $this->driver;
-      parent::Login();
-      
-      $driver->findElement(WebDriverBy::linkText('Se connecter'))->click();
+      $this->driver->findElement(WebDriverBy::linkText('Se connecter'))->click();
       // On attend l'affichage du bloc de login
-      $element = $driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('user')));
+      $element = $this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('user')));
 
       // Saisie du login et du mot de passe puis validation
-      $driver->findElement(WebDriverBy::id('user'))->sendKeys('blaise.thauvin@mairie-saint-maur.com');
-      $driver->findElement(WebDriverBy::id('motdepasse'))->sendKeys('OAN5NFrXf0l6GafxQSZd');
-      $driver->findElement(WebDriverBy::id('submit_login'))->click();
+      $this->driver->findElement(WebDriverBy::id('user'))->sendKeys('blaise.thauvin@mairie-saint-maur.com');
+      $this->driver->findElement(WebDriverBy::id('motdepasse'))->sendKeys('OAN5NFrXf0l6GafxQSZd');
+      $this->driver->findElement(WebDriverBy::id('submit_login'))->click();
    }
    
    public function Action() {
-      $driver = $this->driver;
-      parent::Action();
-
       // On attend l'affichage effectif de la première page puis clic sur menu "mes démarches"
-      //$driver->findElement(WebDriverBy::xpath("(//button[@type='button'])[5]"))->click();
+      //$this->driver->findElement(WebDriverBy::xpath("(//button[@type='button'])[5]"))->click();
       //$driver.findElement(WebDriverBy::css_selector("#mes-demarches > ul > li > a"))->click();
 
       // clic sur bouton "mon compte
-      $driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText('Mon compte')))->click();
+      $this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText('Mon compte')))->click();
    }
 
    public function Logout() {
-      $driver = $this->driver;
-      parent::Logout();
-
       // Déconnexion
-      $driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText('Se déconnecter')))->click();
+      $this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText('Se déconnecter')))->click();
    }
 
 }

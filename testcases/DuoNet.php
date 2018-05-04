@@ -18,51 +18,47 @@ require_once('vendor/autoload.php');
 
 class DuoNet extends scenario {
 
+	protected $driver = null;
+	
+
+   function __construct($driver) {
+	   $this->driver = $driver;
+	   $this->steps = ['gohome','Login','Action','Logout'];
+   }
+
    public function gohome() {
-      $driver = $this->driver;
-      parent::goHome();
-
       // Ouverture de la page d'accueil de l'application
-      $driver->get('http://10.0.0.81/');
+      $this->driver->get('http://10.0.0.81/');
 
-      $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('txtLogin')));
+      $this->driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('txtLogin')));
    }
 
 
    public function Login() {
-      $driver = $this->driver;
-      parent::Login();
-      
       // On accpete les cookies
-      $driver->findElement(WebDriverBy::cssSelector('button'))->click();
+      $this->driver->findElement(WebDriverBy::cssSelector('button'))->click();
       
       // Saisie du login et du mot de passe puis validation
-      $driver->findElement(WebDriverBy::id('txtLogin'))->clear();
-      $driver->findElement(WebDriverBy::id('txtLogin'))->sendKeys('frederic.guillet@mairie-saint-maur.com');
-      $driver->findElement(WebDriverBy::id('txtPassword'))->clear();
-      $driver->findElement(WebDriverBy::id('txtPassword'))->sendKeys('frederic.guillet');
+      $this->driver->findElement(WebDriverBy::id('txtLogin'))->clear();
+      $this->driver->findElement(WebDriverBy::id('txtLogin'))->sendKeys('frederic.guillet@mairie-saint-maur.com');
+      $this->driver->findElement(WebDriverBy::id('txtPassword'))->clear();
+      $this->driver->findElement(WebDriverBy::id('txtPassword'))->sendKeys('frederic.guillet');
      
-      $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('btnConnect')))->click();
+      $this->driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('btnConnect')))->click();
    }
    
    public function Action() {
-      $driver = $this->driver;
-      parent::Action();
-
       // Clic sur menu liste des salles
-      $driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("ctl00_contMainmenu_dlMainMenu_ctl06_hlk")))->click();
-      $driver->findElement(WebDriverBy::xpath("//div[@id='ctl00_chpMain_grdRes_ob_grdResBodyContainer']/table/tbody/tr[4]/td[2]/div"))->click();
+      $this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("ctl00_contMainmenu_dlMainMenu_ctl06_hlk")))->click();
+      $this->driver->findElement(WebDriverBy::xpath("//div[@id='ctl00_chpMain_grdRes_ob_grdResBodyContainer']/table/tbody/tr[4]/td[2]/div"))->click();
 
       // Clic sur menu paramètres
-      $driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('ctl00_hlkParams')))->click();
+      $this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('ctl00_hlkParams')))->click();
    }
 
    public function Logout() {
-      $driver = $this->driver;
-      parent::Logout();
-
       // Déconnexion
-      $driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('ctl00_hlkDisconnect')))->click();
+      $this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('ctl00_hlkDisconnect')))->click();
    }
 
 }

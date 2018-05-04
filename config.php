@@ -10,6 +10,7 @@
 define("SCREENSHOT_DIR", "./screenshots/");
 
 define("SELENIUM_HOST", "http://srv-eon.saintmaur.local:4444/wd/hub");
+define("SELENIUM_HOST_NAME", "SRV-EON"); 
 
 define("RRD_TOOL", "/opt/rrdtool-1.7.0/bin/rrdtool");
 
@@ -34,6 +35,8 @@ define("QUERY_TIMEOUT", 120000);
 
 require_once('vendor/phpmailer/phpmailer/class.phpmailer.php');
 require_once('vendor/phpmailer/phpmailer/class.smtp.php');
+require_once('DriverWrapper.php');
+require_once('NiceMail.php');
 require_once('ReportingTool.php');
 require_once('testcases/Scenario.php');
 require_once('Exception.php');

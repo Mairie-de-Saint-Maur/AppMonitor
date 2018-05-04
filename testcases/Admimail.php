@@ -18,60 +18,48 @@ require_once('vendor/autoload.php');
 
 class Admimail extends scenario {
 
-   function __construct($driver) {
-      global $mail;
+	protected $driver = null;
 
-      parent::__construct($driver);
-      $mail->addAddress('camus.lejarre@mairie-saint-maur.com', 'Camus Lejarre');
-   }
+	function __construct($driver) {
+		$this->driver = $driver;
+		//$this->steps = ['gohome','Login','Action','Logout'];
+	}
 
 	public function gohome() {
-		$driver = $this->driver;
-		parent::goHome();
-
 		// Ouverture de la page d'accueil de l'application
-		$driver->get('https://courrier-smdf.infocom94.fr');
+		$this->driver->get('https://courrier-smdf.infocom94.fr');
 		
 		// Vérification de la présence du formulaire
-		$driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("ext-gen1139_loginIframeDom")));
+		$this->driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("ext-gen1139_loginIframeDom")));
 	}
 
 	public function Login() {
-		$driver = $this->driver;
-		parent::Login();
-		
 		//On bascule vers le contenu de l'iframe
-		$driver->switchTo()->frame($driver->findElement(WebDriverBy::id("ext-gen1139_loginIframeDom")));
+		$this->driver->switchTo()->frame($this->driver->findElement(WebDriverBy::id("ext-gen1139_loginIframeDom")));
 		
 		//On attend pour être sûr d'avoir le contenu de l'iframe
-		$driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("username")))->clear();
-		$driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("password")))->clear();
+		$this->driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("username")))->clear();
+		$this->driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("password")))->clear();
 		
 		// Saisie du login et du mot de passe puis validation
-		$driver->findElement(WebDriverBy::id('username'))->sendKeys("tdsi");
-		$driver->findElement(WebDriverBy::id('password'))->sendKeys("DSI94100");
+		$this->driver->findElement(WebDriverBy::id('username'))->sendKeys("tdsi");
+		$this->driver->findElement(WebDriverBy::id('password'))->sendKeys("DSI94100");
 		
-		$driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("connect")))->click();
+		$this->driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("connect")))->click();
 
 		//Vérification du chargement de la page
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('a#index_menu_global_Board')));
+		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('a#index_menu_global_Board')));
 	}
    
 	public function Action() {
-		$driver = $this->driver;
-		parent::Action();
-
 		// clic sur lien "Réception"
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("span.ux-adminext-admimail-board-button-name")))->click();
+		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("span.ux-adminext-admimail-board-button-name")))->click();
 	}
 
 	public function Logout() {
-		$driver = $this->driver;
-		parent::Logout();
-
 		// Déconnexion
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('div#container-1012')))->click();
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('a#menuitem-1026-itemEl')))->click();
+		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('div#container-1012')))->click();
+		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('a#menuitem-1026-itemEl')))->click();
 	}
 }
 ?>

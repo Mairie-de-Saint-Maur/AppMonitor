@@ -18,61 +18,50 @@ require_once('vendor/autoload.php');
 
 class GeoDP extends scenario {
 
-   function __construct($driver) {
-      global $mail;
+	protected $driver = null;
+	
 
-      parent::__construct($driver);
-		$mail->addAddress('camus.lejarre@mairie-saint-maur.com', 'Camus Lejarre');
+   function __construct($driver) {
+	   $this->driver = $driver;
+	   $this->steps = ['gohome','Login','Action','Logout'];
    }
 
 	public function gohome() {
-		$driver = $this->driver;
-		parent::goHome();
-
 		// Ouverture de la page d'accueil de l'application
-		$driver->get('http://10.0.0.82/geodp.smdf/index.htm');
-                $driver->switchTo()->frame($driver->findElement(WebDriverBy::name("mainFrame")));	
-		$driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name("Txt_Identifiant")));
+		$this->driver->get('http://10.0.0.82/geodp.smdf/index.htm');
+                $this->driver->switchTo()->frame($this->driver->findElement(WebDriverBy::name("mainFrame")));	
+		$this->driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name("Txt_Identifiant")));
 	}
 
 	public function Login() {
-		$driver = $this->driver;
-		parent::Login();
-		
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name("Txt_Identifiant")));
+		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name("Txt_Identifiant")));
 		
 		// Saisie du login et du mot de passe puis validation
-		$driver->findElement(WebDriverBy::name("Txt_Identifiant"))->clear();
-		$driver->findElement(WebDriverBy::name("Txt_Identifiant"))->sendKeys("TEST");
-		$driver->findElement(WebDriverBy::name("Txt_MotDePasse"))->clear();
-		$driver->findElement(WebDriverBy::name("Txt_MotDePasse"))->sendKeys("DSISTMAUR1");
-		$driver->findElement(WebDriverBy::linkText("Valider"))->click();
+		$this->driver->findElement(WebDriverBy::name("Txt_Identifiant"))->clear();
+		$this->driver->findElement(WebDriverBy::name("Txt_Identifiant"))->sendKeys("TEST");
+		$this->driver->findElement(WebDriverBy::name("Txt_MotDePasse"))->clear();
+		$this->driver->findElement(WebDriverBy::name("Txt_MotDePasse"))->sendKeys("DSISTMAUR1");
+		$this->driver->findElement(WebDriverBy::linkText("Valider"))->click();
             
                 // On attend l'affichage des boutons des deux modules ODP et TLPE
-                $driver->switchTo()->frame($driver->findElement(WebDriverBy::name("mainFrame")));
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name("image9")));
+                $this->driver->switchTo()->frame($this->driver->findElement(WebDriverBy::name("mainFrame")));
+		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name("image9")));
 	}
    
 	public function Action() {
-		$driver = $this->driver;
-		parent::Action();
-		
-                //On clique sur ODP puis quelques menus
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name("image9")))->click();
+		//On clique sur ODP puis quelques menus
+		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name("image9")))->click();
 
 	}
 
 	public function Logout() {
-		$driver = $this->driver;
-		parent::Logout();
-
 		//clic sur menu déconnexion
-		$driver->switchTo()->defaultContent();
-		$driver->switchTo()->frame($driver->findElement(WebDriverBy::id("leftFrame")));
-		$driver->wait()->until(WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::cssSelector("a.lien_menu[href='../deconnexion.asp'")))->click();
-		$driver->switchTo()->defaultContent();
-		$driver->switchTo()->frame($driver->findElement(WebDriverBy::id("mainFrame")));
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name("Txt_Identifiant")));
+		$this->driver->switchTo()->defaultContent();
+		$this->driver->switchTo()->frame($this->driver->findElement(WebDriverBy::id("leftFrame")));
+		$this->driver->wait()->until(WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::cssSelector("a.lien_menu[href='../deconnexion.asp'")))->click();
+		$this->driver->switchTo()->defaultContent();
+		$this->driver->switchTo()->frame($this->driver->findElement(WebDriverBy::id("mainFrame")));
+		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name("Txt_Identifiant")));
 	}
 }
 ?>

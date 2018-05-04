@@ -17,66 +17,55 @@ require_once('vendor/autoload.php');
 
 class Geosphere extends scenario {
 
-   function __construct($driver) {
-      global $mail;
+	protected $driver = null;
+	
 
-      parent::__construct($driver);
-      $mail->addAddress('camus.lejarre@mairie-saint-maur.com', 'Camus Lejarre');
+   function __construct($driver) {
+	   $this->driver = $driver;
+	   $this->steps = ['gohome','Login','Action','Logout'];
    }
 
 	public function gohome() {
-		$driver = $this->driver;
-		parent::goHome();
-
 		// Ouverture de la page d'accueil de l'application
-		$driver->get('http://172.24.1.32/adscs/Login.aspx');
+		$this->driver->get('http://172.24.1.32/adscs/Login.aspx');
 		
 		//Le site va rediriger vers la page de login du SSO
 		// Vérification de la présence du formulaire
-		$driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector(".fondPortail")));
+		$this->driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector(".fondPortail")));
 	}
 
 	public function Login() {
-		$driver = $this->driver;
-		parent::Login();
-		
 		//On rentre dans la frame login:
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("input#RadTextBoxLogin")));
+		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("input#RadTextBoxLogin")));
 		
 		// Saisie du login et du mot de passe puis validation
-		$driver->findElement(WebDriverBy::cssSelector("input#RadTextBoxLogin"))->clear();
-		$driver->findElement(WebDriverBy::cssSelector("input#RadTextBoxLogin"))->sendKeys("SMDFINFORMATIQUE");
-		$driver->findElement(WebDriverBy::cssSelector("input#RadTextBoxMDP"))->clear();
-		$driver->findElement(WebDriverBy::cssSelector("input#RadTextBoxMDP"))->sendKeys("VFDMOE2016");
+		$this->driver->findElement(WebDriverBy::cssSelector("input#RadTextBoxLogin"))->clear();
+		$this->driver->findElement(WebDriverBy::cssSelector("input#RadTextBoxLogin"))->sendKeys("SMDFINFORMATIQUE");
+		$this->driver->findElement(WebDriverBy::cssSelector("input#RadTextBoxMDP"))->clear();
+		$this->driver->findElement(WebDriverBy::cssSelector("input#RadTextBoxMDP"))->sendKeys("VFDMOE2016");
 		
-		$driver->findElement(WebDriverBy::cssSelector("input[type=submit]"))->click();
+		$this->driver->findElement(WebDriverBy::cssSelector("input[type=submit]"))->click();
 
 		//Vérification du chargement de la page
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("iframeADS")));
+		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("iframeADS")));
 	}
    
 	public function Action() {
-		$driver = $this->driver;
-		parent::Action();
-		
 		//On charge à la place le contenu de la frame
-		$driver->get('http://172.24.1.32/adscs/Default.aspx');
+		$this->driver->get('http://172.24.1.32/adscs/Default.aspx');
 		
 		//On affiche le menu d'abord
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("RadDockActions_C_HyperlinkRechercher")))->click();
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector(".outlooktop2")));
+		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("RadDockActions_C_HyperlinkRechercher")))->click();
+		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector(".outlooktop2")));
 	}
 
 	public function Logout() {
-		$driver = $this->driver;
-		parent::Logout();
-
 		//On affiche le menu d'abord
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector(".RadMenu")));
-		$driver->findElement(WebDriverBy::cssSelector("ul.rmRootGroup.rmHorizontal > li.rmItem.rmLast"))->click();
+		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector(".RadMenu")));
+		$this->driver->findElement(WebDriverBy::cssSelector("ul.rmRootGroup.rmHorizontal > li.rmItem.rmLast"))->click();
 		
 		//on clique sur déconnexion
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector(".menuUser")))->click();
+		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector(".menuUser")))->click();
 	}
 }
 ?>

@@ -18,50 +18,39 @@ require_once('vendor/autoload.php');
 
 class Artotheque extends scenario {
 
-   function __construct($driver) {
-      global $mail;
+	protected $driver = null;
+	
 
-      parent::__construct($driver);
-#      $mail->addAddress('blaise.thauvin@mairie-saint-maur.com', 'Blaise Thauvin');
+   function __construct($driver) {
+	   $this->driver = $driver;
+	   $this->steps = ['gohome','Login','Action','Logout'];
    }
 
    public function gohome() {
-      $driver = $this->driver;
-      parent::goHome();
-
       // Ouverture de la page d'accueil de l'application
-      $driver->get('http://saint-maur.ideesculture.fr/gestion/');
+      $this->driver->get('http://saint-maur.ideesculture.fr/gestion/');
 
-      $driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name('username')));
+      $this->driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name('username')));
    }
 
 
    public function Login() {
-      $driver = $this->driver;
-      parent::Login();
-      
       // Saisie du login et du mot de passe puis validation
-      $driver->findElement(WebDriverBy::name('username'))->clear();
-      $driver->findElement(WebDriverBy::name('username'))->sendKeys('test');
-      $driver->findElement(WebDriverBy::name('password'))->clear();
-      $driver->findElement(WebDriverBy::name('password'))->sendKeys('test2018!');
-      $driver->findElement(WebDriverBy::linkText('Identifiant'))->click();
+      $this->driver->findElement(WebDriverBy::name('username'))->clear();
+      $this->driver->findElement(WebDriverBy::name('username'))->sendKeys('test');
+      $this->driver->findElement(WebDriverBy::name('password'))->clear();
+      $this->driver->findElement(WebDriverBy::name('password'))->sendKeys('test2018!');
+      $this->driver->findElement(WebDriverBy::linkText('Identifiant'))->click();
    }
    
    public function Action() {
-      $driver = $this->driver;
-      parent::Action();
-
       // clic sur bouton "Mes Préférences"
-      $driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText('Préférences')))->click();
+      $this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText('Préférences')))->click();
    }
 
    public function Logout() {
-      $driver = $this->driver;
-      parent::Logout();
-
       // Déconnexion
-      $driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText('Déconnexion')))->click();
+      $this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText('Déconnexion')))->click();
    }
 
 }
