@@ -18,57 +18,46 @@ require_once('vendor/autoload.php');
 
 class Zimbra extends scenario {
 
-   function __construct($driver) {
-      global $mail;
+	protected $driver = null;
+	
 
-      parent::__construct($driver);
-      $mail->addAddress('camus.lejarre@mairie-saint-maur.com', 'Camus Lejarre');
+   function __construct($driver) {
+	   $this->driver = $driver;
+	   $this->steps = ['gohome','Login','Action','Logout'];
    }
 
 	public function gohome() {
-		$driver = $this->driver;
-		parent::goHome();
-
 		// Ouverture de la page d'accueil de l'application
-		$driver->get('https://zimbra.mairie-saint-maur.com/');
+		$this->driver->get('https://zimbra.mairie-saint-maur.com/');
 		
 		// Vérification de la présence du formulaire
-		$driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name('username')));
+		$this->driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name('username')));
 	}
 
 	public function Login() {
-		$driver = $this->driver;
-		parent::Login();
-
 		// Saisie du login et du mot de passe puis validation
-		//$driver->open("/zimbra/");
-		$driver->findElement(WebDriverBy::id('username'))->clear();
-		$driver->findElement(WebDriverBy::id('username'))->sendKeys("support.informatique");
-		$driver->findElement(WebDriverBy::id('password'))->clear();
-		$driver->findElement(WebDriverBy::id('password'))->sendKeys("Sidsi94100");
+		//$this->driver->open("/zimbra/");
+		$this->driver->findElement(WebDriverBy::id('username'))->clear();
+		$this->driver->findElement(WebDriverBy::id('username'))->sendKeys("support.informatique");
+		$this->driver->findElement(WebDriverBy::id('password'))->clear();
+		$this->driver->findElement(WebDriverBy::id('password'))->sendKeys("Sidsi94100");
 		
-		$driver->findElement(WebDriverBy::cssSelector("input.ZLoginButton.DwtButton"))->click();
+		$this->driver->findElement(WebDriverBy::cssSelector("input.ZLoginButton.DwtButton"))->click();
 
 		//Vérification du chargement de la page
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('div.ImgAppBanner')));
+		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('div.ImgAppBanner')));
 	}
    
 	public function Action() {
-		$driver = $this->driver;
-		parent::Action();
-
 		// clic sur lien "Réception"
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('#zti__main_Mail__2_textCell')))->click();
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('#CHECK_MAIL_left_icon')))->click();
+		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('#zti__main_Mail__2_textCell')))->click();
+		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('#CHECK_MAIL_left_icon')))->click();
 	}
 
 	public function Logout() {
-		$driver = $this->driver;
-		parent::Logout();
-
 		// Déconnexion
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('div.DwtLinkButtonDropDownArrowRow')))->click();
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('#logOff')))->click();
+		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('div.DwtLinkButtonDropDownArrowRow')))->click();
+		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('#logOff')))->click();
 	}
 }
 ?>
