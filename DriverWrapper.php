@@ -88,7 +88,7 @@ class DriverWrapper {
 	{
 		if($mail === null) $mail = new NiceMail();
 		
-		echo "Initialisation du \e[1;33mWebDriver\e[0m\n";
+		Console("Initialisation du \e[1;33mWebDriver\e[0m\n");
 		$this->NiceMail = $mail;
 	
 	///////////////////////////////////////////////////////////////////
@@ -107,7 +107,7 @@ class DriverWrapper {
 	function startDriver($capabilities){
 		
 		// Lancement du navigateur sur le client cible, timeout de 10 secondes
-		echo "Lancement du navigateur \e[1;33mChrome\e[0m\n";
+		Console("Lancement du navigateur \e[1;33mChrome\e[0m\n");
 		try
 		{
 		   $this->driver = RemoteWebDriver::create($this->host, $capabilities, $this->connection_timeout, $this->request_timeout);
@@ -115,7 +115,7 @@ class DriverWrapper {
 		catch(Exception $e) {
 		   fwrite(STDERR, "Première tentative de lancement du navigateur échouée\n");
 		   fwrite(STDERR, "$e->getMessage()");
-			echo "\n\e[0;31m /!\ ERREUR \e[0m Impossible de lancer le navigateur (1ère tentative)\n";
+			Console("\n\e[0;31m /!\ ERREUR \e[0m Impossible de lancer le navigateur (1ère tentative)\n");
 		   $this->NiceMail->Subject = "Première tentative de lancement du navigateur échouée";
 		   $this->NiceMail->addBody("$e->getMessage()");
 		}   
@@ -131,7 +131,7 @@ class DriverWrapper {
 		   catch(Exception $e) {
 			  fwrite(STDERR, "Deuxième tentative de lancement du navigateur échouée\n");
 			  fwrite(STDERR, "$e->getMessage()");
-			echo "\n\e[0;31m /!\ ERREUR \e[0m Impossible de lancer le navigateur (2ème tentative)\n";
+			Console("\n\e[0;31m /!\ ERREUR \e[0m Impossible de lancer le navigateur (2ème tentative)\n");
 			  $this->NiceMail->Subject = "Deuxième tentative de lancement du navigateur échouée";
 			  $this->NiceMail->addBody("$e->getMessage()");
 			  $this->error += 2;
@@ -145,7 +145,7 @@ class DriverWrapper {
 		if (!isset($this->driver) or $allWindowHandlers < 1){
 			$this->fin(1, "\nTests Selenium \e[0;31mKO, lancement navigateur impossible !\e[0m\n");
 		}else{
-			echo "[\e[0;32mOK\e[0m - Fenêtres : $allWindowHandlers]\n\n";
+			Console("[\e[0;32mOK\e[0m - Fenêtres : $allWindowHandlers]\n\n");
 		}
 	}
 		
@@ -155,7 +155,7 @@ class DriverWrapper {
 
 	function fin($exit_code=0, $message='fin de simulation')
 	{
-		echo "\n\e[1;34m$message\e[0m\n";
+		Console("\n\e[1;34m$message\e[0m\n");
 
 		// Si le script a échoué 
 		if ($exit_code > 0) {
