@@ -38,7 +38,7 @@ class CirilRH extends scenario {
 
 	public function Login() {
 		$driver = $this->driver;
-		parent::Login();
+//		parent::Login();
 
 		// Saisie du login et du mot de passe puis validation
 		$driver->switchTo()->frame($driver->findElement(WebDriverBy::name("choixAppli")));
@@ -71,7 +71,7 @@ class CirilRH extends scenario {
    
 	public function Action() {
 		$driver = $this->driver;
-		parent::Action();
+//		parent::Action();
 
 		// clic sur lien "Réception"
 		$driver->switchTo()->frame($driver->findElement(WebDriverBy::name("choixAppli")));
@@ -81,7 +81,7 @@ class CirilRH extends scenario {
 
 	public function Logout() {
 		$driver = $this->driver;
-		parent::Logout();
+//		parent::Logout();
 
 		// Déconnexion
 		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("identite_button")))->click();
