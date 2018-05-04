@@ -3,7 +3,7 @@
 //                                                              //
 //     classe de test applicatif Agora                          //
 //                                                              //
-//                   Blaise 31-01-2018   V0.1                   //
+//                   Blaise 04-05-2018   V1.0                   //
 //                                                              //
 //////////////////////////////////////////////////////////////////
 
@@ -46,8 +46,14 @@ class Agora extends scenario {
       $element = $this->driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name('p_login')));
 
       // Saisie du login et du mot de passe puis validation
-      $this->driver->findElement(WebDriverBy::name('p_login'))->sendKeys('Tdsi');
-      $this->driver->findElement(WebDriverBy::name('p_pass'))->sendKeys('DSI94100');
+      $element = $this->driver->findElement(WebDriverBy::name('p_login'));
+      $element->clear();
+      $element->sendKeys('Tdsi');
+
+      $element = $this->driver->findElement(WebDriverBy::name('p_pass'));
+      $element->clear();
+      $element->sendKeys('DSI94100');
+
       $this->driver->findElement(WebDriverBy::id('logIn'))->click();
 
       // On attend l'affichage effectif de la première page
