@@ -39,7 +39,7 @@ class Artotheque extends scenario {
       $this->driver->findElement(WebDriverBy::name('username'))->clear();
       $this->driver->findElement(WebDriverBy::name('username'))->sendKeys('test');
       $this->driver->findElement(WebDriverBy::name('password'))->clear();
-      $this->driver->findElement(WebDriverBy::name('password'))->sendKeys('test2018!');
+      $this->driver->findElement(WebDriverBy::name('password'))->sendKeys('NVawyqtdy5nFoXaY6iwL');
       $this->driver->findElement(WebDriverBy::linkText('Identifiant'))->click();
    }
    
