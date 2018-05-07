@@ -22,10 +22,10 @@ class Admimail extends scenario {
 
 	function __construct($driver) {
 		$this->driver = $driver;
-		//$this->steps = ['gohome','Login','Action','Logout'];
+		$this->steps = ['Home','Login','Action','Logout'];
 	}
 
-	public function gohome() {
+	public function Home() {
 		// Ouverture de la page d'accueil de l'application
 		$this->driver->get('https://courrier-smdf.infocom94.fr');
 		

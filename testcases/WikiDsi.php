@@ -23,10 +23,10 @@ class WikiDsi extends scenario {
 
    function __construct($driver) {
 	   $this->driver = $driver;
-	   $this->steps = ['gohome','Login','Action','Logout'];
+	   $this->steps = ['Home','Login','Action','Logout'];
    }
 
-	public function gohome() {
+	public function Home() {
 		// Ouverture de la page de connexion de l'application
 		$this->driver->get('http://wiki.saintmaur.local/index.php/Sp%C3%A9cial:Connexion');
 		

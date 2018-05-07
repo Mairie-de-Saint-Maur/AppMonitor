@@ -44,7 +44,7 @@ class ReportingTool {
 	  //établissement de la connexion SSH
       $this->ssh_connection = new NiceSsh();
 	  
-	  echo "\e[1;34mConnexion SSH\e[0m au serveur ".SSH_HOST.":".SSH_PORT."\n\n";
+	  Console("\e[1;34mConnexion SSH\e[0m au serveur ".SSH_HOST.":".SSH_PORT."\n\n");
 	  
 	  $this->ssh_connection->connect();
 	  
@@ -57,9 +57,9 @@ class ReportingTool {
          $parameters = "--step 60 --no-overwrite DS:home:GAUGE:120:0:60000 DS:login:GAUGE:120:0:60000 DS:actions:GAUGE:120:0:60000 DS:logout:GAUGE:120:0:60000 RRA:AVERAGE:0.5:1:2880 RRA:AVERAGE:0.5:5:2304 RRA:AVERAGE:0.5:30:700 RRA:AVERAGE:0.5:120:775 RRA:AVERAGE:0.5:1440:3700 RRA:MIN:0.5:1:2880 RRA:MIN:0.5:5:2304 RRA:MIN:0.5:30:700 RRA:MIN:0.5:120:775 RRA:MIN:0.5:1440:3700 RRA:MAX:0.5:1:2880 RRA:MAX:0.5:5:2304 RRA:MAX:0.5:30:700 RRA:MAX:0.5:120:775 RRA:MAX:0.5:1440:3700 RRA:LAST:0.5:1:2880 RRA:LAST:0.5:5:2304 RRA:LAST:0.5:30:700 RRA:LAST:0.5:120:775 RRA:LAST:0.5:1440:3700";
          exec("$this->rrdTool create $this->rrdFile $parameters", $output, $errno);
          if ( $errno <> 0 ){
-			 echo "\n\e[0;31m/!\ ERREUR RRD\e[0m ".$errno."";
-			 if ($errno == 127) echo " : Commande introuvable";
-			 echo "\n\n";
+			 Console("\n\e[0;31m/!\ ERREUR RRD\e[0m ".$errno."");
+			 if ($errno == 127) Console(" : Commande introuvable");
+			 Console("\n\n");
 			 if ($output) print_r($output);
 		 }
          return $errno;
@@ -70,14 +70,12 @@ class ReportingTool {
    // Cela permet de conserver la trace des plantages dans les données d'exécution
    function __destruct() {
 	  $this->update();
-	  $this->driver->close();
-	  $this->driver->quit();
    }
 
 	// Update du fichier rrd et du status nagios NSCA
 	public function update()
 	{
-		echo "\e[1;34mEnvoi de la requête NSCA\e[0m : ".$this->nsca_service." -> ".$this->nsca_msg.' ('.$this->nsca_state.')';
+		Console("\e[1;34mEnvoi de la requête NSCA\e[0m : ".$this->nsca_service." -> ".$this->nsca_msg.' ('.$this->nsca_state.')');
 		//Envoi de la requête
 		$this->nsca_client->send('Applications', $this->nsca_service, $this->nsca_state, $this->nsca_msg);
 		//Commande SSH pour écrire le statut dans le fichier .status
@@ -112,14 +110,13 @@ class ReportingTool {
 		exec("$this->rrdUpdate $this->rrdFile -t home:login:actions:logout N:$command_times", $output, $errno
 		);
 		if ( $errno <> 0 ){
-			echo "\n\e[0;31m /!\ ERREUR RRD\e[0m ".$errno." : ";
-			if ($errno == 127) echo " : Commande introuvable";
+			Console("\n\e[0;31m /!\ ERREUR RRD\e[0m ".$errno." : ");
+			if ($errno == 127) Console(" : Commande introuvable");
 			if ($output){
 				if($errno == 1){
-					echo substr($output[11], 7);
-					echo "\n";
+					Console(substr($output[11], 7)."\n");
 				}else{
-					echo "\n\n";
+					Console("\n\n");
 					print_r($output);
 				}
 			}

@@ -19,14 +19,13 @@ require_once('vendor/autoload.php');
 class Agora extends scenario {
 	
 	protected $driver = null;
-	
 
-   function __construct($driver) {
-	   $this->driver = $driver;
-	   $this->steps = ['gohome','Login','Action','Logout'];
-   }
+	function __construct($driver) {
+		$this->driver = $driver;
+		$this->steps = ['Home','Login','Action','Logout'];
+	}
 
-   public function gohome() {
+   public function Home() {
       // Ouverture de la page d'accueil de l'application
       $this->driver->get('http://10.51.0.8/agora/pck_security.home');
    }

@@ -8,27 +8,47 @@
 //                                                              //
 //////////////////////////////////////////////////////////////////
 
-echo "Chargement des bibliothèques \e[1;33mFB-Webdriver\e[0m (autoload Composer)\n";
-require_once('vendor/autoload.php');
-echo "[\e[0;32mOK\e[0m]\n\n";
-
-/* GET OPT : -s(obligatoire) pour le nom du scenario; -c(facultatif) pour le fichier de config à utiliser
+/* GET OPT : 
+	-s (obligatoire) pour le nom du scenario;
+	-c (facultatif) pour le fichier de config à utiliser;
+	-i (facultatif)pour l'intervalle horaire permis pour les mails;
+	-v (facultatif)pour le mode verbose;
+	
  * retourne un array avec :
  * $cl_opt[s] = nom du scenario
  * $cl_opt[c] = fichier de config à utiliser ou FALSE si rien n'a été saisi
  * $cl_opt[i] = intervalle horaire pendant lequel le script va envoyer des notifs par emial, format 8-22 != 22-8
+ * $cl_opt[v] = mode verbose affichant le détail des étapes en console
  */
- 
-echo "Récupération des paramètres de ligne de commande\n";
-$cl_opt = getopt("s:c::i::");
+$cl_opt = getopt("s:c::i::v::h::-help::");
+
+//Mode Verbose
+$verbose = (isset($cl_opt['v']))? true : false ;
+if($verbose) echo "Mode verbose \e[1;33mactivé\e[0m\n\n";
+
+Console("Récupération des paramètres de ligne de commande\n");
 //Si les options génèrent une erreur, on stoppe le script
-if(!$cl_opt or !isset($cl_opt['s'])){
-	echo "\n\e[0;31m /!\ ERREUR\e[0m : Les options passées sont non conformes\n\n";
+if(!$cl_opt or (!isset($cl_opt['s']) and !isset($cl_opt['h']) and !isset($cl_opt['help']))){
+	echo "\n\e[0;31m /!\ ERREUR\e[0m : Les options passées sont non conformes. Utilisez -h ou -help pour l'aide.\n\n";
+	exit;
+}elseif (isset($cl_opt['h']) or isset($cl_opt['h'])){
+	echo "\n\e[0;32mAIDE pour TestSelenium\e[0m
+Les paramètres disponibles sont :
+	\e[1;33m-s\e[0m (\e[0;31mobligatoire\e[0m) pour le nom du scenario,
+	\e[1;33m-c\e[0m (facultatif) pour le fichier de config à utiliser (config.php est utilisé si le paramètre est omis),
+	\e[1;33m-i\e[0m (facultatif)pour l'intervalle horaire permis pour les mails (0-24 est utilisé si le paramètre est omis),
+	\e[1;33m-v\e[0m (facultatif)pour le mode verbose (qui affiche le détail d'avancement du scénario),
+";
 	exit;
 }else{
+	
+	Console("Chargement des bibliothèques \e[1;33mFB-Webdriver\e[0m (autoload Composer)\n");
+	require_once('vendor/autoload.php');
+	Console("[\e[0;32mOK\e[0m]\n\n");
+
 	//Vérification de la présence d'un fichier config.php par défaut
 	if(!file_exists("config.php")){
-		echo "Fichier de configuration \e[1;33mconfig.php \e[0;31mNON TROUVÉ.\nImpossible de continuer.\e[0m.\n";
+		Console("Fichier de configuration \e[1;33mconfig.php \e[0;31mNON TROUVÉ.\nImpossible de continuer.\e[0m.\n");
 		exit;
 	}
 	//Recup fichier de config ou appeler la valeur par défaut
@@ -39,20 +59,20 @@ if(!$cl_opt or !isset($cl_opt['s'])){
 
 	//on vérifie si le fichier demandé existe ou on impose le fichier config.php
 	if(!file_exists($conf)){
-		echo "Fichier de configuration \e[1;33m$conf \e[0;31mNON TROUVÉ\e[0m, utilisation de \e[1;33mconfig.php\e[0m à la place\n";
+		Console("Fichier de configuration \e[1;33m$conf \e[0;31mNON TROUVÉ\e[0m, utilisation de \e[1;33mconfig.php\e[0m à la place\n");
 		$conf = 'config.php';
 	}
 	$scenario_n = $cl_opt['s'];
 }
-echo "[\e[0;32mOK\e[0m]\n\n";
+Console("[\e[0;32mOK\e[0m]\n\n");
 
 //Fichier de configuration
-echo "Chargement du fichier de configuration \e[1;33m$conf\e[0m\n";
+Console("Chargement du fichier de configuration \e[1;33m$conf\e[0m\n");
 require_once($conf);
-echo "[\e[0;32mOK\e[0m]\n\n";
+Console("[\e[0;32mOK\e[0m]\n\n");
 
 //Création du mail à partir de la classe NiceMail
-echo "Création de l'objet \e[1;33mNiceMail\e[0m\n";
+Console("Création de l'objet \e[1;33mNiceMail\e[0m\n");
 
 //Config des adresses de dest et reply depuis le fichier de conf
 $params['dest'] = (isset($dest))? $dest : null;
@@ -64,7 +84,7 @@ $mail = new NiceMail($params);
 $mail->Subject = "ECHEC Scenario $scenario_n";
 if(defined(SELENIUM_HOST_NAME)) $mail->Subject .= "sur ".SELENIUM_HOST_NAME;
 $mail->addBody("<h1>Scénario $scenario_n</h1><p>Exécuté depuis ".SELENIUM_HOST."</p>");
-echo "[\e[0;32mOK\e[0m]\n\n";
+Console("[\e[0;32mOK\e[0m]\n\n");
 
 //Niveau d'erreur et gestionnaire d'exceptions
 set_exception_handler('exception_handler');
@@ -89,7 +109,7 @@ $RRD = new ReportingTool($scenario->getName(), $driver);
 $RRD->setSteps($scenario->getSteps());
 
 //Titre coloré : permet de mieux repérer le début de l'exécution du script #USER_FRIENDLY
-echo "\e[1;37mDemarrage du scenario \e[1;34m$scenario_n\n\e[0m\n";
+Console("\e[1;37mDemarrage du scenario \e[1;34m$scenario_n\n\e[0m\n");
 
 //On parcourt les étapes prévues au scénarion, par défaut : GoHome, Login, Action, Logout.
 foreach($scenario->getSteps() as $step){
@@ -102,7 +122,7 @@ foreach($scenario->getSteps() as $step){
 		try {
 			$scenario->$step();
 			//temps d'exécution de l'étape
-			echo "...".$driver_w->logTime($step)."ms\n";
+			Console("...".$driver_w->logTime($step)."ms\n");
 		} 
 		catch(Exception $exception) {
 			//En cas d'erreur :
@@ -111,19 +131,19 @@ foreach($scenario->getSteps() as $step){
 		
 		//Enregistrement RRD
 		if ($driver_w->getError() == 0){
-			echo "Enregistrement RRD (".$driver_w->getTimes($step)."ms)";
+			Console("Enregistrement RRD (".$driver_w->getTimes($step)."ms)");
 			$RRD->setTime($step, $driver_w->getTimes($step));
-			echo "[\e[0;32mOK\e[0m]\n";
+			Console("[\e[0;32mOK\e[0m]\n");
 		}
 		
 		//Capture d'écran
-		echo "Capture d'écran ";
+		Console("Capture d'écran ");
 		$driver_w->takeSnapshot($scenario->getStep(),$scenario->getName());
-		echo "[\e[0;32mOK\e[0m]\n";
+		Console("[\e[0;32mOK\e[0m]\n");
 	}
-	echo "Fin d'étape : $step\n\n";
+	Console("Fin d'étape : $step\n\n");
 }
-echo "\e[1;37mFin du scenario \e[1;34m$scenario_n\n\e[0m\n";
+Console("\e[1;37mFin du scenario \e[1;34m$scenario_n\n\e[0m\n");
 
 // Suppression des éventuels cookies résiduels
 if (is_object($driver)) {
@@ -132,7 +152,7 @@ if (is_object($driver)) {
   }
   catch(Exception $e) {
 	 $mail->addBody("<div class='info'>Aucun cookie à supprimer</div>");
-	 echo "\e[0;31m /!\ ERREUR\e[0m : Aucun cookie à supprimer\n\n";
+	 Console("\e[0;31m /!\ ERREUR\e[0m : Aucun cookie à supprimer\n\n");
   }
 }
 
@@ -174,7 +194,7 @@ if ($driver_w->getError() > 0 )
 		{
 			$mail->send();
 		}
-		echo "\e[1;34mINFO\e[0m : Mail sent !\n\n";
+		Console("\e[1;34mINFO\e[0m : Mail sent !\n\n");
 	} 
 	catch(Exception $e) {
 		fwrite(STDERR, "Mail could not be sent. Mailer Error:\n". $mail->ErrorInfo . "\n");
@@ -203,4 +223,9 @@ unset($mail);
 
 // Fermeture du navigateur et sortie
 $driver_w->fin(0, "Fin des tests Selenium");
+
+function Console($text){
+	global $verbose;
+	if($verbose) echo($text);
+}
 ?>

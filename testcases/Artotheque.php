@@ -23,10 +23,10 @@ class Artotheque extends scenario {
 
    function __construct($driver) {
 	   $this->driver = $driver;
-	   $this->steps = ['gohome','Login','Action','Logout'];
+	   $this->steps = ['Home','Login','Action','Logout'];
    }
 
-   public function gohome() {
+   public function Home() {
       // Ouverture de la page d'accueil de l'application
       $this->driver->get('https://saint-maur.ideesculture.fr/gestion/');
 
@@ -39,7 +39,7 @@ class Artotheque extends scenario {
       $this->driver->findElement(WebDriverBy::name('username'))->clear();
       $this->driver->findElement(WebDriverBy::name('username'))->sendKeys('test');
       $this->driver->findElement(WebDriverBy::name('password'))->clear();
-      $this->driver->findElement(WebDriverBy::name('password'))->sendKeys('test2018!');
+      $this->driver->findElement(WebDriverBy::name('password'))->sendKeys('NVawyqtdy5nFoXaY6iwL');
       $this->driver->findElement(WebDriverBy::linkText('Identifiant'))->click();
    }
    
