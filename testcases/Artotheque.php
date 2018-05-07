@@ -28,7 +28,7 @@ class Artotheque extends scenario {
 
    public function gohome() {
       // Ouverture de la page d'accueil de l'application
-      $this->driver->get('http://saint-maur.ideesculture.fr/gestion/');
+      $this->driver->get('https://saint-maur.ideesculture.fr/gestion/');
 
       $this->driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name('username')));
    }

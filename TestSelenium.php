@@ -91,7 +91,7 @@ $RRD->setSteps($scenario->getSteps());
 //Titre coloré : permet de mieux repérer le début de l'exécution du script #USER_FRIENDLY
 echo "\e[1;37mDemarrage du scenario \e[1;34m$scenario_n\n\e[0m\n";
 
-//On parcourt les étapes prévues au scénarion, par défaut : gohome, Login, Action, Logout.
+//On parcourt les étapes prévues au scénarion, par défaut : GoHome, Login, Action, Logout.
 foreach($scenario->getSteps() as $step){
 	//On vérifie que l'étape demandée existe et on init les variables
 	$scenario->init_step($step);
