@@ -12,9 +12,9 @@ require_once('NiceSsh.php');
 class ReportingTool {
 	private $ssh_connection;
 
-	private $rrdTool = RRD_TOOL;
-	private $rrdUpdate = RRD_UPD;
-	private $rrdFile = RRD_DEFAULT_FILE;
+	private $rrdTool =  Config::RRD_TOOL;
+	private $rrdUpdate =  Config::RRD_UPD;
+	private $rrdFile =  Config::RRD_DEFAULT_FILE;
 
 	private $nsca_client ;	
 	private $nsca_msg ;
@@ -44,12 +44,12 @@ class ReportingTool {
 	  //établissement de la connexion SSH
       $this->ssh_connection = new NiceSsh();
 	  
-	  Console("\e[1;34mConnexion SSH\e[0m au serveur ".SSH_HOST.":".SSH_PORT."\n\n");
+	  Console("\e[1;34mConnexion SSH\e[0m au serveur ". Config::SSH_HOST.":". Config::SSH_PORT."\n\n");
 	  
 	  $this->ssh_connection->connect();
 	  
 	  //Création du répertoire pour accueillir les fichiers statuts par appli
-	  $this->ssh_connection->exec("mkdir -p /var/www/html/dev/listapp/app_status/");
+	  $this->ssh_connection->exec("mkdir -p ".Config::STATUS_FILE_DIR);
       
 	  //Vérification de l'existance du fichier RRD et création si besoin
       $this->rrdFile = "./rrd/".$file . ".rrd";
@@ -152,7 +152,7 @@ class ReportingTool {
 	   }
 	   
 	   //commande d'écriture dans le fichier .status
-	   $cmd = "echo '".$clear_state."' > /var/www/html/dev/listapp/app_status/$this->nsca_service.status" ;
+	   $cmd = "echo '".$clear_state."' > ".Config::STATUS_FILE_DIR."$this->nsca_service.status" ;
 	   
 	   //Exécution de la commande SSH
 	   $this->ssh_connection->exec($cmd);
