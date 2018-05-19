@@ -7,6 +7,6 @@ class EonNsca extends SendNsca
 {
 	public function __construct() 
 	{
-		parent::__construct(Config::EON_SRV);
+		parent::__construct(Config::$EON_SRV);
 	}
 }

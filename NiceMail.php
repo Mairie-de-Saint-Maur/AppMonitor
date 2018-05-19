@@ -6,14 +6,14 @@
 //                LEJARRE Camus 24-04-2018   V0.1               //
 //                                                              //
 //////////////////////////////////////////////////////////////////
-
+require_once("config.php");
 
 class NiceMail extends PHPMailer{
 	
 	//Adresses email des destinataires par défaut
-	private $default_dest = Config::DEFAULT_DEST;
+	private $default_dest ; # = Config::$DEFAULT_DEST;
 	//Adresses email des expéditeurs par défaut
-	private $default_reply = Config::DEFAULT_REPLY;
+	private $default_reply ; #= Config::$DEFAULT_REPLY;
 	
 	/**
 	 *  @brief Constructeur de la classe, paramètre les données de base du mail
@@ -25,15 +25,17 @@ class NiceMail extends PHPMailer{
 	 *  @details More details
 	 */
 	function __construct($params = array('dest'=>null, 'reply'=>null, 'exceptions'=>true)) {
+		$this->default_dest = Config::$DEFAULT_DEST;
+		$this->default_reply = Config::$DEFAULT_REPLY;
 		$this->exceptions = $params['exceptions'];				// Passing `true` enables exceptions
 		//Server settings
 		$this->SMTPDebug = 0;                                 // Enable verbose debug output
 		$this->isSMTP();                                      // Set mailer to use SMTP
-		$this->Host =  Config::SMTP;                 // Specify main and backup SMTP servers
+		$this->Host =  Config::$SMTP;                 // Specify main and backup SMTP servers
 		$this->SMTPAuth = false;                              // Disable SMTP authentication
 
 		//Expediteur des mails
-		$this->setFrom(Config::DEFAULT_EXP_MAIL, Config::DEFAULT_EXP_NAME);
+		$this->setFrom(Config::$DEFAULT_EXP_MAIL, Config::$DEFAULT_EXP_NAME);
 		
 		
 		//var_dump($params['dest']);

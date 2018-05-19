@@ -16,10 +16,10 @@ class DriverWrapper {
 	private $error = 0;
 
 	// Execution du navigateur sur le serveur défini par la conf
-	private $host =  Config::SELENIUM_HOST;
+	private $host ; #=  Config::SELENIUM_HOST;
 	
-	private $connection_timeout =  Config::CONNECT_TIMEOUT;
-	private $request_timeout =  Config::QUERY_TIMEOUT;
+	private $connection_timeout ; # =  Config::CONNECT_TIMEOUT;
+	private $request_timeout ; #=  Config::QUERY_TIMEOUT;
 	
 	private $timeLast = 0;
 	//Tableau contenant les temps pour chaque step
@@ -60,15 +60,15 @@ class DriverWrapper {
 		return $this->NiceMail;
 	}
 	
-	function setHost($host =  Config::SELENIUM_HOST){
+	function setHost($host){
 		$this->host = $host;
 	}
 	
-	function setConnectionTimeout($time =  Config::CONNECT_TIMEOUT){
+	function setConnectionTimeout($time){
 		$this->connection_timeout = $time;
 	}
 	
-	function setRequestTimeout($time =  Config::QUERY_TIMEOUT){
+	function setRequestTimeout($time){
 		$this->request_timeout = $time;
 	}
 	
@@ -86,6 +86,11 @@ class DriverWrapper {
 	
 	function __construct(NiceMail $mail = null)
 	{
+		$this->host =  Config::$SELENIUM_HOST;
+
+        	$this->connection_timeout =  Config::$CONNECT_TIMEOUT;
+		$this->request_timeout =  Config::$QUERY_TIMEOUT;		
+
 		if($mail === null) $mail = new NiceMail();
 		
 		Console("Initialisation du \e[1;33mWebDriver\e[0m\n");
@@ -192,7 +197,7 @@ class DriverWrapper {
 	function takeSnapshot($step, $name)
 	{
 		if (isset($this->driver)) {
-			$screenshot =  Config::SCREENSHOT_DIR."screenshot-$name-$step-". date("Y-m-d_H-i-s") . ".png";
+			$screenshot =  Config::$SCREENSHOT_DIR."screenshot-$name-$step-". date("Y-m-d_H-i-s") . ".png";
 			try {
 				$this->driver->takeScreenshot($screenshot);
 			}

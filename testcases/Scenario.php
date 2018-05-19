@@ -20,7 +20,7 @@ class Scenario {
       $this->err = 0;
    }
    
-   function createScenario($driver, $name){
+   static function createScenario($driver, $name){
 
 		// Instanciation de la classe de scénario
 		//Vérification d'existence du scénario :

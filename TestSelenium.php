@@ -84,8 +84,8 @@ $mail = new NiceMail($params);
 
 //Ajout du nom du scénario dans le corps du mail
 $mail->Subject = "ECHEC Scenario $scenario_n";
-if(Config::SELENIUM_HOST_NAME) $mail->Subject =  $mail->Subject." sur ". Config::SELENIUM_HOST_NAME;
-$mail->addBody("<h1>Scénario $scenario_n</h1><p>Exécuté depuis ". Config::SELENIUM_HOST."</p>");
+if(Config::$SELENIUM_HOST_NAME) $mail->Subject =  $mail->Subject." sur ". Config::$SELENIUM_HOST_NAME;
+$mail->addBody("<h1>Scénario $scenario_n</h1><p>Exécuté depuis ". Config::$SELENIUM_HOST."</p>");
 Console("[\e[0;32mOK\e[0m]\n\n");
 
 //Niveau d'erreur et gestionnaire d'exceptions
@@ -220,7 +220,7 @@ else
 }
 
 //Suppression des fichiers images
-array_map('unlink', glob( Config::SCREENSHOT_DIR."screenshot-$scenario_n-*.png"));
+array_map('unlink', glob( Config::$SCREENSHOT_DIR."screenshot-$scenario_n-*.png"));
 
 //NSCA Report
 $RRD->nsca_report($nsca_status, $nsca_msg);
