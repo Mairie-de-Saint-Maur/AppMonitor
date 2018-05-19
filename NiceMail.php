@@ -11,16 +11,9 @@
 class NiceMail extends PHPMailer{
 	
 	//Adresses email des destinataires par défaut
-	private $default_dest = array(['blaise.thauvin@mairie-saint-maur.com', 'Blaise THAUVIN'],
-								['hugo.stephan@mairie-saint-maur.com', 'Hugo STEPHAN'],
-								['camus.lejarre@mairie-saint-maur.com', 'Camus LEJARRE']
-							);
-								
+	private $default_dest = Config::DEFAULT_DEST;
 	//Adresses email des expéditeurs par défaut
-	private $default_reply = [	['blaise.thauvin@mairie-saint-maur.com', 'Blaise THAUVIN'],
-								['hugo.stephan@mairie-saint-maur.com', 'Hugo STEPHAN'],
-								['camus.lejarre@mairie-saint-maur.com', 'Camus LEJARRE']
-							];
+	private $default_reply = Config::DEFAULT_REPLY;
 	
 	/**
 	 *  @brief Constructeur de la classe, paramètre les données de base du mail
@@ -36,11 +29,11 @@ class NiceMail extends PHPMailer{
 		//Server settings
 		$this->SMTPDebug = 0;                                 // Enable verbose debug output
 		$this->isSMTP();                                      // Set mailer to use SMTP
-		$this->Host = 'smtp.saintmaur.local';                 // Specify main and backup SMTP servers
+		$this->Host =  Config::SMTP;                 // Specify main and backup SMTP servers
 		$this->SMTPAuth = false;                              // Disable SMTP authentication
 
-		//Destinataires des mails
-		$this->setFrom('Supervision_Applicative@mairie-saint-maur.com', 'Supervision Applicative');
+		//Expediteur des mails
+		$this->setFrom(Config::DEFAULT_EXP_MAIL, Config::DEFAULT_EXP_NAME);
 		
 		
 		//var_dump($params['dest']);

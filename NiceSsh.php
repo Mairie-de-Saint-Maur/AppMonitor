@@ -10,17 +10,17 @@
 
 class NiceSSH {
     // SSH Host
-    private $ssh_host = SSH_HOST;
+    private $ssh_host =  Config::SSH_HOST;
     // SSH Port
-    private $ssh_port = SSH_PORT;
+    private $ssh_port =  Config::SSH_PORT;
     // SSH Server Fingerprint
-    private $ssh_server_fp = SSH_FP;
+    private $ssh_server_fp =  Config::SSH_FP;
     // SSH Username
-    private $ssh_auth_user = SSH_AUTH_USER;
+    private $ssh_auth_user =  Config::SSH_AUTH_USER;
     // SSH Public Key File
-    private $ssh_auth_pub = SSH_AUTH_PUB;
+    private $ssh_auth_pub =  Config::SSH_AUTH_PUB;
     // SSH Private Key File
-    private $ssh_auth_priv = SSH_AUTH_PRIV;
+    private $ssh_auth_priv =  Config::SSH_AUTH_PRIV;
     // SSH Private Key Passphrase (null == no passphrase)
     private $ssh_auth_pass = null ;
     // SSH Connection
