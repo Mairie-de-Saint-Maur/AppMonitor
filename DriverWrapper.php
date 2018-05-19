@@ -97,7 +97,10 @@ class DriverWrapper {
 	
 		// Choix du navigateur
 		$options = new ChromeOptions();
-		$options->addArguments(array("--start-maximized", "--no-sandbox","--disable-setuid-sandbox"));
+		
+		// Data dir unique
+		$dirname = "/tmp/chromedata." . date("Ymd-h:i:s") ;
+		$options->addArguments(array("--start-maximized","--incognito","--headless","user-data-dir=".$dirname));// "--no-sandbox","--disable-setuid-sandbox"));
 		$capabilities = DesiredCapabilities::chrome();
 		$capabilities->setCapability(ChromeOptions::CAPABILITY, $options);
 		
