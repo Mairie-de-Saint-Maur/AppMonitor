@@ -105,10 +105,21 @@ class DriverWrapper {
 		
 		// Data dir unique
 		$dirname = "/tmp/chromedata." . date("Ymd-h:i:s") ;
-		$options->addArguments(array("--start-maximized","--incognito","--headless","user-data-dir=".$dirname));// "--no-sandbox","--disable-setuid-sandbox"));
+		$options->addArguments(array("--start-maximized","--incognito","--headless","--user-data-dir=".$dirname));// "--no-sandbox","--disable-setuid-sandbox"));
 		$capabilities = DesiredCapabilities::chrome();
+		#$capabilities = $options.ToCapabilities();
 		$capabilities->setCapability(ChromeOptions::CAPABILITY, $options);
-		
+	 	$capabilities->setCapability("chromeOptions", array(
+			"args" => array(
+			"--start-maximized",
+			"--headless",
+			"--no-default-browser-check",
+			"--user-data-dir=".$dirname,
+			"--incognito"
+			)
+		));
+				
+
 		$this->startDriver($capabilities);
 	}
 	
