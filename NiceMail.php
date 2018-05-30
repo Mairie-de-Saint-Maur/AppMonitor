@@ -6,7 +6,7 @@
 //                LEJARRE Camus 24-04-2018   V0.1               //
 //                                                              //
 //////////////////////////////////////////////////////////////////
-require_once("config.php");
+//require_once("config.php");
 
 class NiceMail extends PHPMailer{
 	
