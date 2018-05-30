@@ -21,6 +21,8 @@ class Config{
 	// Host selenium
 			$SELENIUM_HOST = "http://srv-eon.saintmaur.local:4444/wd/hub",
 			$SELENIUM_HOST_NAME = "SRV-EON",
+	//Chrome settings
+			$CHROME_OPTIONS = ["--start-maximized","--headless","--no-default-browser-check","--incognito"],
 	//RRDTool
 			$RRD_TOOL = "/opt/rrdtool-1.7.0/bin/rrdtool",
 			$RRD_UPD = "/opt/rrdtool-1.7.0/bin/rrdupdate",
@@ -38,6 +40,10 @@ class Config{
 			$QUERY_TIMEOUT = 120000,
 	// EON NSCA
 			$EON_SRV = 'srv-eon.saintmaur.local';
+	
+	public function getChromeDirName(){
+		return "--user-data-dir=/tmp/chromedata".date("_Ymd_h-i-s");
+	}
 }
 //////////////////////////////////////////////////////////////////
 //                           INCLUDE                            //

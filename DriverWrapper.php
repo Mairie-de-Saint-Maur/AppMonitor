@@ -100,23 +100,13 @@ class DriverWrapper {
 	// Initialise et paramètre le navigateur pour la simulation      //
 	///////////////////////////////////////////////////////////////////
 	
-		// Choix du navigateur
-		$options = new ChromeOptions();
-		
-		// Data dir unique
-		$dirname = "/tmp/chromedata." . date("Ymd-h:i:s") ;
-		$options->addArguments(array("--start-maximized","--incognito","--headless","--user-data-dir=".$dirname));// "--no-sandbox","--disable-setuid-sandbox"));
 		$capabilities = DesiredCapabilities::chrome();
-		#$capabilities = $options.ToCapabilities();
-		$capabilities->setCapability(ChromeOptions::CAPABILITY, $options);
+		
+		$options = Config::$CHROME_OPTIONS;
+		//on ajoute le dossier tmp de chrome
+		array_push($options, Config::getChromeDirName());
 	 	$capabilities->setCapability("chromeOptions", array(
-			"args" => array(
-			"--start-maximized",
-			"--headless",
-			"--no-default-browser-check",
-			"--user-data-dir=".$dirname,
-			"--incognito"
-			)
+			"args" => $options
 		));
 				
 
