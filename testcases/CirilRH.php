@@ -27,53 +27,53 @@ class CirilRH extends scenario {
 
 	public function Home() {
 		// Ouverture de la page d'accueil de l'application
-		$driver->get('http://10.0.0.52:83/');
+		$this->driver->get('http://10.0.0.52:83/');
 		
 		// Vérification de la présence du formulaire
-		$driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name("choixAppli")));
+		$this->driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name("choixAppli")));
 	}
 
 	public function Login() {
 		// Saisie du login et du mot de passe puis validation
-		$driver->switchTo()->frame($driver->findElement(WebDriverBy::name("choixAppli")));
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('identifiant')))->clear();
-		$driver->findElement(WebDriverBy::id('identifiant'))->sendKeys("smdfdsi");
-		$driver->findElement(WebDriverBy::id('motPasse'))->clear();
-		$driver->findElement(WebDriverBy::id('motPasse'))->sendKeys("Orage1752");
+		$this->driver->switchTo()->frame($this->driver->findElement(WebDriverBy::name("choixAppli")));
+		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('identifiant')))->clear();
+		$this->driver->findElement(WebDriverBy::id('identifiant'))->sendKeys("smdfdsi");
+		$this->driver->findElement(WebDriverBy::id('motPasse'))->clear();
+		$this->driver->findElement(WebDriverBy::id('motPasse'))->sendKeys("Orage1752");
 		
-		$driver->findElement(WebDriverBy::cssSelector("input[type=submit]"))->click();
+		$this->driver->findElement(WebDriverBy::cssSelector("input[type=submit]"))->click();
 
 		//GESTION DE LA POPUP
 		
 		//On récupère l'ID de la fenêtre principale
-		$mainWindowHandler = $driver->getWindowHandle();
+		$mainWindowHandler = $this->driver->getWindowHandle();
 
 		//On attend 1 sec que la popup s'ouvre
 		sleep(1);
 		//On récpère la liste des fenêtres
-		$allWindowHandlers = $driver->getWindowHandles();
+		$allWindowHandlers = $this->driver->getWindowHandles();
 		
 		//On boucle sur les fenêtres en fermant celle qui ne sont pas la fenêtre principale
 		foreach($allWindowHandlers as $currWindowHandler) {
 			if ($currWindowHandler != $mainWindowHandler) {
-				$driver->switchTo()->window($currWindowHandler);
-				$driver->close();
+				$this->driver->switchTo()->window($currWindowHandler);
+				$this->driver->close();
 			}
 		}
-		$driver->switchTo()->window($mainWindowHandler);
+		$this->driver->switchTo()->window($mainWindowHandler);
 	}
    
 	public function Action() {
 		// clic sur lien "Réception"
-		$driver->switchTo()->frame($driver->findElement(WebDriverBy::name("choixAppli")));
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("burger_button")))->click();
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("notifications_button")))->click();
+		$this->driver->switchTo()->frame($this->driver->findElement(WebDriverBy::name("choixAppli")));
+		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("burger_button")))->click();
+		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("notifications_button")))->click();
 	}
 
 	public function Logout() {
 		// Déconnexion
-		$driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("identite_button")))->click();
-		$driver->wait()->until(WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::id("deconnexion")))->click();
+		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("identite_button")))->click();
+		$this->driver->wait()->until(WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::id("deconnexion")))->click();
 	}
 }
 ?>
