@@ -22,7 +22,7 @@ class Config{
 			$SELENIUM_HOST = "http://srv-eon.saintmaur.local:4444/wd/hub",
 			$SELENIUM_HOST_NAME = "SRV-EON",
 	//Chrome settings
-			$CHROME_OPTIONS = ["--start-maximized","--headless","--no-default-browser-check","--incognito"],
+			$CHROME_OPTIONS = ["--start-maximized","--headless","--no-default-browser-check","--incognito"], //--window-size=1920,1080
 	//RRDTool
 			$RRD_TOOL = "/opt/rrdtool-1.7.0/bin/rrdtool",
 			$RRD_UPD = "/opt/rrdtool-1.7.0/bin/rrdupdate",
