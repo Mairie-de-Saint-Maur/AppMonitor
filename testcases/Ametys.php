@@ -36,10 +36,10 @@ class Ametys extends scenario {
 
 	public function Login() {
 		// Saisie du login et du mot de passe puis validation
-		$this->driver->findElement(WebDriverBy::id('Username'))->clear();
-		$this->driver->findElement(WebDriverBy::id('Username'))->sendKeys("test_applicatif");
-		$this->driver->findElement(WebDriverBy::id('Password'))->clear();
-		$this->driver->findElement(WebDriverBy::id('Password'))->sendKeys("r8aSPVSU5ozQDWK2mk6q");
+		$this->driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('Username')))->clear();
+		$this->driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('Username')))->sendKeys("test_applicatif");
+		$this->driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('Password')))->clear();
+		$this->driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('Password')))->sendKeys("r8aSPVSU5ozQDWK2mk6q");
 		
 		$this->driver->findElement(WebDriverBy::cssSelector("button[type=submit]"))->click();
 	}
