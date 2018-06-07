@@ -45,12 +45,15 @@ class Ametys extends scenario {
 	}
    
 	public function Action() {
+		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("ametys-ribbon-button-2005")));
+		/*
 		//Fermeture / ouverture du panneau latéral "plan du site"
 		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("ametys-ribbon-button-2005")))->click();
 		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("ametys-ribbon-button-2005")))->click();
 		
 		//Rechargement de la page
 		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id("ametys-ribbon-button-2506")))->click();
+		*/
 	}
 
 	public function Logout() {
