@@ -27,7 +27,7 @@ class JesPlan extends scenario {
 
 	public function Home() {
 		// Ouverture de la page d'accueil de l'application
-		$this->driver->get('https://srv-app-3/saint-maur/planitech/');
+		$this->driver->get('https://planitech/saint-maur/planitech');
 		
 		// Vérification de la présence du formulaire
 		$this->driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector(".login-box")));
