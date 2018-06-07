@@ -51,7 +51,7 @@ class Zimbra extends scenario {
 	public function Action() {
 		// clic sur lien "Réception"
 		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('#zti__main_Mail__2_textCell')))->click();
-		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('#CHECK_MAIL_left_icon')))->click();
+		//$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('#CHECK_MAIL_left_icon')))->click();
 	}
 
 	public function Logout() {
