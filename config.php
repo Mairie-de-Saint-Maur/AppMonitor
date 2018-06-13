@@ -22,19 +22,21 @@ class Config{
 			$SELENIUM_HOST = "http://srv-eon.saintmaur.local:4444/wd/hub",
 			$SELENIUM_HOST_NAME = "SRV-EON",
 	//Chrome settings
-			$CHROME_OPTIONS = ["--start-maximized","--headless","--no-default-browser-check","--incognito"], //--window-size=1920,1080
+			$CHROME_OPTIONS = ["--start-maximized","--headless","--no-default-browser-check","--incognito", "--window-size=1920,1080"],
 	//RRDTool
 			$RRD_TOOL = "/opt/rrdtool-1.7.0/bin/rrdtool",
 			$RRD_UPD = "/opt/rrdtool-1.7.0/bin/rrdupdate",
 			$RRD_DEFAULT_FILE = "default.rrd",
 	// SSH
-			$SSH_HOST = "www01-d.saintmaur.local",
+			//$SSH_HOST = "www01-d.saintmaur.local",
+			$SSH_HOST = "intranet01-x.dmz.saintmaur.local",
 			$SSH_PORT = 22,
 			$SSH_FP = "19:f8:27:1f:df:64:02:d4:38:5d:83:16:f7:dc:91:cf",
 			$SSH_AUTH_USER = 'root',
 			$SSH_AUTH_PUB = '/root/.ssh/id_rsa.pub',
 			$SSH_AUTH_PRIV = '/root/.ssh/id_rsa',
-			$STATUS_FILE_DIR = "/var/www/html/dev/listapp/app_status/", //dossier où stocker les fichiers .status
+			//$STATUS_FILE_DIR = "/var/www/html/dev/listapp/app_status/", //dossier où stocker les fichiers .status
+			$STATUS_FILE_DIR = "/home/cms/Ametys_CMS/application/cms/skins/intranet-kmu/resources/listapp/app_status",
 	// TIMEOUT DELAYS (in Miliseconds)
 			$CONNECT_TIMEOUT = 15000,
 			$QUERY_TIMEOUT = 120000,
