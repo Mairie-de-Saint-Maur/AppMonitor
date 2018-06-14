@@ -36,7 +36,7 @@ class Config{
 			$SSH_AUTH_PUB = '/root/.ssh/id_rsa.pub',
 			$SSH_AUTH_PRIV = '/root/.ssh/id_rsa',
 			//$STATUS_FILE_DIR = "/var/www/html/dev/listapp/app_status/", //dossier où stocker les fichiers .status
-			$STATUS_FILE_DIR = "/home/cms/Ametys_CMS/application/cms/skins/intranet-kmu/resources/listapp/app_status/",
+			$STATUS_FILE_DIR = "/home/cms/Ametys_CMS/app_status/",
 	// TIMEOUT DELAYS (in Miliseconds)
 			$CONNECT_TIMEOUT = 15000,
 			$QUERY_TIMEOUT = 120000,
