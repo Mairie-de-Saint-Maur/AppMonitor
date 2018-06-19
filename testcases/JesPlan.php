@@ -41,9 +41,9 @@ class JesPlan extends scenario {
 		
 		// Saisie du login et du mot de passe puis validation
 		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name('login')))->clear();
-		$this->driver->findElement(WebDriverBy::name('login'))->sendKeys("jesplan");
+		$this->driver->findElement(WebDriverBy::name('login'))->sendKeys("Test_DSI");
 		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name('password')))->clear();
-		$this->driver->findElement(WebDriverBy::name('password'))->sendKeys("jesplan");
+		$this->driver->findElement(WebDriverBy::name('password'))->sendKeys("GesPlan_DSI2018");
 		
 		$this->driver->findElement(WebDriverBy::cssSelector("input[type=submit]"))->click();
 		
