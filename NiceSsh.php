@@ -26,8 +26,8 @@ class NiceSSH {
     // SSH Connection
     private $connection;
    
-    public function connect() {
-	$this->ssh_host  =  Config::$SSH_HOST;
+    public function connect($host) {
+	$this->ssh_host  =  $host;
     	$this->ssh_port =  Config::$SSH_PORT;
 	$this->ssh_server_fp =  Config::$SSH_FP;
 	$this->ssh_auth_user =  Config::$SSH_AUTH_USER;

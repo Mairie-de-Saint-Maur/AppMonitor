@@ -10,7 +10,8 @@ require_once('nsca/src/EonNsca.php');
 require_once('NiceSsh.php');
 
 class ReportingTool {
-	private $ssh_connection;
+	private $ssh_connection1;
+	private $ssh_connection2;
 
 	private $rrdTool ; # =  Config::$RRD_TOOL;
 	private $rrdUpdate ; #=  Config::$RRD_UPD;
@@ -45,14 +46,17 @@ class ReportingTool {
 	  $this->nsca_service = $file ;
 	  
 	  //établissement de la connexion SSH
-      $this->ssh_connection = new NiceSsh();
+      $this->ssh_connection1 = new NiceSsh();
+      $this->ssh_connection2 = new NiceSsh();
 	  
-	  Console("\e[1;34mConnexion SSH\e[0m au serveur ". Config::$SSH_HOST.":". Config::$SSH_PORT."\n\n");
+	  Console("\e[1;34mConnexion SSH\e[0m au serveur ". Config::$SSH_HOST1.":". Config::$SSH_PORT."\n\n");
 	  
-	  $this->ssh_connection->connect();
+	  $this->ssh_connection1->connect(Config::$SSH_HOST1);
+	  $this->ssh_connection2->connect(Config::$SSH_HOST2);
 	  
 	  //Création du répertoire pour accueillir les fichiers statuts par appli
-	  $this->ssh_connection->exec("mkdir -p ".Config::$STATUS_FILE_DIR);
+	  $this->ssh_connection1->exec("mkdir -p ".Config::$STATUS_FILE_DIR);
+	  $this->ssh_connection2->exec("mkdir -p ".Config::$STATUS_FILE_DIR);
       
 	  //Vérification de l'existance du fichier RRD et création si besoin
       $this->rrdFile = "./rrd/".$file . ".rrd";
@@ -158,7 +162,8 @@ class ReportingTool {
 	   $cmd = "echo '".$clear_state."' > ".Config::$STATUS_FILE_DIR."$this->nsca_service.status" ;
 	   
 	   //Exécution de la commande SSH
-	   $this->ssh_connection->exec($cmd);
+	   $this->ssh_connection1->exec($cmd);
+	   $this->ssh_connection2->exec($cmd);
    }
    
    /////////////////////////////

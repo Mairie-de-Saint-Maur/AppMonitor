@@ -29,14 +29,15 @@ class Config{
 			$RRD_DEFAULT_FILE = "default.rrd",
 	// SSH
 			//$SSH_HOST = "www01-d.saintmaur.local",
-			$SSH_HOST = "intranet01-x.dmz.saintmaur.local",
+			$SSH_HOST1 = "www03-p.dmz.saintmaur.local",
+			$SSH_HOST2 = "www04-p.dmz.saintmaur.local",
 			$SSH_PORT = 22,
 			$SSH_FP = "19:f8:27:1f:df:64:02:d4:38:5d:83:16:f7:dc:91:cf",
 			$SSH_AUTH_USER = 'root',
 			$SSH_AUTH_PUB = '/root/.ssh/id_rsa.pub',
 			$SSH_AUTH_PRIV = '/root/.ssh/id_rsa',
 			//$STATUS_FILE_DIR = "/var/www/html/dev/listapp/app_status/", //dossier où stocker les fichiers .status
-			$STATUS_FILE_DIR = "/home/cms/Ametys_CMS/app_status/",
+			$STATUS_FILE_DIR = "/var/www/html/listapp/app_status/",
 	// TIMEOUT DELAYS (in Miliseconds)
 			$CONNECT_TIMEOUT = 15000,
 			$QUERY_TIMEOUT = 120000,
