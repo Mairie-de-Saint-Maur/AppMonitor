@@ -21,19 +21,20 @@ class Config{
 			$SELENIUM_HOST = "http://sm00597.saintmaur.local:4444/wd/hub",
 			$SELENIUM_HOST_NAME = "KMU - sm00597",
 	//Chrome settings
-			$CHROME_OPTIONS = ["--start-maximized","--no-default-browser-check","--incognito"],
+			$CHROME_OPTIONS = ["--start-maximized","--no-default-browser-check","--incognito", "--window-size=1050,889"],
 	//RRDTool
 			$RRD_TOOL = "/opt/rrdtool-1.7.0/bin/rrdtool",
 			$RRD_UPD = "/opt/rrdtool-1.7.0/bin/rrdupdate",
 			$RRD_DEFAULT_FILE = "default.rrd",
 	// SSH
-			$SSH_HOST = "www01-d.saintmaur.local",
+			$SSH_HOST1 = "www01-d.saintmaur.local",
+			$SSH_HOST2 = "www01-d.saintmaur.local",
 			$SSH_PORT = 22,
 			$SSH_FP = "19:f8:27:1f:df:64:02:d4:38:5d:83:16:f7:dc:91:cf",
 			$SSH_AUTH_USER = 'root',
 			$SSH_AUTH_PUB = '/root/.ssh/id_rsa.pub',
 			$SSH_AUTH_PRIV = '/root/.ssh/id_rsa',
-			$STATUS_FILE_DIR = "/var/www/html/dev/listapp/app_status/", //dossier où stocker les fichiers .status
+			$STATUS_FILE_DIR = "/var/www/html/listapp/app_status/", //dossier où stocker les fichiers .status
 	// TIMEOUT DELAYS (in Miliseconds)
 			$CONNECT_TIMEOUT = 15000,
 			$QUERY_TIMEOUT = 120000,
