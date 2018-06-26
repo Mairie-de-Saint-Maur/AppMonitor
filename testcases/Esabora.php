@@ -31,64 +31,57 @@ class Esabora extends scenario {
 		
 		//Le site va rediriger vers la page de login du SSO
 		// Vérification de la présence du formulaire
-		$this->driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("div#logo_app")));
+		//$this->driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("div#logo_app")));
 	}
 
 	public function Login() {
-		//On rentre dans la frame login:
-		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("input#username")));
 		
-		// Saisie du login et du mot de passe puis validation
-		$this->driver->findElement(WebDriverBy::cssSelector("input#username"))->clear();
-		$this->driver->findElement(WebDriverBy::cssSelector("input#username"))->sendKeys("");
-		$this->driver->findElement(WebDriverBy::cssSelector("input#password"))->clear();
-		$this->driver->findElement(WebDriverBy::cssSelector("input#password"))->sendKeys("");
 		
-		$this->driver->findElement(WebDriverBy::cssSelector("button[type=submit]"))->click();
-
-		//Vérification du chargement de la page
-		$this->driver->switchTo()->defaultContent();
-		$this->driver->switchTo()->frame($this->driver->findElement(WebDriverBy::cssSelector("frame[name=login]")));
-		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("frame[name=bandeauHaut]")));
-		$this->driver->switchTo()->frame($this->driver->findElement(WebDriverBy::cssSelector("frame[name=bandeauHaut]")));
-		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('.bandeauuser')));
+		//On vérifie si on arrive sur le login du SSO ou si on est entré sans frappé
+		if (count($this->driver->findElements(WebDriverBy::cssSelector("input#username.form-element"))) > 0){
+			
+			// Saisie du login et du mot de passe puis validation
+			$this->driver->findElement(WebDriverBy::cssSelector("input#username"))->clear();
+			$this->driver->findElement(WebDriverBy::cssSelector("input#username"))->sendKeys("lejarre-cam");
+			$this->driver->findElement(WebDriverBy::cssSelector("input#password"))->clear();
+			$this->driver->findElement(WebDriverBy::cssSelector("input#password"))->sendKeys("04Madlb83");
+			
+			$this->driver->findElement(WebDriverBy::cssSelector("button[type=submit]"))->click();
+			
+		}
+		
+		$allWindowHandlers = $this->driver->getWindowHandles();
+		//var_dump($allWindowHandlers);
+		foreach($allWindowHandlers as $handle){
+			$this->driver->switchTo()->window($handle);
+			if (count($this->driver->findElements(WebDriverBy::cssSelector(".logo"))) > 0){
+				$this->driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector(".logo")));
+			}
+		}
 	}
    
 	public function Action() {
-		//Navigation dans les frames jusqu'au lien
-		$this->driver->switchTo()->defaultContent();
-		$this->driver->switchTo()->frame($this->driver->findElement(WebDriverBy::cssSelector("frame[name=login]")));
-		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("frame[name=work]")));
-		$this->driver->switchTo()->frame($this->driver->findElement(WebDriverBy::cssSelector("frame[name=work]")));
-		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("frame[name=menu]")));
-		$this->driver->switchTo()->frame($this->driver->findElement(WebDriverBy::cssSelector("frame[name=menu]")));
+		//Recherche N° Dossiers
+		$this->driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("#btRDossiers")))->click();
 		
-		// clic sur lien "Réception"
-		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("form[name=loginForm] td.menuLnk a[href='javascript:f_redirectSeancesList();']")))->click();
-		
-		//Vérification du chargement
-		//Navigation dans les frames jusqu'à l'élément
-		$this->driver->switchTo()->defaultContent();
-		$this->driver->switchTo()->frame($this->driver->findElement(WebDriverBy::cssSelector("frame[name=login]")));
-		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("frame[name=work]")));
-		$this->driver->switchTo()->frame($this->driver->findElement(WebDriverBy::cssSelector("frame[name=work]")));
-		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("frame[name=main]")));
-		$this->driver->switchTo()->frame($this->driver->findElement(WebDriverBy::cssSelector("frame[name=main]")));
-		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("frame[name=action]")));
-		$this->driver->switchTo()->frame($this->driver->findElement(WebDriverBy::cssSelector("frame[name=action]")));
-		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector(".actionBtn")));
+		//Retour
+		$this->driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("#btRetour")))->click();
 	}
 
 	public function Logout() {
-		//Navigation dans les frames jusqu'au lien
-		$this->driver->switchTo()->defaultContent();
-		$this->driver->switchTo()->frame($this->driver->findElement(WebDriverBy::cssSelector("frame[name=login]")));
-		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("frame[name=work]")));
-		$this->driver->switchTo()->frame($this->driver->findElement(WebDriverBy::cssSelector("frame[name=work]")));
-		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("frame[name=menu]")));
-		$this->driver->switchTo()->frame($this->driver->findElement(WebDriverBy::cssSelector("frame[name=menu]")));
-		// Déconnexion -> On trouve l'élément dont le lien commence par ...
-		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("a[href^='javascript:top.login.bandeauHaut.setDeconnection']")))->click();
+		//Quitter
+		$this->driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("#btQuitter")))->click();
+		
+		//On recherche la fenêtre avec le bloc de connexion
+		$allWindowHandlers = $this->driver->getWindowHandles();
+		//var_dump($allWindowHandlers);
+		foreach($allWindowHandlers as $handle){
+			//On switche dessus pour que le close la ferme
+			$this->driver->switchTo()->window($handle);
+			if (count($this->driver->findElements(WebDriverBy::cssSelector("#logobox"))) > 0){
+				$this->driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("#logobox")));
+			}
+		}
 	}
 }
 ?>
