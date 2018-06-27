@@ -22,11 +22,26 @@
 // |                                                                      |
 // +----------------------------------------------------------------------+
 
-//Config
-require_once('camus_conf.php');
+//Composer
+require_once('vendor/autoload.php');
 
+$cl_opt = getopt("c::");
+//Recup fichier de config ou appeler la valeur par défaut
+$conf = (isset($cl_opt['c']))? $cl_opt['c'] : 'config.php';
+//on vérifie si le fichier demandé existe ou on impose le fichier config.php
+if(!file_exists($conf)){
+	Console("Fichier de configuration \e[1;33m$conf \e[0;31mNON TROUVÉ\e[0m, utilisation de \e[1;33mconfig.php\e[0m à la place\n");
+	$conf = 'config.php';
+	if(!file_exists($conf)){
+		Console("Fichier de configuration \e[1;33m par défaut \e[0;31mNON TROUVÉ\e[0m, fin du script\n");
+		exit;
+	}
+}
+
+//Config
+require_once($conf);
 //NiceSSH class
-require_once('NiceSsh.php');
+//require_once('NiceSsh.php');
 
 // Change this accordingly
 $statusFile = Config::$NAGIOS_DAT_FILE_DIR."status.dat"; 
@@ -35,7 +50,7 @@ $statusFilesDir = Config::$STATUS_FILE_DIR;
 global $debug;
 
 	if(!file_exists($statusFile)){
-		echo "Le fichier DAT de Nagios n'a pas été trouvé.";
+		echo "Le fichier DAT de Nagios n'a pas été trouvé.\n";
 		exit;
 	}
     # open the file

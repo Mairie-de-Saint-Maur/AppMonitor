@@ -42,7 +42,7 @@ class Config{
 			$CONNECT_TIMEOUT = 15000,
 			$QUERY_TIMEOUT = 120000,
 	// EON NSCA
-			$EON_SRV = 'srv-eon.saintmaur.local';
+			$EON_SRV = 'localhost';
 	
 	public function getChromeDirName(){
 		return "--user-data-dir=/tmp/chromedata".date("_Ymd_h-i-s");
