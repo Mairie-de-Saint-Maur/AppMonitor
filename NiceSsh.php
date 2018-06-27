@@ -27,13 +27,13 @@ class NiceSSH {
     private $connection;
    
     public function connect($host) {
-	$this->ssh_host  =  $host;
-    	$this->ssh_port =  Config::$SSH_PORT;
-	$this->ssh_server_fp =  Config::$SSH_FP;
-	$this->ssh_auth_user =  Config::$SSH_AUTH_USER;
-	$this->ssh_auth_pub =  Config::$SSH_AUTH_PUB;
-	$this->ssh_auth_priv =  Config::$SSH_AUTH_PRIV;
-	$this->ssh_auth_pass == null ;
+		$this->ssh_host  =  $host;
+		$this->ssh_port =  Config::$SSH_PORT;
+		$this->ssh_server_fp =  Config::$SSH_FP;
+		$this->ssh_auth_user =  Config::$SSH_AUTH_USER;
+		$this->ssh_auth_pub =  Config::$SSH_AUTH_PUB;
+		$this->ssh_auth_priv =  Config::$SSH_AUTH_PRIV;
+		$this->ssh_auth_pass == null ;
 
 		//Test de connection
         if (!($this->connection = ssh2_connect($this->ssh_host, $this->ssh_port))) {

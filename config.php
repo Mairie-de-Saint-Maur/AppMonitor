@@ -28,7 +28,7 @@ class Config{
 			$RRD_UPD = "/opt/rrdtool-1.7.0/bin/rrdupdate",
 			$RRD_DEFAULT_FILE = "default.rrd",
 	// SSH
-			//$SSH_HOST = "www01-d.saintmaur.local",
+			$SSH_HOST_STATUS_FILES = "www01-d.saintmaur.local",
 			$SSH_HOST1 = "www03-p.dmz.saintmaur.local",
 			$SSH_HOST2 = "www04-p.dmz.saintmaur.local",
 			$SSH_PORT = 22,
@@ -36,8 +36,8 @@ class Config{
 			$SSH_AUTH_USER = 'root',
 			$SSH_AUTH_PUB = '/root/.ssh/id_rsa.pub',
 			$SSH_AUTH_PRIV = '/root/.ssh/id_rsa',
-			//$STATUS_FILE_DIR = "/var/www/html/dev/listapp/app_status/", //dossier où stocker les fichiers .status
-			$STATUS_FILE_DIR = "/var/www/html/listapp/app_status/",
+			$NAGIOS_DAT_FILE_DIR = "./", //dossier où trouver le fichier DAT de Nagios
+			$STATUS_FILE_DIR = "/var/www/html/dev/listapp/app_status/",//dossier où stocker les fichiers .status
 	// TIMEOUT DELAYS (in Miliseconds)
 			$CONNECT_TIMEOUT = 15000,
 			$QUERY_TIMEOUT = 120000,
