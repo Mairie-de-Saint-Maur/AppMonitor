@@ -28,7 +28,7 @@ class Config{
 			$RRD_UPD = "/opt/rrdtool-1.7.0/bin/rrdupdate",
 			$RRD_DEFAULT_FILE = "default.rrd",
 	// SSH
-			$SSH_HOST_STATUS_FILES = "www01-d.saintmaur.local",
+			//$SSH_HOST_STATUS_FILES = "www01-d.saintmaur.local",
 			$SSH_HOST1 = "www01-d.saintmaur.local",
 			$SSH_HOST2 = "www01-d.saintmaur.local",
 			$SSH_PORT = 22,

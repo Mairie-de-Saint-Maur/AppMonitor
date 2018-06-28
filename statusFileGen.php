@@ -50,7 +50,7 @@ $statusFilesDir = Config::$STATUS_FILE_DIR;
 global $debug;
 
 	if(!file_exists($statusFile)){
-		echo "Le fichier DAT de Nagios n'a pas été trouvé.\n";
+		echo "Le fichier DAT de Nagios ($statusFile) n'a pas été trouvé.\n";
 		exit;
 	}
     # open the file
@@ -128,13 +128,26 @@ global $debug;
 
     fclose($fh);
 	
-	$ssh = new NiceSsh();
-	$ssh->connect(Config::$SSH_HOST_STATUS_FILES);
+	//On crée deux connexions, une pour chaque serveur
+	
+	$ssh1 = new NiceSsh();
+	$ssh2 = new NiceSsh();
+	
+	$ssh1->connect(Config::$SSH_HOST1);
+	$ssh2->connect(Config::$SSH_HOST2);
+	
+	//Tableau qui trace les commandes exécutées
+	$cmd_trace = array();
 	
 	//Pour chaque appli, on génère le fichier status correspondant
 	foreach($serviceStatus as $key => $app)
 	{
 		$cmd = 'echo '.$app['plugin_output'].' > '.$statusFilesDir.$key.'.status';
-		$ssh->exec($cmd);
+		$cmd_trace[Config::$SSH_HOST1][] = $cmd;
+		$ssh1->exec($cmd);
+		$cmd_trace[Config::$SSH_HOST2][] = $cmd;
+		$ssh2->exec($cmd);
 	}
+	
+	var_dump($cmd_trace);
 ?>
