@@ -36,13 +36,13 @@ class Config{
 			$SSH_AUTH_USER = 'root',
 			$SSH_AUTH_PUB = '/root/.ssh/id_rsa.pub',
 			$SSH_AUTH_PRIV = '/root/.ssh/id_rsa',
-			$NAGIOS_DAT_FILE_DIR = "./", //dossier où trouver le fichier DAT de Nagios
-			$STATUS_FILE_DIR = "/var/www/html/dev/listapp/app_status/",//dossier où stocker les fichiers .status
+			$NAGIOS_DAT_FILE_DIR = "/srv/eyesofnetwork/nagios/var/log/", //dossier où trouver le fichier DAT de Nagios
+			$STATUS_FILE_DIR = "/var/www/html/listapp/app_status/",//dossier où stocker les fichiers .status
 	// TIMEOUT DELAYS (in Miliseconds)
 			$CONNECT_TIMEOUT = 15000,
 			$QUERY_TIMEOUT = 120000,
 	// EON NSCA
-			$EON_SRV = 'srv-eon.saintmaur.local';
+			$EON_SRV = 'localhost';
 	
 	public function getChromeDirName(){
 		return "--user-data-dir=/tmp/chromedata".date("_Ymd_h-i-s");
