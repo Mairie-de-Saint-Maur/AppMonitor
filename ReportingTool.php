@@ -85,8 +85,8 @@ class ReportingTool {
 		Console("\e[1;34mEnvoi de la requête NSCA\e[0m : ".$this->nsca_service." -> ".$this->nsca_msg.' ('.$this->nsca_state.')');
 		//Envoi de la requête
 		$this->nsca_client->send('Applications', $this->nsca_service, $this->nsca_state, $this->nsca_msg);
-		//Commande SSH pour écrire le statut dans le fichier .status
-		$this->ssh_report();
+		//Commande SSH pour écrire le statut dans le fichier .status -- Commentée parce qu'on lit maintenant les statuts depuis NAGIOS
+		//$this->ssh_report();
 		
 		//Tableau des temps
 		$mask = "|%-9.9s |%10.10s |\n";
