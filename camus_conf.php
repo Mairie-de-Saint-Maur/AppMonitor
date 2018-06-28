@@ -57,9 +57,9 @@ class Config{
 
 require_once('vendor/phpmailer/phpmailer/class.phpmailer.php');
 require_once('vendor/phpmailer/phpmailer/class.smtp.php');
-//require_once('DriverWrapper.php');
-//require_once('NiceMail.php');
-//require_once('ReportingTool.php');
+require_once('DriverWrapper.php');
+require_once('NiceMail.php');
+require_once('ReportingTool.php');
 require_once('testcases/Scenario.php');
 require_once('Exception.php');
 ?>
