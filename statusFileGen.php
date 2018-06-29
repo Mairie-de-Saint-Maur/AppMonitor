@@ -150,11 +150,6 @@ global $debug;
 
     fclose($fh);
 	
-	echo ('<pre>');
-	var_dump($serviceStatus);
-	echo ('</pre>');
-	
-	exit;
 	//On crée deux connexions, une pour chaque serveur
 	$ssh1 = new NiceSsh();
 	$ssh2 = new NiceSsh();
