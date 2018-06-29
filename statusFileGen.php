@@ -28,6 +28,8 @@ require_once('vendor/autoload.php');
 $cl_opt = getopt("c::");
 //Recup fichier de config ou appeler la valeur par défaut
 $conf = (isset($cl_opt['c']))? $cl_opt['c'] : 'config.php';
+//Si c'est via la page web :
+$conf = (isset($_GET['c']))? $_GET['c'] : 'config.php';
 //on vérifie si le fichier demandé existe ou on impose le fichier config.php
 if(!file_exists($conf)){
 	Console("Fichier de configuration \e[1;33m$conf \e[0;31mNON TROUVÉ\e[0m, utilisation de \e[1;33mconfig.php\e[0m à la place\n");
@@ -105,6 +107,19 @@ global $debug;
                 $serviceStatus[$sectionData['service_description']] = $sectionData;
             }
 			
+			
+			//On regarde s'il y a un downtime pour le service
+            if ($sectionType == "servicedowntime" && $sectionData['host_name'] == 'Applications') {
+				$soft = $sectionData['service_description'];
+				//On enlève les informations redondantes
+				unset($sectionData['service_description']);
+				unset($sectionData['host_name']);
+				//On stocke la liste reçue des périodes de maintenance
+					//$serviceStatus[$soft]['downtime'][] = $sectionData;
+				//On met à jour le statut si l'heure tombe dans la fourchette
+				if ($sectionData['start_time'] <= mktime() && $sectionData['end_time'] >= mktime()) $serviceStatus[$soft]['plugin_output'] = 'WARNING';
+            }
+			
             $inSection = false;
             $sectionType = "";
             continue;
@@ -116,7 +131,14 @@ global $debug;
             // add to the array as appropriate mais en sélectionnant les infos qu'on veut
             if ($sectionType == "servicestatus" && ($lineKey == 'host_name' || $lineKey == 'service_description' || $lineKey == 'plugin_output')) {
                 if ($debug) {
-                    echo "LINE " . $lineNum . ": lineKey=" . $lineKey . "= lineVal=" . $lineVal . "=\n";
+                    echo "LINE " . $lineNum . ": lineKey=" . $lineKey . "= lineVal=" . $lineVal . "<br>";
+                }
+				//Nettoyage du statut
+                $sectionData[$lineKey] = preg_replace('/\[[0-9:]*[m]/m','',$lineVal);
+            }// add to the array as appropriate mais en sélectionnant les infos qu'on veut
+            elseif ($sectionType == "servicedowntime" && ($lineKey == 'start_time' || $lineKey == 'end_time' || $lineKey == 'comment' || $lineKey == 'host_name' || $lineKey == 'service_description')) {
+                if ($debug) {
+                    echo "LINE " . $lineNum . ": lineKey=" . $lineKey . "= lineVal=" . $lineVal . "<br>";
                 }
 				//Nettoyage du statut
                 $sectionData[$lineKey] = preg_replace('/\[[0-9:]*[m]/m','',$lineVal);
@@ -128,8 +150,12 @@ global $debug;
 
     fclose($fh);
 	
-	//On crée deux connexions, une pour chaque serveur
+	echo ('<pre>');
+	var_dump($serviceStatus);
+	echo ('</pre>');
 	
+	exit;
+	//On crée deux connexions, une pour chaque serveur
 	$ssh1 = new NiceSsh();
 	$ssh2 = new NiceSsh();
 	
