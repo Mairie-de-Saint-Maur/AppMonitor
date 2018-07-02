@@ -169,6 +169,8 @@ global $debug;
 		$cmd_trace[Config::$SSH_HOST2][] = $cmd;
 		$ssh2->exec($cmd);
 	}
-	
+
+        $ssh1->exec("chmod -R 777 ".$statusFilesDir." ; chown -R apache:apache ".$statusFilesDir);	
+        $ssh2->exec("chmod -R 777 ".$statusFilesDir." ; chown -R apache:apache ".$statusFilesDir);	
 	var_dump($cmd_trace);
 ?>
