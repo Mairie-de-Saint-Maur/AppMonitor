@@ -68,7 +68,8 @@ class Keepeek extends scenario {
 
 	public function Logout() {
 		// clic sur le menu utilisateur
-		$this->driver->wait()->until(WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::xpath("//button[text()[contains(.,'Administrateur Technique')]]")))->click();
+		//$this->driver->wait()->until(WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::xpath("//button[text()[contains(.,'Administrateur Technique')]]")))->click();
+		$this->driver->wait()->until(WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::cssSelector("table.kpk-top-bar-user tbody tr td.x-btn-center button")))->click();
 		// Déconnexion
 		$this->driver->wait()->until(WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::linkText("Déconnexion")))->click();
 	}
