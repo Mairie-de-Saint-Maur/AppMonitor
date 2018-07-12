@@ -59,7 +59,7 @@ class Gitlab extends scenario {
 	public function Logout() {
 		// Déconnexion par le menu déroulant et Sign out
 		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('a.header-user-dropdown-toggle')))->click();
-		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::partialLinkText('Sign out')))->click();
+		$this->driver->wait()->until(WebDriverExpectedCondition::visibilityOf(WebDriverBy::partialLinkText('Sign out')))->click();
 	}
 }
 ?>
