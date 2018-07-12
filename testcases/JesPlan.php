@@ -64,7 +64,7 @@ class JesPlan extends scenario {
    
 	public function Action() {
 		// clic
-		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector(".mainmenu-item-lvl1")))->click();
+		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector(".mainmenu-item-leaf")))->click();
 		//Recherche avancée
 		$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector(".XButtonTabCell:not(.active)")))->click();
 		
