@@ -61,7 +61,7 @@ function exception_normale($exception, $driver, $scenario, $error)
 
 	//Traitement du message d'exception pour le rendre plus lisible
 	//On coupe la fin qui propose la documentation
-	$ex_message = substr($exception->getMessage(), 0, strpos($exception->getMessage(),'  ('));
+	$ex_message = $exception->getMessage(); //substr($exception->getMessage(), 0, strpos($exception->getMessage(),'  ('));
 	$duration = '';
 	if (strpos($exception->getMessage(),'milliseconds'))
 	{
