@@ -1,9 +1,9 @@
 <?php
 //////////////////////////////////////////////////////////////////
 //                                                              //
-//     classe de test applicatif Agora 2.7                      //
+//     classe de test applicatif Agora                          //
 //                                                              //
-//                   Camus 23-04-2018   V0.1                    //
+//                   Blaise 04-05-2018   V1.0                   //
 //                                                              //
 //////////////////////////////////////////////////////////////////
 
@@ -16,18 +16,18 @@ use Facebook\WebDriver\Chrome\ChromeOptions;
 
 require_once('vendor/autoload.php');
 
-class Agora_27 extends scenario {
-
-	protected $driver = null;
+class Agora extends scenario {
 	
-   function __construct($driver) {
-	   $this->driver = $driver;
-	   $this->steps = ['Home','Login','Action','Logout'];
-   }
+	protected $driver = null;
+
+	function __construct($driver) {
+		$this->driver = $driver;
+		$this->steps = ['Home','Login','Action','Logout'];
+	}
 
    public function Home() {
       // Ouverture de la page d'accueil de l'application
-      $this->driver->get('http://10.50.0.8/agora');
+      $this->driver->get('http://10.51.0.8/agora/pck_security.home');
    }
 
 
@@ -49,6 +49,8 @@ class Agora_27 extends scenario {
       $this->driver->findElement(WebDriverBy::name('p_pass'))->sendKeys('DSI94100');
       $this->driver->findElement(WebDriverBy::id('logIn'))->click();
 
+      //$this->driver->findElement(WebDriverBy::id('logIn'))->click();
+
       // On attend l'affichage effectif de la première page
       $this->driver->wait()->until(WebDriverExpectedCondition::titleContains('Agor@Baby'));
       //$this->driver->wait()->until(WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::id('title', 'login')));
@@ -59,11 +61,11 @@ class Agora_27 extends scenario {
       $this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText('GESTION DE LA POPULATION')));
       $this->driver->findElement(WebDriverBy::linkText('GESTION DE LA POPULATION'))->click();
 
-      $this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText('FAMILLES - FOYERS')));
-      $this->driver->findElement(WebDriverBy::linkText('FAMILLES - FOYERS'))->click();
+      $this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText('FAMILLES')));
+      $this->driver->findElement(WebDriverBy::linkText('FAMILLES'))->click();
 
-      $this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText('Recherche')));
-      $this->driver->findElement(WebDriverBy::linkText('Recherche'))->click();
+      $this->driver->wait()->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText('Rechercher')));
+      $this->driver->findElement(WebDriverBy::linkText('Rechercher'))->click();
    }
 
    public function Logout() {
