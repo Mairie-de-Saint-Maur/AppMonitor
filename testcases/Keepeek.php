@@ -48,6 +48,7 @@ class Keepeek extends scenario {
 		sleep(2);
 		$el = $this->driver->findElements(WebDriverBy::xpath("//button[text()[contains(.,'connecter')]]"));
 		if (count($el) >= 1) {
+			sleep(10);
 			current($el)->click();
 		}
 		
