@@ -12,6 +12,8 @@ class Scenario {
 	protected $step;
 	protected $driver;
 	protected $name;
+	protected $lock_file = null;
+	protected $lock_filename = '';
 	protected $steps = ['Home', 'Login', 'Action', 'Logout'];
    
    function __construct($driver) {
@@ -35,7 +37,36 @@ class Scenario {
 
 		$scenario = new $name($driver);
 		$scenario->setName($name);
+		$scenario->setLockFile($name);
+		
 		return $scenario;
+   }
+   
+	function isLocked(){
+		if(file_exists($this->lock_filename)){
+			
+			//Le fichier existe, mais quand a-t-il été créé ?
+			$this->lock_file = fopen($this->lock_filename, 'r') or die('Cannot open file:  '.$this->lock_filename);
+			
+			$date_ref = intval(fread($this->lock_file, filesize($this->lock_filename)));
+			$date_exp = ($date_ref + Config::$LOCKFILE_MIN_EXPIRE);
+			
+			Console("Le précédent fichier LOCK n'a pas été effacé !\nDate fichier : ".date('Y-m-d H:i:s',$date_ref)." \nDate d'exp.  : ".date('Y-m-d H:i:s',$date_exp)."\nDate actuelle: ".date('Y-m-d H:i:s',mktime())."\n\n");
+			
+			if( mktime() > $date_exp){
+				Console("Le précédent fichier LOCK a expiré, \e[0;31meffacement\e[0m et recréation.\n[\e[0;32mOK\e[0m]\n\n");
+				//Le processus est sûrement bloqué, on efface le fichier
+				$this->unlock();
+				return false;
+			}else{
+				//le processus tourne encore, on skip ce scénario
+				return true;
+			}
+		}else{
+			//Le fichier n'existe pas donc le scénario n'est pas bloqué
+			return false;
+		}
+	   
    }
    
    function getName(){
@@ -44,6 +75,29 @@ class Scenario {
    
    function setName($name){
 	   $this->name = $name;
+   }
+   
+   /*** Crée le fichier lock et y inscrit la date de bloquage ***/
+   function lock(){
+		$this->lock_file = fopen($this->lock_filename, 'w') or die('Cannot open file:  '.$this->lock_filename);
+		fwrite($this->lock_file , mktime());
+		fclose($this->lock_file);
+		return true;
+   }
+   
+   /*** Ferme le fichier lock et le supprime ***/
+	function unlock(){
+		if(is_resource($this->lock_file)) fclose($this->lock_file);
+		unlink($this->lock_filename);
+		return false;
+	}
+   
+   function getLockFile(){
+	   return $this->lock_filename;
+   }
+   
+   function setLockFile($name){
+	   $this->lock_filename = Config::$LOCKFILE_FOLDER.$name.'.lock';
    }
    
    function getStep(){
@@ -78,5 +132,7 @@ class Scenario {
 			$this->err = 0;
 		}
    }
+   
+   //public function 
 }
 ?>

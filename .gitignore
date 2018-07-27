@@ -4,3 +4,4 @@
 *.bak
 status.dat
 /testcases/*
+/lockfiles/*

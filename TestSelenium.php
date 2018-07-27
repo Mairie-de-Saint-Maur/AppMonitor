@@ -105,14 +105,22 @@ $driver = $driver_w->getDriver();
 //On instancie le scénario appelé
 $scenario = Scenario::createScenario($driver, $scenario_n);
 
+//On vérifie si une autre instance du scénario n'est pas déjà en cours d'execution et non finie
+if($scenario->isLocked()){
+	Console("\e[1;37mLe scenario précédent n'est pas terminé\e[0m\n[\e[0;31mSKIP\e[0m]\n\n");
+	exit;
+}else{
+	Console("Vérification que le scénario précédent est \e[1;33mterminé\n[\e[0;32mOK\e[0m]\n\n");
+	$scenario->lock();
+}
 // Instanciation de la classe permettant le stockage des données en base circulaire
-$RRD = new ReportingTool($scenario->getName(), $driver);
+$RRD = new ReportingTool($scenario, $driver);
 //On utilise les mêmes étapes pour le RRD que celle que le scénario a prévu.
 $RRD->setSteps($scenario->getSteps());
 
 //Vérification de communication avec Chrome
 try {
-	$driver->get('http://srv-eon.saintmaur.local');
+	$driver->get(Config::$TEST_COMM_URL);
 }
 catch(Exception $exception) {
 	//En cas d'erreur :
@@ -154,6 +162,7 @@ foreach($scenario->getSteps() as $step){
 	}
 	Console("Fin d'étape : $step\n\n");
 }
+
 Console("\e[1;37mFin du scenario \e[1;34m$scenario_n\n\e[0m\n");
 
 // Suppression des éventuels cookies résiduels

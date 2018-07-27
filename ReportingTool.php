@@ -22,6 +22,7 @@ class ReportingTool {
 	private $nsca_state ;
 	private $nsca_service ;
 	private $driver;
+	private $scenario;
 
 	/* On n'utilise plus d'étapes définies, on se base sur les étapes demandées par le scénario
 	public $timeHome    = 'U';
@@ -32,13 +33,16 @@ class ReportingTool {
 	private $times = array();
 
    // Création du fichier RRD si nécessaire lors de l'instanciation
-   function __construct($file, $driver) {
-	  $this->rrdTool =  Config::$RRD_TOOL;
-          $this->rrdUpdate =  Config::$RRD_UPD;
-          $this->rrdFile =  Config::$RRD_DEFAULT_FILE;
+   function __construct($scenario, $driver) {
+		$this->rrdTool =  Config::$RRD_TOOL;
+		$this->rrdUpdate =  Config::$RRD_UPD;
+		$this->rrdFile =  Config::$RRD_DEFAULT_FILE;
 
-      $this->driver = $driver ;
+		$this->driver = $driver ;
+		$this->scenario = $scenario ;
 
+		$file = $this->scenario->getName();
+		
 	   //Préparation du client NSCA - envoi de commandes à NAGIOS
       $this->nsca_client = new EonNsca();
 	  $this->nsca_msg = "UNKNOWN STATE" ;
@@ -77,6 +81,10 @@ class ReportingTool {
    // Cela permet de conserver la trace des plantages dans les données d'exécution
    function __destruct() {
 	  $this->update();
+	  //On met fin au lock par fichier sur le scénario
+	  Console("\e[0;31mSuppression\e[0m du fichier LOCK\n");
+	  $this->scenario->unlock();
+	  Console("[\e[0;32mOK\e[0m]\n\n");
    }
 
 	// Update du fichier rrd et du status nagios NSCA

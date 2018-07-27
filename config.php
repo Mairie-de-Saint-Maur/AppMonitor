@@ -18,6 +18,8 @@ class Config{
 			$SMTP = 'smtp.saintmaur.local',
 	// Dossier pour les caputres
 			$SCREENSHOT_DIR = "./screenshots/",
+	// URL de test de communication - doit renvoyer vers une URL dispo sur le réseau local pour être effective
+			$TEST_COMM_URL = 'http://srv-eon.saintmaur.local',
 	// Host selenium
 			$SELENIUM_HOST = "http://srv-eon.saintmaur.local:4444/wd/hub",
 			$SELENIUM_HOST_NAME = "SRV-EON",
@@ -41,6 +43,9 @@ class Config{
 	// TIMEOUT DELAYS (in Miliseconds)
 			$CONNECT_TIMEOUT = 15000,
 			$QUERY_TIMEOUT = 120000,
+	// Emplacement des fichiers LOCK
+			$LOCKFILE_FOLDER = './lockfiles/',
+			$LOCKFILE_MIN_EXPIRE = 60*10, //10 minutes
 	// EON NSCA
 			$EON_SRV = 'localhost';
 	
