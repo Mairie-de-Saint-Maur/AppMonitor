@@ -2,3 +2,5 @@
 *.old
 *.png
 *.bak
+status.dat
+/testcases/*
