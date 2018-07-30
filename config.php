@@ -45,7 +45,7 @@ class Config{
 			$QUERY_TIMEOUT = 120000,
 	// Emplacement des fichiers LOCK
 			$LOCKFILE_FOLDER = './lockfiles/',
-			$LOCKFILE_MIN_EXPIRE = 60*10, //10 minutes
+			$LOCKFILE_MIN_EXPIRE = 600, //10 minutes
 	// EON NSCA
 			$EON_SRV = 'localhost';
 	
