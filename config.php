@@ -16,6 +16,8 @@ class Config{
 			$DEFAULT_EXP_MAIL = 'Supervision_Applicative@mairie-saint-maur.com',
 			$DEFAULT_EXP_NAME = 'Supervision Applicative',
 			$SMTP = 'smtp.saintmaur.local',
+	// Création des dossiers si absents
+			$CREATE_DIR_IF_ABSENT = true,
 	// Dossier pour les caputres
 			$SCREENSHOT_DIR = "./screenshots/",
 	// URL de test de communication - doit renvoyer vers une URL dispo sur le réseau local pour être effective
@@ -50,6 +52,48 @@ class Config{
 	
 	public function getChromeDirName(){
 		return "--user-data-dir=/tmp/chromedata".date("_Ymd_h-i-s");
+	}
+	
+	public function CheckFolders($create = true){
+		//Screenshots
+		Console("1- \e[1;33m".Config::$SCREENSHOT_DIR."\e[0m\n");
+		if (!is_dir(Config::$SCREENSHOT_DIR) or !file_exists(Config::$SCREENSHOT_DIR)){
+			Console("   [\e[0;31mNOT FOUND\e[0m]\n");
+			if ($create){
+				Console("   Création du dossier \e[1;33m".Config::$SCREENSHOT_DIR."\e[0m\n");
+				if(mkdir(Config::$SCREENSHOT_DIR, 0777)){
+					Console("   [\e[0;32mOK\e[0m]\n\n");
+				}else{
+					Console("   [\e[0;32mImpossible de créer le dossier.\e[0m]\n\n");
+					exit;
+				}
+			}else{
+				Console("   [\e[0;31mTest arrêté\e[0m] : les dossiers requis ne sont pas présents.\n\n");
+				exit;
+			}
+		}else{
+			Console("   [\e[0;32mOK\e[0m]\n\n");
+		}
+		
+		//Lockfiles
+		Console("2- \e[1;33m".Config::$LOCKFILE_FOLDER."\e[0m\n");
+		if (!is_dir(Config::$LOCKFILE_FOLDER) or !file_exists(Config::$LOCKFILE_FOLDER)){
+			Console("   [\e[0;31mNOT FOUND\e[0m]\n");
+			if ($create){
+				Console("   Création du dossier \e[1;33m".Config::$LOCKFILE_FOLDER."\e[0m\n");
+				if(mkdir(Config::$LOCKFILE_FOLDER)){
+					Console("   [\e[0;32mOK\e[0m]\n\n");
+				}else{
+					Console("   [\e[0;32mImpossible de créer le dossier.\e[0m]\n\n");
+					exit;
+				}
+			}else{
+				Console("   [\e[0;31mTest arrêté\e[0m] : les dossiers requis ne sont pas présents.\n\n");
+				exit;
+			}
+		}else{
+			Console("   [\e[0;32mOK\e[0m]\n\n");
+		}
 	}
 }
 //////////////////////////////////////////////////////////////////
