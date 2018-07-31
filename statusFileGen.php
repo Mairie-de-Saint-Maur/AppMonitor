@@ -159,10 +159,16 @@ global $debug;
 			
 		$ssh = new NiceSsh();
 		
+		echo "\e[1;34mConnexion SSH\e[0m au serveur ". $host .":". Config::$SSH_PORT."\n\n";
 		$ssh->connect($host);
 		
 		//Tableau qui trace les commandes exécutées
 		$cmd_trace = array();
+		
+		//Création du répertoire pour accueillir les fichiers statuts par appli -p = crée les dossiers s'ils n'existent pas déjà
+		echo "\e[1;34mCréation des dossiers\e[0m pour les fichiers .status SSH du serveur ". $host .":". Config::$SSH_PORT."\n\n";
+		$cmd_trace[$host][] = "mkdir -p ".Config::$STATUS_FILE_DIR;
+		$ssh->exec("mkdir -p ".Config::$STATUS_FILE_DIR);
 		
 		//Pour chaque appli, on génère le fichier status correspondant
 		foreach($serviceStatus as $key => $app)
