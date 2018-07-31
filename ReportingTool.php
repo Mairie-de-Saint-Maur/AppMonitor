@@ -49,17 +49,6 @@ class ReportingTool {
 	  $this->nsca_state = EonNsca::STATE_UNKNOWN;
 	  $this->nsca_service = $file ;
 	  
-	  //établissement de la connexion SSH à chaque serveur pour créer les dossiers
-		foreach(Config::$SSH_HOSTS as $host){
-			$this->ssh_connection = new NiceSsh();
-
-			Console("\e[1;34mConnexion SSH\e[0m au serveur ". $host .":". Config::$SSH_PORT."\n\n");
-
-			$this->ssh_connection->connect($host);
-
-			//Création du répertoire pour accueillir les fichiers statuts par appli
-			$this->ssh_connection->exec("mkdir -p ".Config::$STATUS_FILE_DIR);
-		}
 	  //Vérification de l'existance du fichier RRD et création si besoin
       $this->rrdFile = "./rrd/".$file . ".rrd";
       if (!file_exists($this->rrdFile)) {
