@@ -13,6 +13,7 @@
 	-c (facultatif) pour le fichier de config à utiliser;
 	-i (facultatif)pour l'intervalle horaire permis pour les mails;
 	-v (facultatif)pour le mode verbose;
+	-h ou -help (facultatif) liste les paramètres;
 	
  * retourne un array avec :
  * $cl_opt[s] = nom du scenario
@@ -31,13 +32,14 @@ Console("Récupération des paramètres de ligne de commande\n");
 if(!$cl_opt or (!isset($cl_opt['s']) and !isset($cl_opt['h']) and !isset($cl_opt['help']))){
 	echo "\n\e[0;31m /!\ ERREUR\e[0m : Les options passées sont non conformes. Utilisez -h ou -help pour l'aide.\n\n";
 	exit;
-}elseif (isset($cl_opt['h']) or isset($cl_opt['h'])){
+}elseif (isset($cl_opt['h']) or isset($cl_opt['help'])){
 	echo "\n\e[0;32mAIDE pour TestSelenium\e[0m
 Les paramètres disponibles sont :
-	\e[1;33m-s\e[0m (\e[0;31mobligatoire\e[0m) pour le nom du scenario,
-	\e[1;33m-c\e[0m (facultatif) pour le fichier de config à utiliser (config.php est utilisé si le paramètre est omis),
-	\e[1;33m-i\e[0m (facultatif)pour l'intervalle horaire permis pour les mails (0-24 est utilisé si le paramètre est omis),
-	\e[1;33m-v\e[0m (facultatif)pour le mode verbose (qui affiche le détail d'avancement du scénario),
+	\e[1;33m-s\e[0m (\e[0;31mobligatoire\e[0m) pour le nom du scenario
+	\e[1;33m-c\e[0m (facultatif) pour le fichier de config à utiliser (config.php est utilisé si le paramètre est omis)
+	\e[1;33m-i\e[0m (facultatif)pour l'intervalle horaire permis pour les mails (0-24 est utilisé si le paramètre est omis)
+	\e[1;33m-v\e[0m (facultatif)pour le mode verbose (qui affiche le détail d'avancement du scénario)
+	\e[1;33m-h\e[0m ou \e[1;33m-help\e[0m (facultatif) liste les paramètres
 ";
 	exit;
 }else{
@@ -82,8 +84,8 @@ $mail = new NiceMail($params);
 
 //Ajout du nom du scénario dans le corps du mail
 $mail->Subject = "ECHEC Scenario $scenario_n";
-if(defined(SELENIUM_HOST_NAME)) $mail->Subject .= "sur ".SELENIUM_HOST_NAME;
-$mail->addBody("<h1>Scénario $scenario_n</h1><p>Exécuté depuis ".SELENIUM_HOST."</p>");
+if(Config::$SELENIUM_HOST_NAME) $mail->Subject =  $mail->Subject." sur ". Config::$SELENIUM_HOST_NAME;
+$mail->addBody("<h1>Scénario $scenario_n</h1><p>Exécuté depuis ". Config::$SELENIUM_HOST."</p>");
 Console("[\e[0;32mOK\e[0m]\n\n");
 
 //Niveau d'erreur et gestionnaire d'exceptions
@@ -103,15 +105,32 @@ $driver = $driver_w->getDriver();
 //On instancie le scénario appelé
 $scenario = Scenario::createScenario($driver, $scenario_n);
 
+//On vérifie si une autre instance du scénario n'est pas déjà en cours d'execution et non finie
+if($scenario->isLocked()){
+	Console("\e[1;37mLe scenario précédent n'est pas terminé\e[0m\n[\e[0;31mSKIP\e[0m]\n\n");
+	exit;
+}else{
+	Console("Vérification que le scénario précédent est \e[1;33mterminé\n[\e[0;32mOK\e[0m]\n\n");
+	$scenario->lock();
+}
 // Instanciation de la classe permettant le stockage des données en base circulaire
-$RRD = new ReportingTool($scenario->getName(), $driver);
+$RRD = new ReportingTool($scenario, $driver);
 //On utilise les mêmes étapes pour le RRD que celle que le scénario a prévu.
 $RRD->setSteps($scenario->getSteps());
+
+//Vérification de communication avec Chrome
+try {
+	$driver->get(Config::$TEST_COMM_URL);
+}
+catch(Exception $exception) {
+	//En cas d'erreur :
+	$driver_w->setError(exception_at_start($exception, $driver_w, $scenario));
+}
 
 //Titre coloré : permet de mieux repérer le début de l'exécution du script #USER_FRIENDLY
 Console("\e[1;37mDemarrage du scenario \e[1;34m$scenario_n\n\e[0m\n");
 
-//On parcourt les étapes prévues au scénarion, par défaut : gohome, Login, Action, Logout.
+//On parcourt les étapes prévues au scénarion, par défaut : GoHome, Login, Action, Logout.
 foreach($scenario->getSteps() as $step){
 	//On vérifie que l'étape demandée existe et on init les variables
 	$scenario->init_step($step);
@@ -143,6 +162,7 @@ foreach($scenario->getSteps() as $step){
 	}
 	Console("Fin d'étape : $step\n\n");
 }
+
 Console("\e[1;37mFin du scenario \e[1;34m$scenario_n\n\e[0m\n");
 
 // Suppression des éventuels cookies résiduels
@@ -209,7 +229,7 @@ else
 }
 
 //Suppression des fichiers images
-array_map('unlink', glob(SCREENSHOT_DIR."screenshot-$scenario_n-*.png"));
+array_map('unlink', glob( Config::$SCREENSHOT_DIR."screenshot-$scenario_n-*.png"));
 
 //NSCA Report
 $RRD->nsca_report($nsca_status, $nsca_msg);

@@ -28,7 +28,7 @@ class Artotheque extends scenario {
 
    public function Home() {
       // Ouverture de la page d'accueil de l'application
-      $this->driver->get('http://saint-maur.ideesculture.fr/gestion/');
+      $this->driver->get('https://saint-maur.ideesculture.fr/gestion/');
 
       $this->driver->wait()->until(Facebook\WebDriver\WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name('username')));
    }
@@ -39,7 +39,7 @@ class Artotheque extends scenario {
       $this->driver->findElement(WebDriverBy::name('username'))->clear();
       $this->driver->findElement(WebDriverBy::name('username'))->sendKeys('test');
       $this->driver->findElement(WebDriverBy::name('password'))->clear();
-      $this->driver->findElement(WebDriverBy::name('password'))->sendKeys('######');
+      $this->driver->findElement(WebDriverBy::name('password'))->sendKeys('#####');
       $this->driver->findElement(WebDriverBy::linkText('Identifiant'))->click();
    }
    

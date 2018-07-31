@@ -16,10 +16,10 @@ class DriverWrapper {
 	private $error = 0;
 
 	// Execution du navigateur sur le serveur défini par la conf
-	private $host = SELENIUM_HOST;
+	private $host ; #=  Config::SELENIUM_HOST;
 	
-	private $connection_timeout = CONNECT_TIMEOUT;
-	private $request_timeout = QUERY_TIMEOUT;
+	private $connection_timeout ; # =  Config::CONNECT_TIMEOUT;
+	private $request_timeout ; #=  Config::QUERY_TIMEOUT;
 	
 	private $timeLast = 0;
 	//Tableau contenant les temps pour chaque step
@@ -60,15 +60,15 @@ class DriverWrapper {
 		return $this->NiceMail;
 	}
 	
-	function setHost($host = SELENIUM_HOST){
+	function setHost($host){
 		$this->host = $host;
 	}
 	
-	function setConnectionTimeout($time = CONNECT_TIMEOUT){
+	function setConnectionTimeout($time){
 		$this->connection_timeout = $time;
 	}
 	
-	function setRequestTimeout($time = QUERY_TIMEOUT){
+	function setRequestTimeout($time){
 		$this->request_timeout = $time;
 	}
 	
@@ -86,6 +86,11 @@ class DriverWrapper {
 	
 	function __construct(NiceMail $mail = null)
 	{
+		$this->host =  Config::$SELENIUM_HOST;
+
+        	$this->connection_timeout =  Config::$CONNECT_TIMEOUT;
+		$this->request_timeout =  Config::$QUERY_TIMEOUT;		
+
 		if($mail === null) $mail = new NiceMail();
 		
 		Console("Initialisation du \e[1;33mWebDriver\e[0m\n");
@@ -95,12 +100,16 @@ class DriverWrapper {
 	// Initialise et paramètre le navigateur pour la simulation      //
 	///////////////////////////////////////////////////////////////////
 	
-		// Choix du navigateur
-		$options = new ChromeOptions();
-		$options->addArguments(array("--start-maximized", "--no-sandbox","--disable-setuid-sandbox"));
 		$capabilities = DesiredCapabilities::chrome();
-		$capabilities->setCapability(ChromeOptions::CAPABILITY, $options);
 		
+		$options = Config::$CHROME_OPTIONS;
+		//on ajoute le dossier tmp de chrome
+		array_push($options, Config::getChromeDirName());
+	 	$capabilities->setCapability("chromeOptions", array(
+			"args" => $options
+		));
+				
+
 		$this->startDriver($capabilities);
 	}
 	
@@ -131,7 +140,7 @@ class DriverWrapper {
 		   catch(Exception $e) {
 			  fwrite(STDERR, "Deuxième tentative de lancement du navigateur échouée\n");
 			  fwrite(STDERR, "$e->getMessage()");
-			Console("\n\e[0;31m /!\ ERREUR \e[0m Impossible de lancer le navigateur (2ème tentative)\n");
+			  Console("\n\e[0;31m /!\ ERREUR \e[0m Impossible de lancer le navigateur (2ème tentative)\n");
 			  $this->NiceMail->Subject = "Deuxième tentative de lancement du navigateur échouée";
 			  $this->NiceMail->addBody("$e->getMessage()");
 			  $this->error += 2;
@@ -189,13 +198,13 @@ class DriverWrapper {
 	function takeSnapshot($step, $name)
 	{
 		if (isset($this->driver)) {
-			$screenshot = SCREENSHOT_DIR."screenshot-$name-$step-". date("Y-m-d_H-i-s") . ".png";
+			$screenshot =  Config::$SCREENSHOT_DIR."screenshot-$name-$step-". date("Y-m-d_H-i-s") . ".png";
 			try {
 				$this->driver->takeScreenshot($screenshot);
 			}
 			catch(Exception $e) {
 				fwrite(STDERR, "Impossible de prendre une copie d'écran\n");
-				$this->NiceMail->addBody("<h3 class='error'>Impossible de prendre une copie d'écran.</h3><p>".$e->getMessage()."</p>");
+				$this->NiceMail->addBody("<h3 class='error'>Impossible de prendre une copie d'écran.</h3><p>($screenshot)<br>".$e->getMessage()."</p>");
 				$this->error += 4;
 				return $this->error;
 			}

@@ -10,17 +10,19 @@ require_once('nsca/src/EonNsca.php');
 require_once('NiceSsh.php');
 
 class ReportingTool {
-	private $ssh_connection;
+	private $ssh_connection1;
+	private $ssh_connection2;
 
-	private $rrdTool = RRD_TOOL;
-	private $rrdUpdate = RRD_UPD;
-	private $rrdFile = RRD_DEFAULT_FILE;
+	private $rrdTool ; # =  Config::$RRD_TOOL;
+	private $rrdUpdate ; #=  Config::$RRD_UPD;
+	private $rrdFile ; #=  Config::$RRD_DEFAULT_FILE;
 
 	private $nsca_client ;	
 	private $nsca_msg ;
 	private $nsca_state ;
 	private $nsca_service ;
 	private $driver;
+	private $scenario;
 
 	/* On n'utilise plus d'étapes définies, on se base sur les étapes demandées par le scénario
 	public $timeHome    = 'U';
@@ -31,10 +33,16 @@ class ReportingTool {
 	private $times = array();
 
    // Création du fichier RRD si nécessaire lors de l'instanciation
-   function __construct($file, $driver) {
-	   
-      $this->driver = $driver ;
+   function __construct($scenario, $driver) {
+		$this->rrdTool =  Config::$RRD_TOOL;
+		$this->rrdUpdate =  Config::$RRD_UPD;
+		$this->rrdFile =  Config::$RRD_DEFAULT_FILE;
 
+		$this->driver = $driver ;
+		$this->scenario = $scenario ;
+
+		$file = $this->scenario->getName();
+		
 	   //Préparation du client NSCA - envoi de commandes à NAGIOS
       $this->nsca_client = new EonNsca();
 	  $this->nsca_msg = "UNKNOWN STATE" ;
@@ -42,14 +50,17 @@ class ReportingTool {
 	  $this->nsca_service = $file ;
 	  
 	  //établissement de la connexion SSH
-      $this->ssh_connection = new NiceSsh();
+      $this->ssh_connection1 = new NiceSsh();
+      $this->ssh_connection2 = new NiceSsh();
 	  
-	  Console("\e[1;34mConnexion SSH\e[0m au serveur ".SSH_HOST.":".SSH_PORT."\n\n");
+	  Console("\e[1;34mConnexion SSH\e[0m au serveur ". Config::$SSH_HOST1.":". Config::$SSH_PORT."\n\n");
 	  
-	  $this->ssh_connection->connect();
+	  $this->ssh_connection1->connect(Config::$SSH_HOST1);
+	  $this->ssh_connection2->connect(Config::$SSH_HOST2);
 	  
 	  //Création du répertoire pour accueillir les fichiers statuts par appli
-	  $this->ssh_connection->exec("mkdir -p /var/www/html/dev/listapp/app_status/");
+	  $this->ssh_connection1->exec("mkdir -p ".Config::$STATUS_FILE_DIR);
+	  $this->ssh_connection2->exec("mkdir -p ".Config::$STATUS_FILE_DIR);
       
 	  //Vérification de l'existance du fichier RRD et création si besoin
       $this->rrdFile = "./rrd/".$file . ".rrd";
@@ -70,6 +81,10 @@ class ReportingTool {
    // Cela permet de conserver la trace des plantages dans les données d'exécution
    function __destruct() {
 	  $this->update();
+	  //On met fin au lock par fichier sur le scénario
+	  Console("\e[0;31mSuppression\e[0m du fichier LOCK\n");
+	  $this->scenario->unlock();
+	  Console("[\e[0;32mOK\e[0m]\n\n");
    }
 
 	// Update du fichier rrd et du status nagios NSCA
@@ -78,8 +93,8 @@ class ReportingTool {
 		Console("\e[1;34mEnvoi de la requête NSCA\e[0m : ".$this->nsca_service." -> ".$this->nsca_msg.' ('.$this->nsca_state.')');
 		//Envoi de la requête
 		$this->nsca_client->send('Applications', $this->nsca_service, $this->nsca_state, $this->nsca_msg);
-		//Commande SSH pour écrire le statut dans le fichier .status
-		$this->ssh_report();
+		//Commande SSH pour écrire le statut dans le fichier .status -- Commentée parce qu'on lit maintenant les statuts depuis NAGIOS
+		//$this->ssh_report();
 		
 		//Tableau des temps
 		$mask = "|%-9.9s |%10.10s |\n";
@@ -152,10 +167,11 @@ class ReportingTool {
 	   }
 	   
 	   //commande d'écriture dans le fichier .status
-	   $cmd = "echo '".$clear_state."' > /var/www/html/dev/listapp/app_status/$this->nsca_service.status" ;
+	   $cmd = "echo '".$clear_state."' > ".Config::$STATUS_FILE_DIR."$this->nsca_service.status" ;
 	   
 	   //Exécution de la commande SSH
-	   $this->ssh_connection->exec($cmd);
+	   $this->ssh_connection1->exec($cmd);
+	   $this->ssh_connection2->exec($cmd);
    }
    
    /////////////////////////////
