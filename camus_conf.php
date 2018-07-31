@@ -31,8 +31,7 @@ class Config{
 			$RRD_DEFAULT_FILE = "default.rrd",
 	// SSH
 			//$SSH_HOST_STATUS_FILES = "www01-d.saintmaur.local",
-			$SSH_HOST1 = "www01-d.saintmaur.local",
-			$SSH_HOST2 = "www01-d.saintmaur.local",
+			$SSH_HOSTS = array("www01-d.saintmaur.local"),
 			$SSH_PORT = 22,
 			$SSH_FP = "19:f8:27:1f:df:64:02:d4:38:5d:83:16:f7:dc:91:cf",
 			$SSH_AUTH_USER = 'root',
