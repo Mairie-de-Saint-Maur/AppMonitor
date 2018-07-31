@@ -154,30 +154,29 @@ global $debug;
 
     fclose($fh);
 	
-	//On crée deux connexions, une pour chaque serveur
-	$ssh1 = new NiceSsh();
-	$ssh2 = new NiceSsh();
-	
-	$ssh1->connect(Config::$SSH_HOST1);
-	$ssh2->connect(Config::$SSH_HOST2);
-	
-	//Tableau qui trace les commandes exécutées
-	$cmd_trace = array();
-	
-	//Pour chaque appli, on génère le fichier status correspondant
-	foreach($serviceStatus as $key => $app)
-	{
-		//On écrit au format JSON
-		$cmd = "echo \"{\\\"status\\\":\\\"".$app['plugin_output']."\\\"}\" > ".$statusFilesDir.$key.'.status';
-		$cmd_trace[Config::$SSH_HOST1][] = $cmd;
-		$ssh1->exec($cmd);
-		$cmd_trace[Config::$SSH_HOST2][] = $cmd;
-		$ssh2->exec($cmd);
+	//On crée une connexion pour chaque serveur
+	foreach (Config::$SSH_HOSTS as $host){
+			
+		$ssh = new NiceSsh();
 		
+		$ssh->connect($host);
+		
+		//Tableau qui trace les commandes exécutées
+		$cmd_trace = array();
+		
+		//Pour chaque appli, on génère le fichier status correspondant
+		foreach($serviceStatus as $key => $app)
+		{
+			//On écrit au format JSON
+			$cmd = "echo \"{\\\"status\\\":\\\"".$app['plugin_output']."\\\"}\" > ".$statusFilesDir.$key.'.status';
+			//On liste les commandes effectuées
+			$cmd_trace[$host][] = $cmd;
+			$ssh->exec($cmd);
+			
+		}
+			
+			$ssh->exec("chmod -R 777 ".$statusFilesDir." ; chown -R apache:apache ".$statusFilesDir);	
 	}
-		
-        $ssh1->exec("chmod -R 777 ".$statusFilesDir." ; chown -R apache:apache ".$statusFilesDir);	
-        $ssh2->exec("chmod -R 777 ".$statusFilesDir." ; chown -R apache:apache ".$statusFilesDir);	
-		
+	
 	var_dump($cmd_trace);
 ?>

@@ -73,6 +73,11 @@ Console("Chargement du fichier de configuration \e[1;33m$conf\e[0m\n");
 require_once($conf);
 Console("[\e[0;32mOK\e[0m]\n\n");
 
+//Vérification de la présence des dossiers
+Console("\e[0;32mVérification\e[0m de la présence des dossiers :\n");
+Config::CheckFolders(Config::$CREATE_DIR_IF_ABSENT); //CheckFolders prend en paramètre TRUE (par défaut) pour créer les dossiers s'ils n'existent pas, ou FALSE pour ne pas les créer.
+Console("[\e[0;32mOK\e[0m]\n\n");
+
 //Création du mail à partir de la classe NiceMail
 Console("Création de l'objet \e[1;33mNiceMail\e[0m\n");
 
@@ -110,7 +115,7 @@ if($scenario->isLocked()){
 	Console("\e[1;37mLe scenario précédent n'est pas terminé\e[0m\n[\e[0;31mSKIP\e[0m]\n\n");
 	exit;
 }else{
-	Console("Vérification que le scénario précédent est \e[1;33mterminé\n[\e[0;32mOK\e[0m]\n\n");
+	Console("Vérification que le scénario précédent est \e[1;33mterminé\n\e[0m[\e[0;32mOK\e[0m]\n\n");
 	$scenario->lock();
 }
 // Instanciation de la classe permettant le stockage des données en base circulaire
