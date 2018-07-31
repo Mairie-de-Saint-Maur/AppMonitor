@@ -40,6 +40,7 @@ class Config{
 			$SSH_AUTH_PUB = '/root/.ssh/id_rsa.pub',
 			$SSH_AUTH_PRIV = '/root/.ssh/id_rsa',
 			$NAGIOS_DAT_FILE_DIR = "/srv/eyesofnetwork/nagios/var/log/", //dossier où trouver le fichier DAT de Nagios
+			$NAGIOS_HOST_NAME = 'Applications', //nom du host Nagios dans lequel se trouvent les services
 			$STATUS_FILE_DIR = "/var/www/html/listapp/app_status/",//dossier où stocker les fichiers .status
 	// TIMEOUT DELAYS (in Miliseconds)
 			$CONNECT_TIMEOUT = 15000,

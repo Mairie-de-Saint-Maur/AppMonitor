@@ -3,7 +3,7 @@
 // statusFileGen.php
 //
 // Script to parse Nagios status.dat and push .status file for each service
-// in "Applications"
+// in the host name provided in config
 //
 // This code is just a modification of Jason Antman's statusXML.php available at
 // https://github.com/jantman/php-nagios-xml
@@ -104,13 +104,13 @@ global $debug;
         } elseif ($inSection && trim($line) == "}") // closing a section
         {
 			//On n'ajoute le service que s'il appartient à Applications
-            if ($sectionType == "servicestatus" && $sectionData['host_name'] == 'Applications') {
+            if ($sectionType == "servicestatus" && $sectionData['host_name'] == Config::$NAGIOS_HOST_NAME) {
                 $serviceStatus[$sectionData['service_description']] = $sectionData;
             }
 			
 			
 			//On regarde s'il y a un downtime pour le service
-            if ($sectionType == "servicedowntime" && $sectionData['host_name'] == 'Applications') {
+            if ($sectionType == "servicedowntime" && $sectionData['host_name'] == Config::$NAGIOS_HOST_NAME) {
 				$soft = $sectionData['service_description'];
 				//On enlève les informations redondantes
 				unset($sectionData['service_description']);
