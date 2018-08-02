@@ -33,10 +33,10 @@ $conf = (isset($cl_opt['c']))? $cl_opt['c'] : 'config.php';
 //$conf = (isset($_GET['c']))? $_GET['c'] : 'config.php';
 //on vérifie si le fichier demandé existe ou on impose le fichier config.php
 if(!file_exists($conf)){
-	Console("Fichier de configuration \e[1;33m$conf \e[0;31mNON TROUVÉ\e[0m, utilisation de \e[1;33mconfig.php\e[0m à la place\n");
+	echo "Fichier de configuration \e[1;33m$conf \e[0;31mNON TROUVÉ\e[0m, utilisation de \e[1;33mconfig.php\e[0m à la place\n";
 	$conf = 'config.php';
 	if(!file_exists($conf)){
-		Console("Fichier de configuration \e[1;33m par défaut \e[0;31mNON TROUVÉ\e[0m, fin du script\n");
+		echo "Fichier de configuration \e[1;33m par défaut \e[0;31mNON TROUVÉ\e[0m, fin du script\n";
 		exit;
 	}
 }
